@@ -1,0 +1,688 @@
+--- START OF FILE index.html ---
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Descomplica Logística</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-color: #fff;
+        --text-color: #333;
+        --text-color-light: #555;
+        --text-color-subtle: #6c757d;
+        --primary-color: #fec700;
+        --header-bg: rgba(255, 255, 255, 0.85);
+        --footer-bg: #f8f9fa;
+        --footer-border: #e9ecef;
+        --card-bg: #fff;
+        --card-border: #eee;
+        --card-shadow: rgba(0,0,0,0.05);
+        --card-shadow-hover: rgba(0,0,0,0.1);
+        --button-bg: #fffbef;
+        --button-bg-hover: #fef4d6;
+        --search-border: #ddd;
+        --highlight-bg: #fffbef;
+        --timeline-bg: #f8f9fa;
+        --timeline-border: #e9ecef;
+        --timeline-nav-item-color: #6c757d;
+        --timeline-nav-item-color-hover: #333;
+        --quiz-correct-bg: #e6ffed;
+        --quiz-correct-border: #5cb85c;
+        --quiz-incorrect-bg: #fdeded;
+        --quiz-incorrect-border: #d9534f;
+      }
+      
+      [data-theme="dark"] {
+        --bg-color: #1a1a1a;
+        --text-color: #e0e0e0;
+        --text-color-light: #bdbdbd;
+        --text-color-subtle: #9e9e9e;
+        --header-bg: rgba(26, 26, 26, 0.8);
+        --footer-bg: #212121;
+        --footer-border: #333;
+        --card-bg: #2c2c2c;
+        --card-border: #424242;
+        --card-shadow: rgba(0,0,0,0.2);
+        --card-shadow-hover: rgba(0,0,0,0.3);
+        --button-bg: #2c2c2c;
+        --button-bg-hover: #3a3a3a;
+        --search-border: #555;
+        --highlight-bg: #3a3a3a;
+        --timeline-bg: #212121;
+        --timeline-border: #424242;
+        --timeline-nav-item-color: #9e9e9e;
+        --timeline-nav-item-color-hover: #e0e0e0;
+        --quiz-correct-bg: #2a3f2a;
+        --quiz-correct-border: #5cb85c;
+        --quiz-incorrect-bg: #4a2a2a;
+        --quiz-incorrect-border: #d9534f;
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        overflow-x: hidden; /* Prevent horizontal scrollbar during transition */
+      }
+      .custom-cursor {
+        cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 16.5V7.5L12 2L3 7.5V16.5L12 22L21 16.5Z" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.27 7.5L12 12.5L20.73 7.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22V12.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 16 16, auto;
+      }
+      .background-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        z-index: -1;
+      }
+      
+      /* New Slogan Animation */
+      .slogan-text {
+        position: relative;
+        z-index: 1;
+      }
+
+      .slogan-animation-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 12px;
+        z-index: 0;
+      }
+
+      .slogan-animation-bg .line {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--primary-color);
+        opacity: 0.2;
+        animation: flow-lines 10s linear infinite;
+      }
+
+      .slogan-animation-bg .line:nth-child(1) {
+        top: 15%;
+        animation-duration: 8s;
+      }
+      .slogan-animation-bg .line:nth-child(2) {
+        top: 35%;
+        animation-duration: 12s;
+        animation-delay: -2s;
+        opacity: 0.3;
+      }
+      .slogan-animation-bg .line:nth-child(3) {
+        top: 55%;
+        animation-duration: 6s;
+        animation-delay: -5s;
+      }
+      .slogan-animation-bg .line:nth-child(4) {
+        top: 75%;
+        animation-duration: 10s;
+        animation-delay: -3s;
+        opacity: 0.25;
+      }
+      .slogan-animation-bg .line:nth-child(5) {
+        top: 90%;
+        animation-duration: 9s;
+        animation-delay: -7s;
+        height: 2px;
+      }
+
+      @keyframes flow-lines {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(100%);
+        }
+      }
+
+      /* Theme Toggle Button */
+      .theme-toggle-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-color);
+        transition: background-color 0.2s ease;
+      }
+      .theme-toggle-button:hover {
+        background-color: var(--button-bg-hover);
+      }
+      .theme-toggle-button svg {
+        stroke: var(--text-color);
+      }
+      
+      /* Header Hide on Scroll */
+      .header-hidden {
+        transform: translateY(-100%);
+      }
+
+      /* Page Transitions */
+      @keyframes pageFadeIn {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes pageFadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-15px); }
+      }
+
+      main.page-fade-in {
+        animation: pageFadeIn 0.4s ease-out forwards;
+      }
+
+      main.page-fade-out {
+        animation: pageFadeOut 0.4s ease-in forwards;
+      }
+
+      /* Styles for detailed content page */
+      .highlight-text {
+        background-color: var(--highlight-bg);
+        border-left: 5px solid var(--primary-color);
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-color);
+        border-radius: 0 8px 8px 0;
+      }
+      .content-columns {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+      }
+      .content-columns .image-col {
+        flex: 1;
+        min-width: 250px;
+        text-align: center;
+      }
+       .content-columns .image-col svg {
+        max-width: 100%;
+        height: auto;
+      }
+      .content-columns .text-col {
+        flex: 2;
+        min-width: 300px;
+      }
+      
+      /* Timeline styles */
+      .timeline-section {
+        background-color: var(--timeline-bg);
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 3rem 0;
+        width: 100%;
+      }
+       .timeline-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-bottom: 2px solid var(--timeline-border);
+        margin-bottom: 1.5rem;
+      }
+      .timeline-nav-item {
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--timeline-nav-item-color);
+        border-bottom: 3px solid transparent;
+        transition: color 0.3s, border-color 0.3s;
+      }
+      .timeline-nav-item:hover {
+        color: var(--timeline-nav-item-color-hover);
+      }
+      .timeline-nav-item.active {
+        color: var(--primary-color);
+        border-bottom-color: var(--primary-color);
+      }
+      .timeline-content {
+        display: none;
+        text-align: center;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      .timeline-content.active {
+        display: block;
+      }
+
+      /* Info cards styles */
+      .info-cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        width: 100%;
+        margin-top: 2rem;
+        align-items: stretch;
+      }
+      .info-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        flex: 1 1 300px;
+        display: flex;
+        flex-direction: column;
+      }
+       .info-card h3, .info-card h4 {
+        margin-top: 0;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
+      }
+       .info-card .topic-list {
+        list-style-type: '•';
+        padding-left: 1rem;
+      }
+      .info-card .topic-list li {
+        padding-left: 0.5rem;
+        margin-bottom: 0.8rem;
+      }
+      .info-card .topic-list strong {
+        color: var(--text-color);
+      }
+      .topic-list {
+        list-style-type: '✓';
+        padding-left: 20px;
+      }
+      .topic-list li {
+         padding-left: 10px;
+         margin-bottom: 0.5rem;
+      }
+
+      /* Styles for Logistica Integrada page font size */
+      .logistica-integrada-page p,
+      .logistica-integrada-page li {
+        font-size: 1.25rem;
+        line-height: 1.8;
+      }
+
+      .logistica-integrada-page .highlight-text {
+        font-size: 1.5rem;
+      }
+      
+      .logistica-integrada-page .info-card h3 {
+        font-size: 1.4rem;
+      }
+
+      .logistica-integrada-page .timeline-content {
+        font-size: 1.25rem;
+      }
+
+      /* Quiz Styles */
+      .quiz-section {
+        width: 100%;
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--timeline-border);
+      }
+      .quiz-question {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .quiz-question p {
+        font-weight: 600;
+        margin-top: 0;
+        font-size: 1.1rem !important;
+      }
+      .quiz-options {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      .quiz-options li {
+        margin-bottom: 0.5rem;
+        font-size: 1rem !important;
+      }
+      .quiz-options label {
+        display: block;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      .quiz-options label:hover {
+        background-color: var(--button-bg);
+      }
+      .quiz-options input {
+        margin-right: 10px;
+      }
+      .quiz-feedback.correct {
+        background-color: var(--quiz-correct-bg);
+        border: 1px solid var(--quiz-correct-border);
+      }
+      .quiz-feedback.incorrect {
+        background-color: var(--quiz-incorrect-bg);
+        border: 1px solid var(--quiz-incorrect-border);
+      }
+       .quiz-results {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 2rem;
+      }
+      .quiz-buttons {
+        text-align: center;
+        margin-top: 2rem;
+      }
+      
+      /* Topic Navigation */
+      .topic-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding-top: 2rem;
+        margin-top: 2rem;
+        border-top: 2px solid var(--timeline-border);
+      }
+
+      /* JIT Page styles */
+      .jit-page p, .jit-page li {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .jit-page h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .jit-mind-map {
+        width: 100%;
+        max-width: 900px;
+        height: auto;
+        border-radius: 12px;
+        margin: 2rem 0;
+        display: block;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        border: 1px solid var(--card-border);
+      }
+
+       /* Kanban Page styles */
+      .kanban-page p, .kanban-page li {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .kanban-page h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .kanban-board-svg {
+        width: 100%;
+        max-width: 600px;
+        margin: 2rem auto 1rem auto;
+      }
+      .kanban-board-svg svg {
+        width: 100%;
+        height: auto;
+      }
+
+      /* Kaizen Page styles */
+      .kaizen-page p, .kaizen-page li {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .kaizen-page h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .kaizen-main-image {
+        width: 100%;
+        max-width: 700px;
+        margin: 2rem auto;
+      }
+       .kaizen-side-images-container {
+        display: flex;
+        gap: 2rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .kaizen-side-image {
+        flex: 1;
+        min-width: 250px;
+        max-width: 350px;
+        text-align: center;
+      }
+      .kaizen-side-image p {
+        font-style: italic;
+        color: var(--text-color-light);
+      }
+
+      /* 5S Page Styles */
+      .s5-page p, .s5-page li {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .s5-page h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .s5-diagram-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 2rem auto;
+      }
+      .s5-details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        margin-top: 3rem;
+        width: 100%;
+      }
+      .s5-detail-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+      }
+      .s5-detail-item:nth-child(even) .s5-detail-text {
+        order: 2;
+      }
+      .s5-detail-item:nth-child(even) .s5-detail-image {
+        order: 1;
+      }
+      .s5-detail-image svg {
+        width: 100%;
+        max-width: 150px;
+        margin: 0 auto;
+        display: block;
+      }
+       @media (max-width: 768px) {
+        .s5-detail-item {
+          grid-template-columns: 1fr;
+        }
+        .s5-detail-item:nth-child(even) .s5-detail-text,
+        .s5-detail-item:nth-child(even) .s5-detail-image {
+          order: initial;
+        }
+      }
+
+      /* Supply Chain Page Styles */
+      .supply-chain-page p, .supply-chain-page li {
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+      .supply-chain-page h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-color);
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+      }
+      .supply-chain-diagram-container {
+        width: 100%;
+        max-width: 900px;
+        margin: 2rem auto;
+        overflow-x: auto;
+      }
+
+
+      /* Game Page Styles */
+      .games-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        width: 100%;
+        max-width: 1400px;
+        margin-top: 2rem;
+      }
+
+      .game-card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        text-align: center;
+        width: calc(600px + 3rem);
+        max-width: 100%;
+      }
+
+      .game-card h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.3rem;
+        color: var(--text-color);
+      }
+
+      .game-card.placeholder .placeholder-content {
+        width: 600px;
+        height: 450px;
+        max-width: 100%;
+        background-color: var(--timeline-bg);
+        border: 2px dashed var(--timeline-border);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color-subtle);
+      }
+
+      #game-container {
+        position: relative;
+        width: 600px;
+        height: 450px;
+        max-width: 100%;
+        margin: 0 auto;
+        background-color: #82ccdd; /* Sky color */
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px var(--card-shadow-hover);
+      }
+
+      #game-canvas {
+          width: 100%;
+          height: 100%;
+          display: block;
+      }
+
+      #game-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.6);
+          color: white;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          gap: 1.5rem;
+      }
+
+      #game-overlay h2 {
+          font-size: 2.5rem;
+          margin-bottom: 0.5rem;
+      }
+
+      #game-overlay p {
+          font-size: 1.1rem;
+          max-width: 80%;
+      }
+      
+      #game-overlay button {
+        background-color: var(--primary-color) !important;
+        color: #333 !important;
+        border: none !important;
+        font-size: 1.1rem !important;
+        padding: 0.8rem 1.5rem !important;
+      }
+      #game-overlay button:hover {
+          transform: translateY(-3px) scale(1.05) !important;
+          box-shadow: 0 8px 15px rgba(0,0,0,0.2) !important;
+      }
+
+
+      #score-display {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: white;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+          display: none;
+      }
+    </style>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
