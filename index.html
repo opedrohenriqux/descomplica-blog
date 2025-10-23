@@ -1,7 +1,3 @@
---- START OF FILE index.html ---
-
-
-
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -679,7 +675,366 @@
           text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
           display: none;
       }
+
+      /* Fundamentals Section */
+      .fundamentals-section {
+        background-color: var(--timeline-bg);
+        border-top: 1px solid var(--card-border);
+        border-bottom: 1px solid var(--card-border);
+      }
+      .fundamentals-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        align-items: center;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      @media (min-width: 768px) {
+        .fundamentals-container {
+          grid-template-columns: 1fr 1fr;
+          gap: 4rem;
+        }
+      }
+
+      .logistics-flow-diagram {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .logistics-flow-diagram .flow-node text {
+        fill: var(--text-color);
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+      }
+      
+      .fundamentals-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .fund-card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 12px var(--card-shadow);
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+      }
+
+      .fund-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 30px var(--card-shadow-hover);
+      }
+      
+      .fund-card h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+      }
+
+      .fund-card p {
+        margin: 0;
+        color: var(--text-color-light);
+        font-size: 0.9rem;
+      }
+      
+      .fund-card:hover::after {
+        content: attr(data-intro);
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 250px;
+        background-color: var(--text-color);
+        color: var(--bg-color);
+        padding: 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        z-index: 10;
+        opacity: 0;
+        animation: tooltip-fade-in 0.3s ease forwards;
+        pointer-events: none;
+      }
+
+      @keyframes tooltip-fade-in {
+        to {
+          opacity: 1;
+          bottom: 105%;
+        }
+      }
+
+      /* Logistics Rights Section */
+      .logistics-rights-section {
+        padding: 6rem 2rem;
+        text-align: center;
+        background-color: var(--bg-color);
+      }
+
+      .rights-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .right-item {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 2rem 1.5rem;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 12px var(--card-shadow);
+        text-align: center;
+        width: 180px;
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slide-in-fade-up 0.5s ease-out forwards;
+      }
+
+      .right-item:hover {
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 0 10px 30px var(--card-shadow-hover);
+      }
+
+      /* Staggered animation delays */
+      .right-item:nth-of-type(1) { animation-delay: 0.1s; }
+      .right-item:nth-of-type(2) { animation-delay: 0.2s; }
+      .right-item:nth-of-type(3) { animation-delay: 0.3s; }
+      .right-item:nth-of-type(4) { animation-delay: 0.4s; }
+      .right-item:nth-of-type(5) { animation-delay: 0.5s; }
+
+      .right-item-icon svg {
+        width: 50px;
+        height: 50px;
+        stroke: var(--primary-color);
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+      }
+
+      .right-item:hover .right-item-icon svg {
+        transform: scale(1.1);
+      }
+
+      .right-item h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--text-color);
+        font-weight: 600;
+      }
+
+      @keyframes slide-in-fade-up {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Quote Section */
+      .quote-section {
+        padding: 6rem 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--timeline-bg);
+      }
+
+      .quote-card {
+        max-width: 700px;
+        text-align: center;
+        border-left: 5px solid var(--primary-color);
+        padding: 2rem 2.5rem;
+        position: relative;
+        background-color: var(--card-bg);
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 8px 25px var(--card-shadow);
+      }
+      
+      .quote-card .quote-mark {
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        font-size: 5rem;
+        color: var(--primary-color);
+        opacity: 0.2;
+        font-family: Georgia, serif;
+      }
+
+      .quote-card blockquote {
+        margin: 0;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-style: italic;
+        line-height: 1.7;
+        color: var(--text-color);
+      }
+
+      .quote-card cite {
+        display: block;
+        margin-top: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color-light);
+        font-style: normal;
+      }
+      
+      /* AI Chat Styles */
+      #ai-chat-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background-color: var(--primary-color);
+        color: #333;
+        border-radius: 50%;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      #ai-chat-fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      }
+      #ai-chat-widget {
+        position: fixed;
+        bottom: 6rem;
+        right: 2rem;
+        width: 90%;
+        max-width: 400px;
+        height: 60vh;
+        max-height: 500px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        display: none;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+        transform-origin: bottom right;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      #ai-chat-widget.open {
+        display: flex;
+        animation: chat-widget-open 0.3s ease-out forwards;
+      }
+      @keyframes chat-widget-open {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .chat-header {
+        padding: 1rem;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--timeline-bg);
+      }
+      .chat-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+      .chat-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-color-light);
+      }
+      .chat-messages {
+        flex-grow: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .chat-message {
+        padding: 0.75rem 1rem;
+        border-radius: 12px;
+        max-width: 80%;
+        line-height: 1.5;
+      }
+      .chat-message.user {
+        background-color: var(--primary-color);
+        color: #333;
+        align-self: flex-end;
+        border-bottom-right-radius: 2px;
+      }
+      .chat-message.ai {
+        background-color: var(--timeline-bg);
+        color: var(--text-color);
+        align-self: flex-start;
+        border-bottom-left-radius: 2px;
+      }
+      .chat-input-area {
+        display: flex;
+        padding: 1rem;
+        border-top: 1px solid var(--card-border);
+        gap: 0.5rem;
+      }
+      #chat-input {
+        flex-grow: 1;
+        padding: 0.75rem;
+        border: 1px solid var(--search-border);
+        border-radius: 20px;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-size: 1rem;
+      }
+      #chat-send-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--primary-color);
+        padding: 0.5rem;
+      }
+
+      /* Quiz AI Tip */
+      .quiz-ai-tip {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: var(--button-bg);
+        border-left: 5px solid var(--primary-color);
+        border-radius: 0 8px 8px 0;
+      }
+      .quiz-ai-tip h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--text-color);
+      }
+      .quiz-ai-tip p {
+        margin: 0;
+        font-size: 1rem !important;
+        line-height: 1.7;
+        color: var(--text-color-light);
+      }
+
+
     </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0"
+  }
+}
+</script>
 </head>
   <body>
     <div id="root"></div>

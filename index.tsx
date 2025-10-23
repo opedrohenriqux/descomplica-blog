@@ -1,4 +1,5 @@
-// FIX: Removed invalid file markers from the top of the file.
+import { GoogleGenAI } from "@google/genai";
+
 const styles = {
   section: {
     minHeight: "calc(100vh - 160px)",
@@ -68,6 +69,33 @@ let currentPage = 'inicio';
 let selectedTopic = null;
 let currentTheme = 'light';
 let isTransitioning = false;
+let isChatOpen = false;
+
+async function getAiResponse(prompt, context = '') {
+    try {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const fullPrompt = `
+            Você é um assistente amigável e prestativo para o site "Descomplica Logística".
+            Sua função é responder às perguntas dos usuários sobre logística.
+            ${context ? `Responda a pergunta a seguir usando APENAS o seguinte contexto. Não adicione informações que não estejam no texto.
+            Contexto:
+            ---
+            ${context}
+            ---
+            Pergunta do usuário: ${prompt}` : prompt}
+        `;
+
+        const response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: fullPrompt
+        });
+        
+        return response.text;
+    } catch (error) {
+        console.error("Erro ao chamar a API do Gemini:", error);
+        return "Desculpe, não consigo responder agora. Tente novamente mais tarde.";
+    }
+}
 
 function toggleTheme() {
   const newTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light';
@@ -154,7 +182,142 @@ function CtaButton(text, onClick, customStyle = {}) {
   return button;
 }
 
+function renderFundamentalsSection() {
+  const section = document.createElement('section');
+  section.className = 'fundamentals-section';
+  applyStyles(section, { ...styles.section, minHeight: 'auto', padding: '6rem 2rem' });
+
+  const title = document.createElement('h2');
+  applyStyles(title, { ...styles.sectionTitle, textAlign: 'center', marginBottom: '4rem', borderBottom: 'none' });
+  title.innerHTML = `Fundamentos da <span style="color: ${styles.highlight.color};">Logística</span>`;
+
+  const container = document.createElement('div');
+  container.className = 'fundamentals-container';
+
+  container.innerHTML = `
+    <div class="logistics-flow-diagram" aria-label="Diagrama animado mostrando o fluxo da logística de fornecedor para empresa e para cliente.">
+      <svg viewBox="0 0 400 300">
+        <!-- Flow Lines -->
+        <path id="flow-path-1" d="M 50 150 Q 125 75, 200 150" stroke="var(--primary-color)" stroke-width="2" fill="none" stroke-dasharray="5, 5" />
+        <path id="flow-path-2" d="M 200 150 Q 275 225, 350 150" stroke="var(--primary-color)" stroke-width="2" fill="none" stroke-dasharray="5, 5" />
+
+        <!-- Animated dots -->
+        <circle cx="0" cy="0" r="4" fill="var(--primary-color)">
+          <animateMotion dur="4s" repeatCount="indefinite" rotate="auto">
+            <mpath xlink:href="#flow-path-1"></mpath>
+          </animateMotion>
+        </circle>
+         <circle cx="0" cy="0" r="4" fill="var(--primary-color)">
+          <animateMotion dur="4s" repeatCount="indefinite" rotate="auto" begin="2s">
+            <mpath xlink:href="#flow-path-2"></mpath>
+          </animateMotion>
+        </circle>
+
+        <!-- Nodes -->
+        <g class="flow-node">
+          <circle cx="50" cy="150" r="30" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2" />
+          <text x="50" y="155" text-anchor="middle" font-size="10">Fornecedor</text>
+        </g>
+        <g class="flow-node">
+          <circle cx="200" cy="150" r="40" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3" />
+          <text x="200" y="150" text-anchor="middle" font-size="12">Empresa</text>
+          <text x="200" y="165" text-anchor="middle" font-size="10">(Produção)</text>
+        </g>
+        <g class="flow-node">
+          <circle cx="350" cy="150" r="30" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2" />
+          <text x="350" y="155" text-anchor="middle" font-size="10">Cliente</text>
+        </g>
+      </svg>
+    </div>
+    <div class="fundamentals-cards">
+      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'compras').intro}">
+        <h3>Compras</h3>
+        <p>Aquisição de bens e serviços.</p>
+      </div>
+      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'recebimento-de-materiais').intro}">
+        <h3>Recebimento</h3>
+        <p>Conferência de materiais.</p>
+      </div>
+      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'cadeia-de-suprimentos').intro}">
+        <h3>Supply Chain</h3>
+        <p>A rede completa de processos.</p>
+      </div>
+    </div>
+  `;
+
+  section.append(title, container);
+  return section;
+}
+
+function renderLogisticsRightsSection() {
+  const section = document.createElement('section');
+  section.className = 'logistics-rights-section';
+
+  const title = document.createElement('h2');
+  applyStyles(title, { ...styles.sectionTitle, textAlign: 'center', marginBottom: '4rem', borderBottom: 'none' });
+  title.innerHTML = `Os 5 <span style="color: ${styles.highlight.color};">Certos</span> da Logística`;
+
+  const container = document.createElement('div');
+  container.className = 'rights-container';
+
+  const rights = [
+    {
+      title: 'Produto Certo',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`
+    },
+    {
+      title: 'Quantidade Certa',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>`
+    },
+    {
+      title: 'Condição Certa',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>`
+    },
+    {
+      title: 'Lugar Certo',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`
+    },
+    {
+      title: 'Tempo Certo',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`
+    }
+  ];
+
+  rights.forEach(right => {
+    const item = document.createElement('div');
+    item.className = 'right-item';
+    item.innerHTML = `
+      <div class="right-item-icon">${right.icon}</div>
+      <h3>${right.title}</h3>
+    `;
+    container.appendChild(item);
+  });
+
+  section.appendChild(title);
+  section.appendChild(container);
+  return section;
+}
+
+function renderQuoteSection() {
+    const section = document.createElement('section');
+    section.className = 'quote-section';
+    
+    section.innerHTML = `
+        <div class="quote-card">
+            <span class="quote-mark">“</span>
+            <blockquote cite="https://www.goodreads.com/quotes/26083-you-will-not-find-it-difficult-to-prove-that">
+                Você não terá dificuldade para provar que batalhas, campanhas e até guerras foram ganhas ou perdidas principalmente devido à logística.
+            </blockquote>
+            <cite>General Dwight D. Eisenhower (1890-1969)</cite>
+        </div>
+    `;
+    
+    return section;
+}
+
 function renderInicioPage() {
+  const pageContainer = document.createElement('div');
+
   const section = document.createElement('section');
   section.id = 'inicio';
   section.className = 'custom-cursor';
@@ -209,7 +372,13 @@ function renderInicioPage() {
   intro.textContent = 'O Descomplica Logística é uma plataforma educativa que ensina conceitos de logística de forma simples, didática e visual, utilizando textos, vídeos e imagens para tornar o aprendizado mais acessível.';
 
   section.append(blob1, blob2, title, slogan, buttonContainer, intro);
-  return section;
+  
+  pageContainer.appendChild(section);
+  pageContainer.appendChild(renderFundamentalsSection());
+  pageContainer.appendChild(renderLogisticsRightsSection());
+  pageContainer.appendChild(renderQuoteSection());
+
+  return pageContainer;
 }
 
 function createTopicList(items) {
@@ -258,6 +427,47 @@ function createTopicNavigation(topicId) {
     }
 
     return navContainer;
+}
+
+async function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, topicName, submitButton, resetButton) {
+    e.preventDefault();
+    let score = 0;
+    const incorrectAnswers = [];
+
+    quizData.forEach((item, index) => {
+        const selected = quizForm.querySelector(`input[name*="question-${index}"]:checked`) as HTMLInputElement;
+        const labels = quizForm.querySelectorAll(`input[name*="question-${index}"]`);
+        
+        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+
+        if (selected) {
+            const answerIndex = parseInt(selected.value);
+            const correctLabel = labels[item.a].parentElement;
+            correctLabel.classList.add('correct', 'quiz-feedback');
+            
+            if (answerIndex === item.a) {
+                score++;
+            } else {
+                const selectedLabel = selected.parentElement;
+                selectedLabel.classList.add('incorrect', 'quiz-feedback');
+                incorrectAnswers.push(item.q);
+            }
+        } else {
+            incorrectAnswers.push(item.q);
+        }
+    });
+
+    resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
+    submitButton.style.display = 'none';
+    resetButton.style.display = 'inline-block';
+
+    aiTipDiv.innerHTML = '';
+    if (incorrectAnswers.length > 0) {
+        aiTipDiv.innerHTML = `<h4>Dica do Assistente</h4><p>Estou gerando uma dica de estudo para você...</p>`;
+        const prompt = `O usuário errou questões sobre ${topicName}. As perguntas erradas foram: "${incorrectAnswers.join('", "')}". Com base nisso, dê uma dica de estudo amigável e curta, sugerindo que ele revise o conteúdo da página para entender melhor esses pontos.`;
+        const tip = await getAiResponse(prompt);
+        aiTipDiv.innerHTML = `<h4>💡 Dica do Assistente</h4><p>${tip}</p>`;
+    }
 }
 
 function renderLogisticaIntegradaPage() {
@@ -478,45 +688,25 @@ function renderLogisticaIntegradaPage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
-
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Logística Integrada', submitButton, resetButton));
+    
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
-
+    });
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
 
@@ -568,7 +758,7 @@ function renderJustInTimePage() {
 
     const mindMapImage = document.createElement('img');
     mindMapImage.className = 'jit-mind-map';
-    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
+    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
     mindMapImage.alt = 'Mapa Mental sobre Just in Time';
     mindMapImage.setAttribute('aria-label', 'Mapa mental detalhando os conceitos de Just in Time, incluindo definição, objetivo, como surgiu, aplicação, benefícios e logística.');
 
@@ -681,45 +871,26 @@ function renderJustInTimePage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="jit-question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="jit-question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
-
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Just in Time', submitButton, resetButton));
+    
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
+    });
 
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
 
@@ -905,45 +1076,26 @@ function renderKanbanPage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="kanban-question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="kanban-question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Kanban', submitButton, resetButton));
 
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
+    });
 
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
 
@@ -1181,45 +1333,26 @@ function renderKaizenPage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="kaizen-question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="kaizen-question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
-
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Kaizen', submitButton, resetButton));
+    
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
+    });
 
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
 
@@ -1445,45 +1578,26 @@ function render5SPage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="s5-question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="s5-question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, '5S', submitButton, resetButton));
 
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
+    });
 
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
 
@@ -1663,44 +1777,25 @@ function renderCadeiaDeSuprimentosPage() {
     quizButtons.className = 'quiz-buttons';
     const resultsDiv = document.createElement('div');
     resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
 
-    const submitButton = CtaButton('Verificar Respostas', (e) => {
-      e.preventDefault();
-      let score = 0;
-      quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name="sc-question-${index}"]:checked`) as HTMLInputElement;
-        const labels = quizForm.querySelectorAll(`input[name="sc-question-${index}"]`);
-        
-        labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
-        if (selected) {
-          const answerIndex = parseInt(selected.value);
-          const correctLabel = labels[item.a].parentElement;
-          correctLabel.classList.add('correct', 'quiz-feedback');
-          
-          if (answerIndex === item.a) {
-            score++;
-          } else {
-             const selectedLabel = selected.parentElement;
-             selectedLabel.classList.add('incorrect', 'quiz-feedback');
-          }
-        }
-      });
-      resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
-      submitButton.style.display = 'none';
-      resetButton.style.display = 'inline-block';
-    }, { margin: '0 0.5rem' });
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Cadeia de Suprimentos', submitButton, resetButton));
 
-    const resetButton = CtaButton('Tentar Novamente', () => {
+    resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
         quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
         submitButton.style.display = 'inline-block';
         resetButton.style.display = 'none';
-    }, { display: 'none', margin: '0 0.5rem' });
+    });
 
     quizButtons.append(submitButton, resetButton);
-    quizSection.append(quizTitle, quizForm, resultsDiv, quizButtons);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
     
@@ -2305,8 +2400,97 @@ function renderFooter() {
     return footer;
 }
 
+function renderChatFab() {
+    const fab = document.createElement('button');
+    fab.id = 'ai-chat-fab';
+    fab.setAttribute('aria-label', 'Abrir assistente de IA');
+    fab.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="12" width="16" height="8" rx="2"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M17 12v-2a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+    fab.onclick = () => {
+        isChatOpen = !isChatOpen;
+        document.getElementById('ai-chat-widget').classList.toggle('open', isChatOpen);
+    };
+    return fab;
+}
+
+function renderChatWidget() {
+    const widget = document.createElement('div');
+    widget.id = 'ai-chat-widget';
+    
+    const header = document.createElement('div');
+    header.className = 'chat-header';
+    header.innerHTML = '<h3>Assistente de Logística</h3>';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'chat-close-btn';
+    closeBtn.innerHTML = '&times;';
+    closeBtn.onclick = () => {
+        isChatOpen = false;
+        widget.classList.remove('open');
+    };
+    header.appendChild(closeBtn);
+
+    const messagesContainer = document.createElement('div');
+    messagesContainer.className = 'chat-messages';
+
+    const inputArea = document.createElement('div');
+    inputArea.className = 'chat-input-area';
+    const input = document.createElement('input');
+    input.id = 'chat-input';
+    input.type = 'text';
+    input.placeholder = 'Pergunte sobre logística...';
+    input.autocomplete = 'off';
+
+    const sendBtn = document.createElement('button');
+    sendBtn.id = 'chat-send-btn';
+    sendBtn.setAttribute('aria-label', 'Enviar mensagem');
+    sendBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
+
+    const sendMessage = async () => {
+        const query = input.value.trim();
+        if (!query) return;
+
+        addMessage(query, 'user');
+        input.value = '';
+        addMessage('Pensando...', 'ai', true); // Loading indicator
+
+        const siteContent = conteudosList.map(c => `Tópico: ${c.title}\nConteúdo: ${c.content}`).join('\n\n');
+        const response = await getAiResponse(query, siteContent);
+        
+        const loadingMessage = messagesContainer.querySelector('.loading');
+        if (loadingMessage) {
+            loadingMessage.remove();
+        }
+        addMessage(response, 'ai');
+    };
+
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+    sendBtn.onclick = sendMessage;
+
+    const addMessage = (text, sender, isLoading = false) => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        if (isLoading) {
+            messageDiv.classList.add('loading');
+        }
+        messageDiv.textContent = text;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+
+    inputArea.append(input, sendBtn);
+    widget.append(header, messagesContainer, inputArea);
+    
+    addMessage('Olá! Como posso te ajudar a descomplicar a logística hoje?', 'ai');
+    
+    return widget;
+}
+
 function render() {
     if (!root) return;
+
+    const existingFab = document.getElementById('ai-chat-fab');
+    const existingWidget = document.getElementById('ai-chat-widget');
 
     root.innerHTML = '';
     root.appendChild(renderHeader());
@@ -2349,6 +2533,13 @@ function render() {
 
     root.appendChild(main);
     root.appendChild(renderFooter());
+
+    // Re-append or create AI components if they don't exist
+    if (!existingFab) root.appendChild(renderChatFab());
+    else root.appendChild(existingFab);
+
+    if (!existingWidget) root.appendChild(renderChatWidget());
+    else root.appendChild(existingWidget);
 }
 
 function init() {
