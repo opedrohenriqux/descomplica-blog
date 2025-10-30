@@ -503,43 +503,53 @@
         padding-bottom: 0.5rem;
         border-bottom: 2px solid var(--primary-color);
       }
-      .s5-diagram-container {
-        width: 100%;
-        max-width: 500px;
-        margin: 2rem auto;
-      }
-      .s5-details-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 3rem;
+      .s5-visual-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
         margin-top: 3rem;
         width: 100%;
       }
-      .s5-detail-item {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+      .s5-visual-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-left: 5px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        display: flex;
         align-items: center;
+        gap: 2rem;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
-      .s5-detail-item:nth-child(even) .s5-detail-text {
-        order: 2;
+      .s5-visual-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px var(--card-shadow-hover);
       }
-      .s5-detail-item:nth-child(even) .s5-detail-image {
-        order: 1;
+      .s5-card-icon {
+        flex-shrink: 0;
       }
-      .s5-detail-image svg {
-        width: 100%;
-        max-width: 150px;
-        margin: 0 auto;
-        display: block;
+      .s5-card-icon svg {
+        width: 80px;
+        height: 80px;
+      }
+      .s5-card-content h3 {
+        margin: 0 0 0.5rem 0 !important;
+        font-size: 1.3rem !important;
+        color: var(--primary-color) !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .s5-card-content p {
+        margin: 0;
+        font-size: 1rem !important;
+        line-height: 1.7 !important;
       }
        @media (max-width: 768px) {
-        .s5-detail-item {
-          grid-template-columns: 1fr;
-        }
-        .s5-detail-item:nth-child(even) .s5-detail-text,
-        .s5-detail-item:nth-child(even) .s5-detail-image {
-          order: initial;
+        .s5-visual-card {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
         }
       }
 
@@ -562,6 +572,162 @@
         max-width: 900px;
         margin: 2rem auto;
         overflow-x: auto;
+      }
+      
+      /* Compras Cycle Styles */
+      .compras-cycle-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        width: 100%;
+        position: relative;
+        padding: 1rem 0;
+      }
+
+      @media (min-width: 900px) {
+        .compras-cycle-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+        }
+      }
+
+      .compras-cycle-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        z-index: 1;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+      }
+      
+      .compras-cycle-step:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px var(--card-shadow-hover);
+      }
+
+      .cycle-step-icon {
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--button-bg);
+        border: 2px solid var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cycle-step-icon svg {
+        width: 28px;
+        height: 28px;
+        fill: var(--primary-color);
+      }
+
+      .cycle-step-content h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+        color: var(--text-color);
+      }
+      
+      .cycle-step-content h4 span {
+        font-weight: 600;
+        color: var(--primary-color);
+        display: block;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .cycle-step-content p {
+        margin: 0;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        color: var(--text-color-light);
+      }
+      
+      /* Recebimento Page Styles */
+      .recebimento-animation-section {
+        width: 100%;
+        background-color: var(--timeline-bg);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .recebimento-animation-container {
+        width: 100%;
+        max-width: 700px;
+      }
+      .recebimento-svg-scene svg {
+        width: 100%;
+        height: auto;
+      }
+      .road-lines {
+        animation: dash 1s linear infinite;
+      }
+      @keyframes dash {
+        to {
+          stroke-dashoffset: -20;
+        }
+      }
+      .recebimento-controls {
+        text-align: center;
+        margin: 1rem 0;
+      }
+      .recebimento-controls .cta-button {
+        background-color: var(--primary-color);
+        color: #333;
+        border: none;
+        padding: 0.8rem 1.8rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        border-radius: 50px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .recebimento-controls .cta-button:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+      }
+      .recebimento-controls .cta-button:not(:disabled):hover {
+         transform: translateY(-3px);
+         box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      }
+      .step-display-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        width: 100%;
+        margin-top: 2rem;
+      }
+      .recebimento-step {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 12px var(--card-shadow);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .recebimento-step.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .recebimento-step h4 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-color);
+      }
+      .recebimento-step p {
+         margin: 0;
+         font-size: 0.95rem !important;
+         line-height: 1.6 !important;
       }
 
 

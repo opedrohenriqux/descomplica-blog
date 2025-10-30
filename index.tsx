@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 const styles = {
@@ -113,7 +114,8 @@ function initTheme() {
   currentTheme = theme;
 }
 
-function transitionTo(updateState: () => void) {
+// Fix: Removed TypeScript type annotation from updateState parameter.
+function transitionTo(updateState) {
     if (isTransitioning) return;
 
     const main = document.querySelector('main');
@@ -435,7 +437,8 @@ async function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, top
     const incorrectAnswers = [];
 
     quizData.forEach((item, index) => {
-        const selected = quizForm.querySelector(`input[name*="question-${index}"]:checked`) as HTMLInputElement;
+        // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
+        const selected = quizForm.querySelector(`input[name*="question-${index}"]:checked`);
         const labels = quizForm.querySelectorAll(`input[name*="question-${index}"]`);
         
         labels.forEach(l => (l.parentElement.classList.remove('correct', 'incorrect', 'quiz-feedback')));
@@ -576,14 +579,21 @@ function renderLogisticaIntegradaPage() {
     });
 
     timelineNav.addEventListener('click', e => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('timeline-nav-item')) {
+        // Fix: Removed TypeScript type casting 'as HTMLElement'.
+        const target = e.target;
+        // Fix: Added instanceof check to ensure target is an HTMLElement and has the expected properties.
+        if (target instanceof HTMLElement && target.classList.contains('timeline-nav-item')) {
             timelineNav.querySelectorAll('.timeline-nav-item').forEach(btn => btn.classList.remove('active'));
             timelineContentContainer.querySelectorAll('.timeline-content').forEach(content => content.classList.remove('active'));
             
             target.classList.add('active');
             const contentId = target.dataset.target;
-            document.getElementById(contentId).classList.add('active');
+            if (contentId) {
+                const contentEl = document.getElementById(contentId);
+                if (contentEl) {
+                    contentEl.classList.add('active');
+                }
+            }
         }
     });
     timelineSection.append(timelineNav, timelineContentContainer);
@@ -758,7 +768,7 @@ function renderJustInTimePage() {
 
     const mindMapImage = document.createElement('img');
     mindMapImage.className = 'jit-mind-map';
-    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
+    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIREAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
     mindMapImage.alt = 'Mapa Mental sobre Just in Time';
     mindMapImage.setAttribute('aria-label', 'Mapa mental detalhando os conceitos de Just in Time, incluindo definição, objetivo, como surgiu, aplicação, benefícios e logística.');
 
@@ -1161,120 +1171,105 @@ function renderKaizenPage() {
     }
 
     const intro = createSection('Introdução', 'Fala, galera! o Kaizen é uma filosofia japonesa que quer dizer “melhoria contínua” (kai = mudança, zen = melhor). A ideia é simples: todo mundo na empresa fazendo pequenas mudanças o tempo todo, que vão somando e deixando tudo melhor, desde o trabalho, a produtividade, a qualidade e até o clima no lugar.');
-    const comoSurgiu = createSection('Como surgiu?', 'Kaizen é uma filosofia japonesa de melhoria contínua, que busca aumentar a produtividade, a qualidade e a eficiência por meio de pequenas mudanças constantes. Surgiu no Japão pós-Segunda Guerra Mundial, quando empresas precisavam se reconstruir e melhorar seus processos sem grandes investimentos. Inspirado em métodos de controle de qualidade, o Kaizen valoriza a participação de todos os funcionários e a eliminação de desperdícios, tornando-se um pilar da indústria japonesa, especialmente na Toyota');
-    const importancia = createSection('Importância do KAIZEN', 'A importância do Kaizen está em promover a melhoria contínua dentro de organizações, tornando processos mais eficientes, reduzindo desperdícios e aumentando a qualidade de produtos e serviços. Ele envolve todos os colaboradores, estimulando a participação, o aprendizado e a inovação constantes. Além disso, o Kaizen ajuda a criar uma cultura organizacional de responsabilidade e colaboração, garantindo que pequenas mudanças diárias se transformem em grandes resultados ao longo do tempo, fortalecendo a competitividade e a sustentabilidade da empresa.');
-
-    const mainImage = document.createElement('div');
-    mainImage.className = 'kaizen-main-image';
-    mainImage.innerHTML = `
-        <svg viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:hsla(47, 100%, 80%, 1);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:var(--primary-color);stop-opacity:1" />
-                </linearGradient>
-                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                    <feOffset dx="2" dy="2" result="offsetblur"/>
-                    <feComponentTransfer>
-                        <feFuncA type="linear" slope="0.5"/>
-                    </feComponentTransfer>
-                    <feMerge> 
-                        <feMergeNode/>
-                        <feMergeNode in="SourceGraphic"/> 
-                    </feMerge>
-                </filter>
-            </defs>
-            <g transform="translate(250, 125)" filter="url(#shadow)">
-                <!-- Arrows -->
-                <path d="M 0 -80 A 80 80 0 1 1 -56.57 -56.57" fill="none" stroke="url(#grad1)" stroke-width="10"/>
-                <path d="M -50 -70 L -56.57 -56.57 L -70 -50" fill="none" stroke="var(--primary-color)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 80 0 A 80 80 0 0 1 -56.57 56.57" fill="none" stroke="url(#grad1)" stroke-width="10" transform="rotate(120)"/>
-                <path d="M -50 70 L -56.57 56.57 L -70 50" fill="none" stroke="var(--primary-color)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" transform="rotate(120)"/>
-                <path d="M 80 0 A 80 80 0 0 1 -56.57 56.57" fill="none" stroke="url(#grad1)" stroke-width="10" transform="rotate(240)"/>
-                <path d="M -50 70 L -56.57 56.57 L -70 50" fill="none" stroke="var(--primary-color)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" transform="rotate(240)"/>
-                <!-- Texts -->
-                <text x="0" y="-90" text-anchor="middle" font-size="16" font-weight="600" fill="var(--text-color)">Planejar</text>
-                <text x="110" y="50" text-anchor="middle" font-size="16" font-weight="600" fill="var(--text-color)">Executar</text>
-                <text x="-105" y="50" text-anchor="middle" font-size="16" font-weight="600" fill="var(--text-color)">Verificar & Agir</text>
-                <text x="0" y="8" text-anchor="middle" font-size="24" font-weight="bold" fill="var(--primary-color)">KAIZEN</text>
-            </g>
-        </svg>
-    `;
-
-    const pdcaCardsContainer = document.createElement('div');
-    pdcaCardsContainer.className = 'info-cards-container';
-    pdcaCardsContainer.style.marginTop = '1rem';
-
-    const planCard = document.createElement('div');
-    planCard.className = 'info-card';
-    planCard.innerHTML = `
-        <h3>Planejar (Plan)</h3>
-        <p>Identifique um problema ou uma oportunidade de melhoria. Analise o processo atual, estabeleça uma meta clara e mensurável, e desenvolva um plano de ação detalhado para alcançar essa meta.</p>
-    `;
-
-    const doCard = document.createElement('div');
-    doCard.className = 'info-card';
-    doCard.innerHTML = `
-        <h3>Executar (Do)</h3>
-        <p>Implemente o plano de ação em uma escala pequena e controlada. O objetivo desta fase é testar a mudança proposta, executar as tarefas definidas e coletar dados sobre o desempenho para análise posterior.</p>
-    `;
-
-    const checkActCard = document.createElement('div');
-    checkActCard.className = 'info-card';
-    checkActCard.innerHTML = `
-        <h3>Verificar & Agir (Check & Act)</h3>
-        <p><b>Verificar:</b> Compare os resultados obtidos com as metas planejadas. <b>Agir:</b> Se a mudança foi bem-sucedida, padronize o novo processo. Se não, analise o que deu errado, aprenda com a experiência e reinicie o ciclo com um novo plano.</p>
-    `;
-
-    pdcaCardsContainer.append(planCard, doCard, checkActCard);
-
-    const aplicacao = createSection('Aplicação', 'O Kaizen é aplicado na prática para melhorar continuamente processos em produção, logística, serviços e gestão, com foco em aumentar a eficiência, reduzir desperdícios, otimizar recursos e envolver todos os colaboradores na busca por melhores resultados.');
-    const objetivo = createSection('Objetivo', 'O objetivo do Kaizen é promover a melhoria contínua em processos, produtos e serviços, tornando-os mais eficientes, ágeis e de maior qualidade. Ele busca eliminar desperdícios, reduzir erros, otimizar recursos e envolver todos os colaboradores na busca por pequenas mudanças diárias que, somadas, geram grandes resultados ao longo do tempo.');
-    const logistica = createSection('KAIZEN na Logística', 'O Kaizen na logística é a aplicação da filosofia de melhoria contínua para tornar os processos logísticos mais eficientes, ágeis e econômicos. Ele busca pequenas melhorias diárias, como redução de desperdícios, otimização de rotas, reorganização de estoques e automatização de tarefas, envolvendo todos os colaboradores na análise e aprimoramento de cada etapa. Com isso, a logística se torna mais rápida, segura e sustentável, gerando grandes resultados ao longo do tempo.');
+    const comoSurgiu = createSection('Como surgiu?', 'Kaizen é uma filosofia japonesa de melhoria contínua, que busca aumentar a produtividade, a qualidade e a eficiência por meio de pequenas mudanças constantes. Surgiu no Japão após a Segunda Guerra Mundial, com a ajuda de especialistas americanos como W. Edwards Deming e Joseph Juran. A ideia principal era reconstruir a indústria do país, focando em processos eficientes e eliminando desperdícios. A Toyota foi pioneira em adotar e popularizar o Kaizen, integrando-o ao seu sistema de produção. Com o tempo, essa filosofia se espalhou pelo mundo e hoje é aplicada em diversas áreas para promover uma cultura de aprendizado e evolução constante.');
+    const comoFunciona = createSection('Como funciona?', 'O Kaizen funciona com a colaboração de todos na empresa. A ideia é identificar problemas e sugerir pequenas melhorias no dia a dia, como organizar melhor as ferramentas ou mudar um passo em uma tarefa para ser mais rápido. Em vez de esperar por grandes mudanças, o Kaizen foca em fazer ajustes simples e contínuos que, juntos, geram grandes resultados a longo prazo, tornando o trabalho mais fácil, seguro e eficiente.');
+    const importancia = createSection('Importância', 'O Kaizen é importante porque incentiva a empresa a melhorar sempre, eliminando desperdícios e aumentando a eficiência. Isso leva a produtos e serviços de maior qualidade, custos mais baixos e clientes mais satisfeitos. Além disso, valoriza os funcionários, que participam ativamente das melhorias, criando um ambiente de trabalho mais colaborativo e motivador.');
     
-    const sideImages = document.createElement('div');
-    sideImages.className = 'kaizen-side-images-container';
-    sideImages.innerHTML = `
-      <div class="kaizen-side-image">
-        <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="5" width="190" height="140" rx="10" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-            <path d="M 50 110 L 70 50 L 90 90 L 110 70 L 130 100 L 150 80" stroke="var(--primary-color)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="50" cy="110" r="4" fill="var(--primary-color)"/>
-            <circle cx="150" cy="80" r="4" fill="var(--primary-color)"/>
-            <path d="M 150 80 L 170 60" stroke-width="3" stroke="var(--primary-color)" stroke-linecap="round" stroke-dasharray="4 4"/>
-            <path d="M 163 53 L 170 60 L 177 53" stroke-width="3" fill="none" stroke="var(--primary-color)" stroke-linecap="round" stroke-linejoin="round"/>
-            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="600" fill="var(--text-color)">Otimização de Processos</text>
-        </svg>
-        <p>Analisar e otimizar processos existentes.</p>
-      </div>
-      <div class="kaizen-side-image">
-        <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="5" width="190" height="140" rx="10" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-            <g transform="translate(100, 80)">
-                <circle cx="0" cy="-10" r="20" fill="hsla(47, 100%, 80%, 1)"/>
-                <path d="M 0 -30 L -5 -25 M 0 -30 L 5 -25 M 0 10 L -5 15 M 0 10 L 5 15" stroke-width="2" stroke="var(--primary-color)"/>
-                <circle cx="-40" cy="20" r="20" fill="hsla(47, 100%, 80%, 1)"/>
-                <path d="M -40 0 L -45 5 M -40 0 L -35 5 M -40 40 L -45 35 M -40 40 L -35 35" stroke-width="2" stroke="var(--primary-color)"/>
-                <circle cx="40" cy="20" r="20" fill="hsla(47, 100%, 80%, 1)"/>
-                <path d="M 40 0 L 35 5 M 40 0 L 45 5 M 40 40 L 35 35 M 40 40 L 45 35" stroke-width="2" stroke="var(--primary-color)"/>
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'kaizen-main-image';
+    imageContainer.innerHTML = `
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:var(--button-bg);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:var(--card-bg);stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="400" height="200" rx="10" fill="url(#grad1)" />
+            <text x="200" y="50" font-family="Poppins" font-size="24" font-weight="700" fill="var(--primary-color)" text-anchor="middle">KAIZEN</text>
+            <text x="200" y="75" font-family="Poppins" font-size="14" fill="var(--text-color)" text-anchor="middle">Melhoria Contínua</text>
+            
+            <g transform="translate(50, 120)">
+                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
+                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Planejar</text>
             </g>
-            <text x="100" y="30" text-anchor="middle" font-size="12" font-weight="600" fill="var(--text-color)">Participação de Todos</text>
+            <path d="M75 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
+            <g transform="translate(140, 120)">
+                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
+                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Fazer</text>
+            </g>
+             <path d="M165 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
+            <g transform="translate(230, 120)">
+                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
+                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Checar</text>
+            </g>
+             <path d="M255 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
+            <g transform="translate(320, 120)">
+                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
+                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Agir</text>
+            </g>
         </svg>
-        <p>Envolvimento de toda a equipe.</p>
-      </div>
+    `;
+    
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'info-cards-container';
+    
+    const beneficiosCard = document.createElement('div');
+    beneficiosCard.className = 'info-card';
+    beneficiosCard.innerHTML = '<h3>Benefícios</h3>';
+    beneficiosCard.appendChild(createTopicList([
+        'Aumento da produtividade e qualidade;',
+        'Redução de desperdícios e custos;',
+        'Maior satisfação do cliente;',
+        'Melhora do ambiente de trabalho e engajamento da equipe;',
+        'Incentivo à inovação e criatividade;',
+        'Processos mais eficientes e seguros.',
+    ]));
+    
+    const aplicacaoCard = document.createElement('div');
+    aplicacaoCard.className = 'info-card';
+    aplicacaoCard.innerHTML = '<h3>Onde se aplica?</h3><p>O Kaizen se aplica em qualquer área ou processo que precise de melhoria, como:</p>';
+    aplicacaoCard.appendChild(createTopicList([
+        'Indústria → otimizando linhas de produção;',
+        'Escritórios → melhorando o fluxo de trabalho;',
+        'Hospitais → agilizando o atendimento;',
+        'Logística → reduzindo tempos de entrega;',
+        'Vida Pessoal → aprimorando hábitos e rotinas.',
+    ]));
+
+    cardContainer.append(beneficiosCard, aplicacaoCard);
+    
+    // Side images
+    const sideImagesContainer = document.createElement('div');
+    sideImagesContainer.className = 'kaizen-side-images-container';
+    sideImagesContainer.innerHTML = `
+        <div class="kaizen-side-image">
+            <svg viewBox="0 0 200 150">
+                <rect x="10" y="10" width="180" height="130" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <circle cx="100" cy="70" r="40" fill="none" stroke="var(--primary-color)" stroke-width="2"/>
+                <path d="M100 30 V 20 M100 110 V 120 M60 70 H 50 M140 70 H 150 M71.7 41.7 L 65 35 M128.3 98.3 L 135 105" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="100" cy="70" r="30" fill="var(--primary-color)" fill-opacity="0.1"/>
+                <text x="100" y="75" font-family="Poppins" font-size="14" font-weight="600" fill="var(--text-color)" text-anchor="middle">Inovação</text>
+            </svg>
+            <p>Kaizen vs. Inovação: O Kaizen foca em melhorias pequenas e contínuas, enquanto a inovação busca mudanças radicais e disruptivas. Ambos são importantes para o crescimento da empresa.</p>
+        </div>
+        <div class="kaizen-side-image">
+            <svg viewBox="0 0 200 150">
+                <rect x="10" y="10" width="180" height="130" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <path d="M40 110 L80 70 L110 90 L160 40" stroke="var(--primary-color)" stroke-width="3" fill="none"/>
+                <circle cx="40" cy="110" r="4" fill="var(--primary-color)"/>
+                <circle cx="80" cy="70" r="4" fill="var(--primary-color)"/>
+                <circle cx="110" cy="90" r="4" fill="var(--primary-color)"/>
+                <circle cx="160" cy="40" r="4" fill="var(--primary-color)"/>
+                <path d="M30 120 H 170" stroke="var(--text-color-subtle)" stroke-width="1"/>
+                <path d="M30 20 V 120" stroke="var(--text-color-subtle)" stroke-width="1"/>
+            </svg>
+            <p>Cultura Kaizen: É a criação de um ambiente de trabalho onde todos os funcionários estão engajados em melhorar continuamente, com autonomia para sugerir e implementar mudanças.</p>
+        </div>
     `;
 
-    const conceitos = createSection('Conceitos importantes', [
-        'Melhoria contínua: Pequenas mudanças diárias que, somadas, geram grandes resultados.',
-        'Eliminação de desperdícios (Muda): Reduzir tudo que não agrega valor, como tempo ocioso, retrabalho e excesso de estoque.',
-        'Participação de todos: Todos os colaboradores, do chão de fábrica à gestão, contribuem com ideias de melhoria.',
-        'Foco em processos: Analisar e otimizar processos existentes em vez de apenas resultados finais.',
-        'Padronização: Após melhorias, processos são padronizados para manter a eficiência.',
-        'Feedback constante: Avaliar resultados e ajustar continuamente para evitar erros e melhorar ainda mais.',
-        'Cultura de aprendizado: Encoraja a inovação, colaboração e responsabilidade coletiva.',
-    ]);
 
+    // Quiz Section
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
 
@@ -1285,20 +1280,21 @@ function renderKaizenPage() {
     quizTitle.style.marginBottom = '2rem';
 
     const quizData = [
-        { q: "O que significa a palavra japonesa 'Kaizen'?", a: 0, o: ["Melhoria Contínua", "Qualidade Total", "Produção Rápida", "Trabalho em Equipe"] },
-        { q: "Qual é a ideia central do Kaizen?", a: 2, o: ["Fazer grandes mudanças tecnológicas de uma só vez.", "Contratar consultores para resolver todos os problemas.", "Fazer pequenas mudanças constantes para melhorar processos.", "Mudar todo o processo a cada ano."] },
-        { q: "O que é 'Muda' no contexto do Kaizen?", a: 0, o: ["Qualquer tipo de desperdício que não agrega valor.", "O nome de uma ferramenta de qualidade.", "Um tipo de reunião de equipe.", "O líder do projeto Kaizen."] },
-        { q: "O que acontece depois que uma melhoria é implementada com sucesso no Kaizen?", a: 1, o: ["O processo antigo é descartado e nunca mais usado.", "O novo processo é padronizado para manter a eficiência.", "A equipe recebe um bônus financeiro imediatamente.", "A melhoria é revertida após um mês."] },
-        { q: "Quem deve participar do processo Kaizen em uma organização?", a: 3, o: ["Apenas os gerentes", "Apenas a equipe de qualidade", "Apenas os operadores da produção", "Todos os colaboradores, de todos os níveis"] },
-        { q: "O ciclo PDCA é uma ferramenta fundamental no Kaizen. O que significa a letra 'P'?", a: 2, o: ["Produzir", "Processo", "Planejar (Plan)", "Priorizar"] },
-        { q: "O Kaizen foca em melhorias:", a: 1, o: ["Grandes e revolucionárias", "Pequenas, incrementais e contínuas", "Apenas tecnológicas", "Bienais e complexas"] },
-        { q: "Em qual país e contexto o Kaizen surgiu?", a: 0, o: ["No Japão, no período pós-Segunda Guerra Mundial", "Nos Estados Unidos, durante a revolução industrial", "Na Alemanha, com a indústria automobilística", "Na China, com o crescimento da manufatura"] },
-        { q: "Qual o objetivo final do Kaizen na logística?", a: 3, o: ["Aumentar o número de caminhões na frota", "Contratar mais funcionários para o armazém", "Tornar os processos mais burocráticos", "Tornar os processos mais eficientes, ágeis e econômicos"] },
-        { q: "Qual destes NÃO é um 'desperdício' (Muda) que o Kaizen busca eliminar?", a: 2, o: ["Excesso de estoque", "Tempo de espera", "Investimento em treinamento de funcionários", "Movimentação desnecessária de materiais"] },
+        { q: "Qual é a tradução literal da palavra japonesa 'Kaizen'?", a: 2, o: ["Trabalho em Equipe", "Qualidade Total", "Mudança para Melhor", "Produção Rápida"] },
+        { q: "O Kaizen foca em que tipo de mudanças?", a: 0, o: ["Pequenas e contínuas", "Grandes e radicais", "Apenas tecnológicas", "Raras e impactantes"] },
+        { q: "Onde a filosofia Kaizen surgiu e se popularizou?", a: 1, o: ["Nos Estados Unidos, na Ford", "No Japão, na Toyota", "Na Alemanha, na Volkswagen", "Na Coreia do Sul, na Samsung"] },
+        { q: "Quem é responsável por aplicar o Kaizen em uma organização?", a: 3, o: ["Apenas os gerentes", "Apenas a equipe de qualidade", "Apenas os diretores", "Todos os funcionários"] },
+        { q: "O Kaizen e a Inovação são a mesma coisa?", a: 1, o: ["Sim, ambos buscam mudanças radicais.", "Não, o Kaizen foca em melhorias contínuas e a inovação em mudanças radicais.", "Sim, ambos são focados em pequenas melhorias diárias.", "Não, o Kaizen é sobre tecnologia e a inovação sobre processos."] },
+        { q: "Qual destes NÃO é um benefício direto do Kaizen?", a: 2, o: ["Redução de desperdícios", "Aumento da produtividade", "Aumento do estoque de segurança", "Melhora do ambiente de trabalho"] },
+        { q: "O ciclo PDCA (Planejar, Fazer, Checar, Agir) é frequentemente associado ao Kaizen porque ele:", a: 0, o: ["Estrutura o processo de melhoria contínua.", "É usado apenas para grandes projetos de inovação.", "Substitui a necessidade de colaboração da equipe.", "Serve para documentar erros sem corrigi-los."] },
+        { q: "O Kaizen pode ser aplicado na vida pessoal?", a: 0, o: ["Sim, para aprimorar hábitos e rotinas.", "Não, é uma filosofia estritamente empresarial.", "Apenas em atividades financeiras.", "Apenas para organização de tarefas domésticas."] },
+        { q: "O principal objetivo de criar uma 'Cultura Kaizen' é:", a: 3, o: ["Punir os funcionários que não sugerem melhorias.", "Fazer com que apenas a liderança pense em melhorias.", "Copiar exatamente o que outras empresas fazem.", "Engajar todos na busca constante por melhorias."] },
+        { q: "Em qual cenário o Kaizen é mais eficaz?", a: 1, o: ["Em empresas que raramente mudam seus processos.", "Em ambientes que valorizam o aprendizado e a evolução constante.", "Em processos que já são perfeitos e não precisam de ajustes.", "Em equipes que trabalham de forma totalmente isolada."] },
     ];
-    
+
     const quizForm = document.createElement('form');
     quizForm.id = 'kaizen-quiz';
+
     quizData.forEach((item, index) => {
       const questionDiv = document.createElement('div');
       questionDiv.className = 'quiz-question';
@@ -1340,7 +1336,7 @@ function renderKaizenPage() {
     const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
 
     submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Kaizen', submitButton, resetButton));
-    
+
     resetButton.addEventListener('click', () => {
         quizForm.reset();
         resultsDiv.textContent = '';
@@ -1353,7 +1349,7 @@ function renderKaizenPage() {
 
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
-
+    
     const topicNav = createTopicNavigation(selectedTopic.id);
 
     container.append(
@@ -1361,14 +1357,11 @@ function renderKaizenPage() {
         title,
         intro,
         comoSurgiu,
+        comoFunciona,
         importancia,
-        mainImage,
-        pdcaCardsContainer,
-        aplicacao,
-        objetivo,
-        logistica,
-        sideImages,
-        conceitos,
+        imageContainer,
+        cardContainer,
+        sideImagesContainer,
         quizSection,
         topicNav
     );
@@ -1399,8 +1392,8 @@ function render5SPage() {
       color: 'var(--text-color)',
       marginBottom: '1rem',
     });
-    title.textContent = 'Metodologia 5S';
-
+    title.textContent = '5S';
+    
     function createSection(titleText, content) {
         const sectionEl = document.createElement('div');
         const h3 = document.createElement('h3');
@@ -1411,113 +1404,53 @@ function render5SPage() {
         sectionEl.appendChild(p);
         return sectionEl;
     }
+    
+    const intro = createSection('Introdução', 'Fala, galera! O 5S é uma metodologia japonesa que ajuda a organizar o local de trabalho para que tudo seja mais fácil, rápido e seguro. O nome vem de cinco palavras em japonês que começam com "S": Seiri, Seiton, Seiso, Seiketsu e Shitsuke. Cada uma representa um passo para criar um ambiente mais limpo, organizado e produtivo.');
+    const comoSurgiu = createSection('Como surgiu?', 'O programa 5S surgiu no Japão, após a Segunda Guerra Mundial, durante a reconstrução do país. A ideia era melhorar a eficiência e a qualidade nas indústrias, eliminando desperdícios e criando um ambiente de trabalho mais organizado. A metodologia se popularizou como parte do Sistema Toyota de Produção e, hoje, é usada por empresas do mundo todo para aumentar a produtividade e a segurança.');
+    
+    const s5Grid = document.createElement('div');
+    s5Grid.className = 's5-visual-grid';
+    
+    const s5Data = [
+        { 
+            title: "1. Seiri (Senso de Utilização)", 
+            text: "<strong>O que é:</strong> Separar o que é necessário do que não é.<br><strong>Como fazer:</strong> Olhe tudo o que você tem na sua área de trabalho e jogue fora, doe ou guarde em outro lugar o que não for essencial para suas tarefas diárias. O objetivo é manter apenas o indispensável.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><path d="M54 18h-8v-4c0-2.2-1.8-4-4-4h-8c-2.2 0-4 1.8-4 4v4h-8l-4 40h40l-4-40z" fill="url(#s5-grad-1)"/><path d="M52 18h-6v-4c0-1.1-.9-2-2-2h-8c-1.1 0-2 .9-2 2v4h-6l-3.5 36h35l-3.5-36z M38 18h-4v-2h4v2z" fill="var(--text-color)"/><path d="M22 28l-2 2 10 10 10-10-2-2-8 8z" fill="var(--primary-color)" opacity="0.8"/><line x1="10" y1="24" x2="54" y2="24" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4"/></svg>`
+        },
+        { 
+            title: "2. Seiton (Senso de Organização)", 
+            text: "<strong>O que é:</strong> Organizar o que ficou.<br><strong>Como fazer:</strong> Defina um lugar para cada coisa e mantenha cada coisa em seu lugar. Use etiquetas, prateleiras e caixas para que qualquer pessoa possa encontrar o que precisa de forma rápida e fácil.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><rect x="8" y="10" width="48" height="44" rx="4" fill="url(#s5-grad-2)"/><path d="M12 18h16v8h-16z M32 18h16v8h-16z M12 30h16v8h-16z M32 30h16v8h-16z M12 42h36v8h-36z" fill="var(--text-color)"/><path d="M14 20h12v4h-12z" fill="var(--primary-color)" opacity="0.8"/><path d="M34 32h12v4h-12z" fill="var(--primary-color)" opacity="0.8"/><path d="M14 44h32v4h-32z" fill="var(--primary-color)" opacity="0.8"/></svg>`
+        },
+        { 
+            title: "3. Seiso (Senso de Limpeza)", 
+            text: "<strong>O que é:</strong> Manter o ambiente limpo.<br><strong>Como fazer:</strong> Crie o hábito de limpar sua área de trabalho regularmente. Um ambiente limpo é mais agradável, seguro e ajuda a identificar problemas, como vazamentos ou equipamentos quebrados, mais facilmente.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><path d="M52 12l-20 20-12-12-8 8 20 20 28-28z" fill="url(#s5-grad-3)"/><path d="M48 10h-32v2h32z M48 52h-32v2h32z" fill="var(--text-color)" opacity="0.5"/><path d="M50 8l-28 28-12-12-4 4 16 16 32-32z" fill="var(--primary-color)"/><path d="M18 42l-4 4 8 8 4-4z M10 50l-4 4 8 8 4-4z M26 50l-4 4 8 8 4-4z" fill="var(--text-color)" opacity="0.7"/></svg>`
+        },
+        { 
+            title: "4. Seiketsu (Senso de Padronização)", 
+            text: "<strong>O que é:</strong> Manter a organização e a limpeza.<br><strong>Como fazer:</strong> Crie regras e padrões para que os três primeiros “S” (Utilização, Organização e Limpeza) se tornem um hábito. Isso pode incluir checklists, rotinas de limpeza e responsabilidades claras para cada um.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><rect x="12" y="8" width="40" height="48" rx="4" fill="url(#s5-grad-4)"/><path d="M20 18h24v4h-24z" fill="var(--text-color)"/><path d="M24 28h16v2h-16zm0 6h16v2h-16zm0 6h16v2h-16z" fill="var(--text-color)" opacity="0.7"/><path d="M20 28l-4 4 2 2 4-4z M20 34l-4 4 2 2 4-4z M20 40l-4 4 2 2 4-4z" fill="var(--primary-color)"/></svg>`
+        },
+        { 
+            title: "5. Shitsuke (Senso de Disciplina)", 
+            text: "<strong>O que é:</strong> Ter disciplina para seguir as regras.<br><strong>Como fazer:</strong> É o compromisso de todos em manter os padrões definidos. Significa transformar o 5S em parte da cultura da empresa, onde cada um faz sua parte sem precisar ser lembrado.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><circle cx="32" cy="32" r="24" fill="url(#s5-grad-5)"/><path d="M32 12c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20zm0 36c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" fill="var(--text-color)"/><path d="M42 30h-6v-6c0-1.1-.9-2-2-2s-2 .9-2 2v8h8c1.1 0 2-.9 2-2s-.9-2-2-2z" fill="var(--primary-color)"/></svg>`
+        },
+    ];
 
-    const intro = createSection('Introdução', 'Fala, galera! O 5S é um jeitinho japonês de organizar e deixar qualquer lugar mais limpo, prático e agradável. A ideia é simples: separar o que serve do que não serve, deixar tudo no lugar, manter limpo, cuidar da saúde e higiene, e criar o hábito de manter isso sempre. Basicamente, é tipo deixar seu quarto ou seu cantinho de trabalho sempre arrumado e funcionando bem, mas de forma profissional.');
-
-    const diagram = document.createElement('div');
-    diagram.className = 's5-diagram-container';
-    diagram.innerHTML = `
-      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="200" cy="200" r="60" fill="var(--primary-color)" />
-          <text x="200" y="205" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">5S</text>
-          
-          <g class="s5-item" transform="translate(200, 60)">
-              <text text-anchor="middle" font-weight="600" fill="var(--text-color)">Seiri (Utilização)</text>
-              <path d="M 0 15 Q 0 60 -60 90" stroke="var(--text-color-subtle)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-              <text font-size="10" fill="var(--text-color-light)">
-                  <tspan x="-110" y="100">Separar o necessário</tspan>
-                  <tspan x="-110" y="112">do desnecessário</tspan>
-              </text>
-          </g>
-          <g class="s5-item" transform="translate(340, 200)">
-              <text text-anchor="middle" x="10" font-weight="600" fill="var(--text-color)">Seiton (Organização)</text>
-               <path d="M -15 0 Q -60 0 -90 60" stroke="var(--text-color-subtle)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-               <text font-size="10" fill="var(--text-color-light)">
-                  <tspan x="-140" y="45">Um lugar para</tspan>
-                  <tspan x="-140" y="57">cada coisa</tspan>
-              </text>
-          </g>
-          <g class="s5-item" transform="translate(200, 340)">
-              <text text-anchor="middle" font-weight="600" fill="var(--text-color)">Seiso (Limpeza)</text>
-              <path d="M 0 -15 Q 0 -60 60 -90" stroke="var(--text-color-subtle)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-              <text font-size="10" fill="var(--text-color-light)">
-                  <tspan x="80" y="-110">Limpar e cuidar</tspan>
-                  <tspan x="80" y="-98">do ambiente</tspan>
-              </text>
-          </g>
-          <g class="s5-item" transform="translate(60, 200)">
-              <text text-anchor="middle" x="-10" font-weight="600" fill="var(--text-color)">Seiketsu (Padronização)</text>
-              <path d="M 15 0 Q 60 0 90 -60" stroke="var(--text-color-subtle)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-               <text font-size="10" fill="var(--text-color-light)">
-                  <tspan x="115" y="-45">Manter a ordem e</tspan>
-                  <tspan x="115" y="-33">a saúde em dia</tspan>
-              </text>
-          </g>
-           <g class="s5-item" transform="translate(130, 110)">
-              <text text-anchor="middle" x="-10" transform="rotate(-45)" font-weight="600" fill="var(--text-color)">Shitsuke (Disciplina)</text>
-              <path d="M 15 15 Q 40 40 70 70" stroke="var(--text-color-subtle)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
-              <text font-size="10" fill="var(--text-color-light)" transform="translate(70, 75)">
-                  <tspan x="0" y="0">Transformar em</tspan>
-                  <tspan x="0" y="12">hábito</tspan>
-              </text>
-          </g>
-      </svg>
-    `;
-
-    const historia = createSection('História e Origem do 5S', 'O 5S surgiu no Japão, na década de 1950, como parte do Sistema de Produção Toyota (TPS), desenvolvido por Taiichi Ohno. Esse sistema foi criado para melhorar a eficiência e reduzir desperdícios nas fábricas da Toyota.');
-    const relacao = createSection('Relação com a Melhoria Contínua (Kaizen)', 'O 5S se alinha com os princípios do Kaizen, os dois buscam melhorar a eficiência e a produtividade a partir de pequenas melhorias constantes. A combinação de 5S e Kaizen é uma prática comum em ambientes de manufatura e logística.');
-
-    const detailsGrid = document.createElement('div');
-    detailsGrid.className = 's5-details-grid';
-
-    detailsGrid.innerHTML = `
-      <div class="s5-detail-item">
-        <div class="s5-detail-text">
-          <h3>1. Seiri (Senso de Utilização)</h3>
-          <p>É o ato de separar o que é necessário do que é desnecessário no ambiente de trabalho. Itens que não são usados com frequência ou que estão quebrados devem ser descartados ou realocados. Isso libera espaço, reduz a bagunça e facilita a localização do que realmente importa.</p>
-        </div>
-        <div class="s5-detail-image">
-          <svg viewBox="0 0 100 100"><path d="M20 30h60v60H20z" fill="var(--timeline-bg)" stroke="var(--text-color)" stroke-width="2"/><path d="M10 30h80M35 20h30v10H35zM40 30v60M60 30v60" fill="none" stroke="var(--text-color)" stroke-width="2"/><path d="M80 15L70 5" stroke="red" stroke-width="3" stroke-linecap="round"/><path d="M70 15L80 5" stroke="red" stroke-width="3" stroke-linecap="round"/></svg>
-        </div>
-      </div>
-      <div class="s5-detail-item">
-        <div class="s5-detail-image">
-           <svg viewBox="0 0 100 100"><path d="M15 70h70v15H15zM20 30h60v40H20z" fill="var(--timeline-bg)" stroke="var(--text-color)" stroke-width="2"/><path d="M30 40h10M30 55h10M55 40h15M55 55h15" fill="none" stroke="var(--text-color)" stroke-width="2"/></svg>
-        </div>
-        <div class="s5-detail-text">
-          <h3>2. Seiton (Senso de Organização)</h3>
-          <p>Depois de separar, é hora de organizar. "Um lugar para cada coisa, e cada coisa em seu lugar." Itens devem ser guardados em locais lógicos e de fácil acesso, identificados corretamente para que qualquer pessoa possa encontrá-los e guardá-los de volta rapidamente.</p>
-        </div>
-      </div>
-      <div class="s5-detail-item">
-        <div class="s5-detail-text">
-          <h3>3. Seiso (Senso de Limpeza)</h3>
-          <p>Mais do que apenas limpar a sujeira, o Seiso significa manter o ambiente de trabalho impecável. Isso inclui máquinas, ferramentas e o próprio espaço físico. Um local limpo não só é mais seguro e agradável, como também ajuda a identificar problemas (vazamentos, peças soltas) mais facilmente.</p>
-        </div>
-        <div class="s5-detail-image">
-          <svg viewBox="0 0 100 100"><path d="M20 80h60v10H20zM40 20h20v60H40z" fill="var(--timeline-bg)" stroke="var(--text-color)" stroke-width="2"/><path d="M40 80L30 90M45 80L35 90M50 80L40 90M55 80L45 90M60 80L50 90" fill="none" stroke="var(--text-color)" stroke-width="2"/></svg>
-        </div>
-      </div>
-      <div class="s5-detail-item">
-        <div class="s5-detail-image">
-          <svg viewBox="0 0 100 100"><rect x="20" y="30" width="60" height="50" fill="var(--timeline-bg)" stroke="var(--text-color)" stroke-width="2"/><path d="M30 40h40M30 50h40M30 60h20" fill="none" stroke="var(--text-color)" stroke-width="2"/><path d="M50 85 a 15 15 0 1 1 0.01 0z" stroke="var(--primary-color)" stroke-width="3" fill="none"/><path d="M45 85 l 5 5 l 10 -10" stroke="var(--primary-color)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-        </div>
-        <div class="s5-detail-text">
-          <h3>4. Seiketsu (Senso de Padronização)</h3>
-          <p>Este senso busca manter os três primeiros (Utilização, Organização e Limpeza) como um padrão. Envolve criar regras, procedimentos e checklists para garantir que as melhorias não se percam com o tempo. A padronização ajuda a manter a consistência e a ordem no longo prazo.</p>
-        </div>
-      </div>
-       <div class="s5-detail-item">
-        <div class="s5-detail-text">
-          <h3>5. Shitsuke (Senso de Disciplina)</h3>
-          <p>O último e mais desafiador S. Refere-se à disciplina e ao comprometimento de todos para seguir as regras e manter os padrões estabelecidos. É transformar a metodologia 5S em um hábito, criando uma cultura de melhoria contínua e responsabilidade coletiva.</p>
-        </div>
-        <div class="s5-detail-image">
-          <svg viewBox="0 0 100 100"><path d="M50,20 C80,20 80,50 50,50 C20,50 20,80 50,80" stroke="var(--primary-color)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 80 L 50 90 L 60 80" stroke="var(--primary-color)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-      </div>
-    `;
-
+    s5Data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 's5-visual-card';
+        card.innerHTML = `
+            <div class="s5-card-icon">${item.icon}</div>
+            <div class="s5-card-content">
+                <h3>${item.title}</h3>
+                <p>${item.text}</p>
+            </div>
+        `;
+        s5Grid.appendChild(card);
+    });
 
     // Quiz Section
     const quizSection = document.createElement('div');
@@ -1530,20 +1463,21 @@ function render5SPage() {
     quizTitle.style.marginBottom = '2rem';
 
     const quizData = [
-        { q: "Qual o primeiro passo (senso) da metodologia 5S?", a: 0, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Shitsuke (Disciplina)"] },
-        { q: "A frase 'Um lugar para cada coisa, e cada coisa em seu lugar' se refere a qual senso?", a: 1, o: ["Seiri", "Seiton", "Shitsuke", "Seiketsu"] },
-        { q: "Qual senso é responsável por transformar as práticas do 5S em um hábito?", a: 2, o: ["Seiketsu (Padronização)", "Seiso (Limpeza)", "Shitsuke (Disciplina)", "Seiri (Utilização)"] },
-        { q: "O 5S surgiu como parte de qual famoso sistema de produção?", a: 1, o: ["Fordismo", "Sistema de Produção Toyota", "Manufatura Ágil", "Taylorismo"] },
-        { q: "O Senso de Limpeza (Seiso) significa apenas remover a sujeira visível?", a: 3, o: ["Sim, apenas limpar o chão.", "Sim, e também pintar as paredes.", "Não, inclui organizar as ferramentas.", "Não, significa manter o ambiente impecável para identificar problemas."] },
-        { q: "Qual o principal objetivo do Seiri (Senso de Utilização)?", a: 0, o: ["Separar o necessário do desnecessário", "Limpar todas as ferramentas", "Organizar os itens em ordem alfabética", "Criar novas regras para a equipe"] },
-        { q: "Criar checklists e procedimentos para manter a ordem faz parte de qual senso?", a: 2, o: ["Seiso (Limpeza)", "Shitsuke (Disciplina)", "Seiketsu (Padronização)", "Seiton (Organização)"] },
-        { q: "Qual é considerado o senso mais desafiador de implementar e manter?", a: 3, o: ["Seiri", "Seiton", "Seiso", "Shitsuke"] },
-        { q: "A metodologia 5S está diretamente relacionada a qual outra filosofia japonesa?", a: 1, o: ["Ikigai", "Kaizen", "Wabi-sabi", "Kakebo"] },
-        { q: "Um benefício direto da aplicação do Seiton (Organização) é:", a: 0, o: ["Redução do tempo para encontrar ferramentas e materiais", "Aumento do espaço de estoque", "Diminuição da necessidade de limpeza", "Aumento do número de itens desnecessários"] },
+        { q: "Qual é o primeiro passo do 5S, representado por 'Seiri'?", a: 0, o: ["Separar o necessário do desnecessário", "Organizar os itens restantes", "Limpar o local de trabalho", "Criar padrões de limpeza"] },
+        { q: "O 'Seiton' (Senso de Organização) prega que deve haver:", a: 1, o: ["Muitos itens guardados, para o caso de precisar.", "Um lugar para cada coisa, e cada coisa em seu lugar.", "Limpeza constante, mesmo que o ambiente esteja desorganizado.", "Reuniões diárias sobre disciplina."] },
+        { q: "Manter o ambiente de trabalho limpo para identificar problemas facilmente é o objetivo de qual senso?", a: 2, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Shitsuke (Disciplina)"] },
+        { q: "O 'Seiketsu' (Senso de Padronização) serve para:", a: 3, o: ["Descartar itens uma única vez.", "Organizar o ambiente apenas quando há visitas.", "Limpar o local de trabalho esporadicamente.", "Manter os três primeiros sensos como um hábito."] },
+        { q: "O 'Shitsuke' (Senso de Disciplina) representa:", a: 1, o: ["A punição para quem não segue as regras.", "O compromisso de todos em manter os padrões.", "A limpeza feita apenas pela equipe de faxina.", "A compra de novos materiais de organização."] },
+        { q: "O 5S é uma metodologia que se originou em qual país?", a: 0, o: ["Japão", "Estados Unidos", "Alemanha", "China"] },
+        { q: "Qual o principal benefício de aplicar o 5S em um ambiente de trabalho?", a: 2, o: ["Aumentar a quantidade de itens estocados.", "Tornar o trabalho mais burocrático.", "Aumentar a produtividade, a segurança e a organização.", "Diminuir a comunicação entre a equipe."] },
+        { q: "Qual senso do 5S está mais relacionado à cultura organizacional e ao comprometimento de longo prazo?", a: 3, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Shitsuke (Disciplina)"] },
+        { q: "Etiquetar prateleiras e caixas para facilitar a localização de itens é uma prática de qual senso?", a: 1, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Seiketsu (Padronização)"] },
+        { q: "O programa 5S foi popularizado como parte de qual famoso sistema de produção?", a: 2, o: ["Fordismo", "Taylorismo", "Sistema Toyota de Produção", "Produção em Massa"] },
     ];
     
     const quizForm = document.createElement('form');
     quizForm.id = 's5-quiz';
+
     quizData.forEach((item, index) => {
       const questionDiv = document.createElement('div');
       questionDiv.className = 'quiz-question';
@@ -1600,22 +1534,20 @@ function render5SPage() {
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
-
+    
     container.append(
-        backButton,
+        backButton, 
         title,
         intro,
-        diagram,
-        historia,
-        relacao,
-        detailsGrid,
+        comoSurgiu,
+        s5Grid,
         quizSection,
         topicNav
     );
     return container;
 }
 
-function renderCadeiaDeSuprimentosPage() {
+function renderSupplyChainPage() {
     const container = document.createElement('div');
     container.className = 'supply-chain-page';
     applyStyles(container, {
@@ -1639,84 +1571,100 @@ function renderCadeiaDeSuprimentosPage() {
       color: 'var(--text-color)',
       marginBottom: '1rem',
     });
-    title.textContent = 'Cadeia de Suprimentos';
-
-    function createSection(titleText, content) {
+    title.textContent = 'Cadeia de Suprimentos (Supply Chain)';
+    
+    function createSection(titleText, content, addClass = '') {
         const sectionEl = document.createElement('div');
+        if (addClass) sectionEl.className = addClass;
+        
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
         sectionEl.appendChild(h3);
-        const p = document.createElement('p');
-        p.innerHTML = content;
-        sectionEl.appendChild(p);
+
+        if (typeof content === 'string') {
+            const p = document.createElement('p');
+            p.innerHTML = content;
+            sectionEl.appendChild(p);
+        } else if (Array.isArray(content)) {
+            sectionEl.appendChild(createTopicList(content));
+        } else {
+            sectionEl.appendChild(content);
+        }
         return sectionEl;
     }
+
+    const intro = createSection('O que é?', 'Fala, galera! A Cadeia de Suprimentos (ou Supply Chain, em inglês) é todo o caminho que um produto faz, desde a matéria-prima até chegar na sua mão. Pensa no seu celular: a cadeia de suprimentos inclui a mineração dos metais, a fabricação das peças, a montagem do aparelho, o transporte para a loja e, finalmente, a venda para você. É uma rede gigante que conecta fornecedores, fabricantes, distribuidores, lojas e clientes.');
     
-    const intro = createSection('Introdução', 'Fala, galera! A cadeia de suprimentos é tudo que envolve fazer um produto chegar até você. Isso inclui produção, armazenamento e distribuição, além de todas as pessoas, empresas, informações e recursos que entram no processo, desde a matéria-prima até o consumidor final.');
-    
-    const diagram = document.createElement('div');
-    diagram.className = 'supply-chain-diagram-container';
-    diagram.innerHTML = `
-      <svg viewBox="0 0 800 150" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="var(--primary-color)" />
-          </marker>
-        </defs>
-        <!-- Nodes -->
-        <g class="sc-node">
-          <rect x="10" y="50" width="120" height="50" rx="5" fill="var(--card-bg)" stroke="var(--card-border)"/>
-          <text x="70" y="80" text-anchor="middle" fill="var(--text-color)">Fornecedor</text>
-        </g>
-        <g class="sc-node">
-          <rect x="170" y="50" width="120" height="50" rx="5" fill="var(--card-bg)" stroke="var(--card-border)"/>
-          <text x="230" y="80" text-anchor="middle" fill="var(--text-color)">Indústria</text>
-        </g>
-        <g class="sc-node">
-          <rect x="330" y="50" width="120" height="50" rx="5" fill="var(--card-bg)" stroke="var(--card-border)"/>
-          <text x="390" y="80" text-anchor="middle" fill="var(--text-color)">Distribuidor</text>
-        </g>
-        <g class="sc-node">
-          <rect x="490" y="50" width="120" height="50" rx="5" fill="var(--card-bg)" stroke="var(--card-border)"/>
-          <text x="550" y="80" text-anchor="middle" fill="var(--text-color)">Varejista</text>
-        </g>
-        <g class="sc-node">
-          <rect x="650" y="50" width="120" height="50" rx="5" fill="var(--card-bg)" stroke="var(--card-border)"/>
-          <text x="710" y="80" text-anchor="middle" fill="var(--text-color)">Consumidor</text>
-        </g>
-        <!-- Arrows -->
-        <line x1="135" y1="75" x2="165" y2="75" stroke="var(--primary-color)" stroke-width="2" marker-end="url(#arrowhead)" />
-        <line x1="295" y1="75" x2="325" y2="75" stroke="var(--primary-color)" stroke-width="2" marker-end="url(#arrowhead)" />
-        <line x1="455" y1="75" x2="485" y2="75" stroke="var(--primary-color)" stroke-width="2" marker-end="url(#arrowhead)" />
-        <line x1="615" y1="75" x2="645" y2="75" stroke="var(--primary-color)" stroke-width="2" marker-end="url(#arrowhead)" />
-      </svg>
+    const diagramContainer = document.createElement('div');
+    diagramContainer.className = 'supply-chain-diagram-container';
+    diagramContainer.innerHTML = `
+        <svg viewBox="0 0 800 150" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .sc-node { transition: transform 0.3s ease; }
+                .sc-node:hover { transform: scale(1.1); }
+                .sc-text { font-family: 'Poppins', sans-serif; font-weight: 600; fill: var(--text-color); }
+                .sc-subtext { font-family: 'Poppins', sans-serif; font-size: 12px; fill: var(--text-color-light); }
+            </style>
+            <!-- Flow Line -->
+            <path d="M 75 75 H 725" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="8 4">
+                <animate attributeName="stroke-dashoffset" from="0" to="24" dur="1s" repeatCount="indefinite" />
+            </path>
+            
+            <!-- Nodes -->
+            <g class="sc-node" transform="translate(50, 75)">
+                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <text class="sc-text" text-anchor="middle" y="-5">Matéria-Prima</text>
+                <text class="sc-subtext" text-anchor="middle" y="15">(Fornecedor)</text>
+            </g>
+            <g class="sc-node" transform="translate(225, 75)">
+                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <text class="sc-text" text-anchor="middle" y="-5">Produção</text>
+                 <text class="sc-subtext" text-anchor="middle" y="15">(Fábrica)</text>
+            </g>
+            <g class="sc-node" transform="translate(400, 75)">
+                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <text class="sc-text" text-anchor="middle" y="-5">Armazenagem</text>
+                 <text class="sc-subtext" text-anchor="middle" y="15">(Distribuidor)</text>
+            </g>
+            <g class="sc-node" transform="translate(575, 75)">
+                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <text class="sc-text" text-anchor="middle" y="-5">Varejo</text>
+                 <text class="sc-subtext" text-anchor="middle" y="15">(Loja)</text>
+            </g>
+            <g class="sc-node" transform="translate(750, 75)">
+                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                <text class="sc-text" text-anchor="middle" y="5">Cliente Final</text>
+            </g>
+        </svg>
     `;
-
-    const surgimento = createSection('Surgimento', 'O SCM (Supply Chain Management) apareceu lá nos anos 1980, mas a ideia já vinha de muito antes, desde quando criaram as linhas de montagem no começo do século XX. No início, a preocupação era só fazer a fábrica produzir mais rápido e com menos estoque parado. Com o tempo, a coisa foi mudando. A globalização e os avanços na tecnologia da informação transformaram a cadeia de suprimentos em uma rede gigante e complexa, conectando empresas do mundo todo.');
-    const naLogistica = createSection('Na Logística', 'A cadeia de suprimentos envolve todas as etapas que um produto percorre, desde a compra da matéria-prima, passando pela produção, até chegar ao consumidor. Já a logística é responsável por fazer esse processo funcionar na prática, cuidando do transporte, do armazenamento e da distribuição. Quando as duas atuam de forma integrada, a empresa consegue reduzir custos, evitar estoques desnecessários, organizar melhor o fluxo de informações e agilizar as entregas. Isso não só aumenta a eficiência interna, mas também melhora a experiência do cliente, que recebe seus pedidos no prazo e com qualidade. No fim, essa integração deixa a empresa mais preparada para competir em um mercado cada vez mais exigente.');
-
-    const tiposTitle = document.createElement('h3');
-    tiposTitle.textContent = 'Tipos de Cadeias de Suprimentos';
-    const cardsContainer = document.createElement('div');
-    cardsContainer.className = 'info-cards-container';
-    cardsContainer.style.flexWrap = 'nowrap'; 
-    cardsContainer.style.overflowX = 'auto'; 
-    cardsContainer.style.paddingBottom = '1rem'; 
     
-    const tiposData = [
-        { title: 'Enxuta (Lean)', content: 'Focada em eliminar desperdícios e reduzir custos. Ideal para produtos com demanda estável e previsível.' },
-        { title: 'Ágil (Agile)', content: 'Prioriza a rapidez e a flexibilidade para responder a mudanças rápidas no mercado. Ideal para produtos com ciclo de vida curto e demanda volátil (ex: moda, tecnologia).' },
-        { title: 'Eficiente (Efficient)', content: 'Busca otimizar a produção e a distribuição em larga escala para reduzir o custo por unidade. Comum em indústrias com margens apertadas e alta competição.' },
-        { title: 'Responsiva (Responsive)', content: 'Combina elementos das cadeias ágil e eficiente, adaptando-se para atender às necessidades específicas dos clientes o mais rápido possível.' },
-    ];
+    const logisticaVsSCM = createSection('Logística vs. Supply Chain Management (SCM)', 'Muita gente confunde, mas saca só a diferença: a <strong>Logística</strong> é uma parte da cadeia de suprimentos. Ela cuida da movimentação e armazenagem dos produtos (transporte, estoque, etc.). Já o <strong>Supply Chain Management (SCM)</strong> é a gestão de TUDO: desde a negociação com fornecedores, produção, logística, até o serviço ao cliente. Ou seja, a logística é o "como" (movimentar), e o SCM é o "o quê" e o "porquê" (gerenciar o processo todo).');
+    
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'info-cards-container';
 
-    tiposData.forEach(tipo => {
-        const card = document.createElement('div');
-        card.className = 'info-card';
-        card.style.minWidth = '250px'; 
-        card.innerHTML = `<h4>${tipo.title}</h4><p>${tipo.content}</p>`;
-        cardsContainer.appendChild(card);
-    });
+    const importanciaCard = document.createElement('div');
+    importanciaCard.className = 'info-card';
+    importanciaCard.innerHTML = '<h3>Importância da Gestão</h3>';
+    importanciaCard.appendChild(createTopicList([
+        'Redução de custos → Processos eficientes evitam desperdícios.',
+        'Satisfação do cliente → O produto certo chega na hora certa.',
+        'Vantagem competitiva → Empresas com boa gestão de SCM são mais rápidas e confiáveis.',
+        'Flexibilidade → Consegue se adaptar a mudanças no mercado (como aumento de demanda).',
+    ]));
+
+    const etapasCard = document.createElement('div');
+    etapasCard.className = 'info-card';
+    etapasCard.innerHTML = '<h3>Principais Etapas</h3>';
+    etapasCard.appendChild(createTopicList([
+        'Planejamento → Prever a demanda e planejar a produção.',
+        'Compras (Sourcing) → Escolher fornecedores e comprar matéria-prima.',
+        'Produção (Fabricação) → Transformar a matéria-prima em produto.',
+        'Distribuição e Logística → Armazenar e transportar o produto.',
+        'Logística Reversa → Lidar com devoluções ou reciclagem de produtos.',
+    ]));
+    
+    cardContainer.append(importanciaCard, etapasCard);
 
     // Quiz Section
     const quizSection = document.createElement('div');
@@ -1729,20 +1677,21 @@ function renderCadeiaDeSuprimentosPage() {
     quizTitle.style.marginBottom = '2rem';
 
     const quizData = [
-        { q: "O que a Cadeia de Suprimentos (Supply Chain) engloba?", a: 2, o: ["Apenas o transporte do produto.", "Apenas a produção na fábrica.", "Todo o processo, da matéria-prima ao consumidor final.", "Apenas o marketing e as vendas."] },
-        { q: "Qual o papel da logística dentro da cadeia de suprimentos?", a: 0, o: ["Cuidar da execução prática, como transporte e armazenamento.", "Definir a estratégia de marketing do produto.", "Gerenciar as finanças da empresa.", "Contratar funcionários."] },
-        { q: "Uma cadeia de suprimentos focada em responder a mercados voláteis, como o da moda, é do tipo:", a: 1, o: ["Enxuta (Lean)", "Ágil (Agile)", "Eficiente (Efficient)", "Burocrática"] },
-        { q: "A integração eficaz entre logística e cadeia de suprimentos resulta em:", a: 2, o: ["Aumento de custos e estoques.", "Pior experiência para o cliente.", "Redução de custos e entregas mais ágeis.", "Maior tempo de produção."] },
-        { q: "Qual o elo final em uma cadeia de suprimentos tradicional?", a: 3, o: ["O fornecedor", "O distribuidor", "O varejista", "O consumidor"] },
-        { q: "O conceito de SCM (Supply Chain Management) ganhou força em qual década?", a: 1, o: ["1960", "1980", "2000", "1920"] },
-        { q: "Uma cadeia de suprimentos 'Enxuta' (Lean) tem como principal objetivo:", a: 0, o: ["Eliminar desperdícios", "Ser a mais rápida do mercado", "Ter os maiores estoques", "Adaptar-se a qualquer mudança"] },
-        { q: "A logística é considerada uma parte de qual processo maior?", a: 2, o: ["Marketing", "Recursos Humanos", "Cadeia de Suprimentos", "Financeiro"] },
-        { q: "O que conecta todos os elos da cadeia de suprimentos, além dos produtos físicos?", a: 3, o: ["Apenas contratos legais", "Apenas o transporte", "Apenas as ordens de compra", "O fluxo de informações"] },
-        { q: "Uma cadeia 'Eficiente' é ideal para qual tipo de mercado?", a: 1, o: ["Mercados de luxo com alta customização.", "Mercados com alta competição e margens apertadas.", "Mercados de produtos inovadores e de curta duração.", "Mercados onde o custo não é um fator importante."] },
+        { q: "O que é a Cadeia de Suprimentos (Supply Chain)?", a: 1, o: ["Apenas o transporte de produtos da fábrica para a loja.", "Todo o caminho do produto, da matéria-prima ao cliente final.", "Apenas o processo de venda no varejo.", "O gerenciamento do estoque dentro do armazém."] },
+        { q: "Qual a principal diferença entre Logística e Supply Chain Management (SCM)?", a: 2, o: ["Não há diferença, são a mesma coisa.", "Logística gerencia tudo, enquanto SCM cuida apenas do transporte.", "A Logística é uma parte do SCM, que gerencia todo o processo.", "SCM foca em fornecedores e Logística foca em clientes."] },
+        { q: "Qual etapa da cadeia de suprimentos envolve a escolha de fornecedores e a compra de matéria-prima?", a: 0, o: ["Compras (Sourcing)", "Produção", "Distribuição", "Logística Reversa"] },
+        { q: "Uma boa gestão da cadeia de suprimentos resulta em:", a: 3, o: ["Aumento de custos e mais desperdícios.", "Clientes insatisfeitos com atrasos.", "Menos flexibilidade para o mercado.", "Redução de custos e clientes mais satisfeitos."] },
+        { q: "A gestão de devoluções e reciclagem de produtos é responsabilidade de qual área?", a: 1, o: ["Planejamento", "Logística Reversa", "Produção", "Varejo"] },
+        { q: "No diagrama da cadeia de suprimentos, qual é o elo que vem imediatamente antes do 'Cliente Final'?", a: 3, o: ["Produção", "Matéria-Prima", "Armazenagem", "Varejo (Loja)"] },
+        { q: "O termo em inglês para Cadeia de Suprimentos é:", a: 2, o: ["Just in Time", "Kaizen", "Supply Chain", "Kanban"] },
+        { q: "Prever a demanda dos clientes e planejar a produção faz parte de qual etapa do SCM?", a: 0, o: ["Planejamento", "Compras", "Distribuição", "Venda"] },
+        { q: "Por que a gestão da cadeia de suprimentos é considerada uma vantagem competitiva?", a: 1, o: ["Porque aumenta o preço final do produto.", "Porque torna a empresa mais rápida, confiável e eficiente.", "Porque elimina a necessidade de fornecedores.", "Porque foca apenas na produção interna."] },
+        { q: "A 'fábrica' está associada a qual etapa da cadeia de suprimentos?", a: 2, o: ["Compras", "Armazenagem", "Produção", "Cliente Final"] },
     ];
     
     const quizForm = document.createElement('form');
-    quizForm.id = 'sc-quiz';
+    quizForm.id = 'supply-chain-quiz';
+
     quizData.forEach((item, index) => {
       const questionDiv = document.createElement('div');
       questionDiv.className = 'quiz-question';
@@ -1794,19 +1743,273 @@ function renderCadeiaDeSuprimentosPage() {
         resetButton.style.display = 'none';
     });
 
+
+    quizButtons.append(submitButton, resetButton);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
+    
+    const topicNav = createTopicNavigation(selectedTopic.id);
+    
+    container.append(
+        backButton, 
+        title,
+        intro,
+        diagramContainer,
+        logisticaVsSCM,
+        cardContainer,
+        quizSection,
+        topicNav
+    );
+    return container;
+}
+
+function renderComprasPage() {
+    const container = document.createElement('div');
+    container.className = 'compras-page';
+    applyStyles(container, {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'start',
+      textAlign: 'left',
+      width: '100%',
+      maxWidth: '900px',
+      padding: '0 1rem'
+    });
+
+    const backButton = CtaButton('← Voltar para a lista', () => {
+        transitionTo(() => { selectedTopic = null; });
+    }, { margin: '0 0 2rem 0' });
+
+    const title = document.createElement('h2');
+    applyStyles(title, {
+      fontSize: '2.8rem',
+      fontWeight: '700',
+      color: 'var(--text-color)',
+      marginBottom: '1rem',
+    });
+    title.textContent = 'Compras';
+
+    function createSection(titleText, content) {
+        const sectionEl = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)'
+        });
+        sectionEl.appendChild(h3);
+        const p = document.createElement('p');
+        p.innerHTML = content;
+        p.style.fontSize = '1.1rem';
+        p.style.lineHeight = '1.8';
+        sectionEl.appendChild(p);
+        return sectionEl;
+    }
+
+    const introducao = createSection('Introdução', 'Fala, galera! Quando falamos de compras não estamos falando apenas de comprar aquilo que é necessário, mas sim de um departamento estratégico que adquire produtos, equipamentos, serviços, entre outros de maneira consciente, buscando o melhor preço, o melhor prazo e a melhor qualidade.');
+    const definicao = createSection('Definição', 'O setor de compras é responsável por adquirir os produtos que estão em falta. Isso envolve uma série de fatores como fazer cotações de preço, prazo (em busca do menor tempo de entrega e a qualidade do produto de diferentes fornecedores.');
+    const objetivo = createSection('Objetivo', 'O objetivo de Compras é utilizar planejamento estratégico para garantir o produto certo no momento certo, e com a qualidade certa. Além disso, garantir o menor custo possível é fundamental nas negociações.');
+    const impacto = createSection('Impacto', 'Uma boa gestão de compras impacta diretamente no andamento dos negócios e sucesso da organização, quando Compras fecha uma negociação com o preço certo, a qualidade certa e o prazo certo, isso aumenta o lucro, a produtividade e a satisfação do cliente final.');
+    const importancia = createSection('Importância', 'Ou seja, o setor de compras é fundamental para o bom funcionamento de qualquer organização, pois é responsável por garantir que todos os materiais necessários para que a produção, vendas e serviços da empresa não faltem e esses processos continuem em andamento.');
+    const comunicacao = createSection('Comunicação', 'Compras deve sempre dialogar com os demais setores da empresa, para entender quais são as necessidades a ser supridas e quais os prazos para entrega. Essa falta de comunicação pode interromper uma venda ou produção, por isso é necessário que tenha esse diálogo positivo para evitar atrasos, perdas e desperdícios.');
+    
+    const cycleSection = document.createElement('div');
+    const cycleTitle = document.createElement('h3');
+    cycleTitle.textContent = 'O Ciclo de uma Compra';
+     applyStyles(cycleTitle, {
+        fontSize: '1.8rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginTop: '3rem',
+        marginBottom: '2rem',
+        textAlign: 'center',
+        width: '100%'
+    });
+    const cycleGrid = document.createElement('div');
+    cycleGrid.className = 'compras-cycle-grid';
+    
+    const steps = [
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>`,
+            title: "Comunicação da Necessidade",
+            description: "O processo começa quando um setor identifica a falta de um material e informa a equipe de compras."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>`,
+            title: "Cotação de Fornecedores",
+            description: "A equipe pesquisa e solicita propostas de diferentes fornecedores para comparar preços, prazos e qualidade."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>`,
+            title: "Análise e Negociação",
+            description: "As propostas são analisadas e a equipe negocia as melhores condições com os fornecedores selecionados."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
+            title: "Emissão do Pedido",
+            description: "Após a negociação, um pedido de compra formal é gerado e enviado ao fornecedor."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M21.99 8c0-.55-.45-1-1-1h-1V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v2H2c-.55 0-1 .45-1 1s.45 1 1 1h1v1H2c-.55 0-1 .45-1 1s.45 1 1 1h1v1H2c-.55 0-1 .45-1 1s.45 1 1 1h1v2c0 1.1.9 2 2 2h4v1c0 .55.45 1 1 1s1-.45 1-1v-1h2v1c0 .55.45 1 1 1s1-.45 1-1v-1h4c1.1 0 2-.9 2-2v-2h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v-1h1c.55 0 1-.45 1-1zM17 17H7V7h10v10z"/><path d="M16 11H8v2h8v-2z"/></svg>`,
+            title: "Acompanhamento (Follow-up)",
+            description: "A equipe de compras monitora o status do pedido para garantir que a entrega ocorra no prazo combinado."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M20.59 5.59L19 4l-9 9-4.5-4.5L4 10l6 6zM20 12v4c0 1.1-.9 2-2 2H6c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2h10l-2 2H6v4h12v-2.17l2-2z"/></svg>`,
+            title: "Recebimento e Conferência",
+            description: "O material é recebido, e a equipe confere se a quantidade e a qualidade estão de acordo com o pedido."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>`,
+            title: "Pagamento",
+            description: "Após a conferência, o pagamento é liberado para o fornecedor, finalizando o ciclo de compra."
+        }
+    ];
+
+    steps.forEach((step, index) => {
+        const stepCard = document.createElement('div');
+        stepCard.className = 'compras-cycle-step';
+        stepCard.innerHTML = `
+            <div class="cycle-step-icon">${step.icon}</div>
+            <div class="cycle-step-content">
+                <h4><span>Passo ${index + 1}:</span> ${step.title}</h4>
+                <p>${step.description}</p>
+            </div>
+        `;
+        cycleGrid.appendChild(stepCard);
+    });
+    
+    cycleSection.append(cycleTitle, cycleGrid);
+
+    const cardsContainer = document.createElement('div');
+    cardsContainer.className = 'info-cards-container';
+
+    const beneficiosCard = document.createElement('div');
+    beneficiosCard.className = 'info-card';
+    beneficiosCard.innerHTML = '<h3>Benefícios</h3>';
+    beneficiosCard.appendChild(createTopicList([
+        'Diminuição de custos;',
+        'Agilidade no processo;',
+        'Gestão eficiente do estoque;',
+        'Tomada de decisões estratégicas;',
+        'Prevenção de falhas na operação;',
+        'Bom relacionamento com fornecedores;',
+        'Satisfação e fidelização dos clientes.',
+    ]));
+
+    const exemplosContainer = document.createElement('div');
+    exemplosContainer.style.flex = '1 1 300px';
+    exemplosContainer.style.display = 'flex';
+    exemplosContainer.style.flexDirection = 'column';
+    exemplosContainer.style.gap = '1.5rem';
+
+    const exemploPositivoCard = document.createElement('div');
+    exemploPositivoCard.className = 'info-card';
+    exemploPositivoCard.innerHTML = '<h4>Exemplo positivo</h4><p>O setor de compras de uma empresa de alimentos negociou com um novo fornecedor de embalagens e conseguiu 10% de desconto, frete gratuito e prazo de pagamento estendido para 60 dias. Graças a essa negociação, a empresa reduziu custos e melhorou o fluxo de caixa sem comprometer a qualidade dos produtos.</p>';
+    
+    const exemploNegativoCard = document.createElement('div');
+    exemploNegativoCard.className = 'info-card';
+    exemploNegativoCard.innerHTML = '<h4>Exemplo negativo</h4><p>Em uma determinada empresa, o setor de estoque não avisou o setor de compras que a quantidade de parafusos estava acabando. Como não houve comunicação, o material acabou no meio da produção, atrasando as entregas aos clientes e gerando prejuízo e insatisfação.</p>';
+
+    exemplosContainer.append(exemploPositivoCard, exemploNegativoCard);
+    cardsContainer.append(beneficiosCard, exemplosContainer);
+
+    // Quiz Section
+    const quizSection = document.createElement('div');
+    quizSection.className = 'quiz-section';
+
+    const quizTitle = document.createElement('h2');
+    applyStyles(quizTitle, styles.sectionTitle);
+    quizTitle.textContent = 'Teste seu conhecimento!';
+    quizTitle.style.textAlign = 'center';
+    quizTitle.style.marginBottom = '2rem';
+
+    const quizData = [
+        { q: "Qual é o principal objetivo do setor de Compras, além de buscar o melhor preço?", a: 2, o: ["Comprar a maior quantidade possível de material.", "Apenas receber cotações de fornecedores.", "Garantir o produto certo, no momento certo e com a qualidade certa.", "Evitar a comunicação com outros setores."] },
+        { q: "Uma boa gestão de compras impacta diretamente em quê?", a: 0, o: ["Aumento do lucro, produtividade e satisfação do cliente.", "Aumento dos custos de produção.", "Diminuição da qualidade dos produtos.", "Atrasos na produção como algo normal."] },
+        { q: "Por que a comunicação entre o setor de Compras e os outros setores é fundamental?", a: 3, o: ["Para que o setor de compras trabalhe isoladamente.", "Porque a comunicação não é importante.", "Para gerar mais burocracia na empresa.", "Para evitar a interrupção da produção ou vendas por falta de material."] },
+        { q: "No 'Exemplo Positivo', qual foi o principal resultado da negociação bem-sucedida?", a: 1, o: ["A empresa comprou embalagens de qualidade inferior.", "A empresa reduziu custos e melhorou o fluxo de caixa.", "O fornecedor aumentou o preço dos produtos.", "A entrega das embalagens atrasou."] },
+        { q: "O que causou o problema no 'Exemplo Negativo'?", a: 2, o: ["Excesso de parafusos no estoque.", "Uma negociação de preço mal-sucedida.", "Falta de comunicação entre o estoque e o setor de compras.", "A má qualidade dos parafusos comprados."] },
+        { q: "Qual destes NÃO é um benefício de uma boa gestão de compras?", a: 3, o: ["Diminuição de custos.", "Agilidade no processo.", "Bom relacionamento com fornecedores.", "Aumento de falhas na operação."] },
+        { q: "O que o setor de compras faz após identificar a falta de um produto?", a: 0, o: ["Realiza cotações de preço, prazo e qualidade.", "Espera o produto acabar completamente.", "Compra do primeiro fornecedor que encontra.", "Cancela a produção do item."] },
+        { q: "A aquisição de bens e serviços de forma consciente, buscando o melhor preço, prazo e qualidade, é a definição de:", a: 1, o: ["Setor de Vendas.", "Compras estratégicas.", "Recursos Humanos.", "Contabilidade."] },
+        { q: "De acordo com o ciclo visual, qual etapa vem logo após a 'Cotação com Fornecedores'?", a: 0, o: ["Análise e Negociação", "Pagamento", "Recebimento", "Comunicação da Necessidade"] },
+        { q: "A satisfação do cliente final pode ser afetada por uma má gestão de compras?", a: 0, o: ["Sim, pois pode causar atrasos na produção e entrega.", "Não, a gestão de compras não tem relação com o cliente.", "Apenas se o preço do produto aumentar.", "Apenas em empresas de serviço."] },
+    ];
+    
+    const quizForm = document.createElement('form');
+    quizForm.id = 'compras-quiz';
+
+    quizData.forEach((item, index) => {
+      const questionDiv = document.createElement('div');
+      questionDiv.className = 'quiz-question';
+      
+      const questionText = document.createElement('p');
+      questionText.textContent = `${index + 1}. ${item.q}`;
+      questionDiv.appendChild(questionText);
+
+      const optionsList = document.createElement('ul');
+      optionsList.className = 'quiz-options';
+
+      item.o.forEach((option, optionIndex) => {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = `compras-question-${index}`;
+        input.value = optionIndex.toString();
+        input.required = true;
+        
+        label.appendChild(input);
+        label.append(` ${option}`);
+        li.appendChild(label);
+        optionsList.appendChild(li);
+      });
+
+      questionDiv.appendChild(optionsList);
+      quizForm.appendChild(questionDiv);
+    });
+
+    const quizButtons = document.createElement('div');
+    quizButtons.className = 'quiz-buttons';
+    const resultsDiv = document.createElement('div');
+    resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
+
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
+
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Compras', submitButton, resetButton));
+
+    resetButton.addEventListener('click', () => {
+        quizForm.reset();
+        resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
+        quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
+        submitButton.style.display = 'inline-block';
+        resetButton.style.display = 'none';
+    });
+
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
     const topicNav = createTopicNavigation(selectedTopic.id);
-    
+
     container.append(
-        backButton,
+        backButton, 
         title,
-        intro,
-        diagram,
-        surgimento,
-        naLogistica,
-        tiposTitle,
+        introducao,
+        definicao,
+        objetivo,
+        impacto,
+        importancia,
+        comunicacao,
+        cycleSection,
         cardsContainer,
         quizSection,
         topicNav
@@ -1815,736 +2018,941 @@ function renderCadeiaDeSuprimentosPage() {
 }
 
 
-function renderConteudosPage() {
-  const section = document.createElement('section');
-  section.id = 'conteudos';
-  section.className = 'custom-cursor';
-  applyStyles(section, styles.section);
-
-  if (selectedTopic) {
-    let content;
-    if (selectedTopic.id === 'logistica-integrada') {
-        content = renderLogisticaIntegradaPage();
-    } else if (selectedTopic.id === 'just-in-time') {
-        content = renderJustInTimePage();
-    } else if (selectedTopic.id === 'kanban') {
-        content = renderKanbanPage();
-    } else if (selectedTopic.id === 'kaizen') {
-        content = renderKaizenPage();
-    } else if (selectedTopic.id === '5s') {
-        content = render5SPage();
-    } else if (selectedTopic.id === 'cadeia-de-suprimentos') {
-        content = renderCadeiaDeSuprimentosPage();
-    } else {
-        // Generic topic renderer
-        const container = document.createElement('div');
-        applyStyles(container, {
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'start',
-            textAlign: 'left',
-            width: '100%',
-            maxWidth: '800px',
-        });
-        const backButton = CtaButton('← Voltar para a lista', () => {
-            transitionTo(() => { selectedTopic = null; });
-        }, { margin: '0 0 2rem 0' });
-        const title = document.createElement('h2');
-        applyStyles(title, {
-            fontSize: '2.5rem',
-            fontWeight: '700',
-            color: 'var(--text-color)',
-            marginBottom: '1rem',
-        });
-        title.textContent = selectedTopic.title;
-        const contentEl = document.createElement('p');
-        applyStyles(contentEl, {
-            fontSize: '1.1rem',
-            lineHeight: '1.8',
-            color: 'var(--text-color-light)',
-        });
-        contentEl.textContent = selectedTopic.content;
-        const topicNav = createTopicNavigation(selectedTopic.id);
-        container.append(backButton, title, contentEl, topicNav);
-        content = container;
-    }
-    section.appendChild(content);
-    return section;
-  }
-
-  const title = document.createElement('h2');
-  applyStyles(title, styles.sectionTitle);
-  title.textContent = 'Conteúdos de Logística';
-  const intro = document.createElement('p');
-  applyStyles(intro, styles.intro);
-  intro.textContent = 'Explore nossos tópicos para descomplicar a logística de vez.';
-  const searchBar = document.createElement('input');
-  searchBar.type = 'text';
-  searchBar.placeholder = 'Pesquisar por um tópico...';
-  searchBar.setAttribute('aria-label', 'Pesquisar por um tópico de logística');
-  applyStyles(searchBar, {
-    width: '80%',
-    maxWidth: '500px',
-    padding: '0.8rem 1.2rem',
-    fontSize: '1rem',
-    borderRadius: '25px',
-    border: '2px solid var(--search-border)',
-    marginBottom: '2.5rem',
-    transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
-    backgroundColor: 'var(--card-bg)',
-    color: 'var(--text-color)',
-  });
-  const gridContainer = document.createElement('div');
-  applyStyles(gridContainer, {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-    gap: '1.5rem',
-    width: '100%',
-    maxWidth: '1200px',
-    padding: '0 2rem',
-  });
-
-  const renderGrid = (term) => {
-    gridContainer.innerHTML = '';
-    const filtered = conteudosList.filter(c => c.title.toLowerCase().includes(term.toLowerCase()));
-    if (filtered.length > 0) {
-      filtered.forEach(topic => {
-        const card = document.createElement('div');
-        applyStyles(card, {
-          backgroundColor: 'var(--card-bg)',
-          border: '1px solid var(--card-border)',
-          borderRadius: '12px',
-          padding: '2rem',
-          textAlign: 'left',
-          cursor: 'pointer',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-          boxShadow: `0 4px 12px var(--card-shadow)`,
-          minHeight: '260px',
-          display: 'flex',
-          flexDirection: 'column',
-        });
-        const cardTitle = document.createElement('h3');
-        applyStyles(cardTitle, {
-          fontSize: '1.3rem',
-          fontWeight: '600',
-          color: 'var(--text-color)',
-          margin: '0 0 1rem 0',
-        });
-        cardTitle.textContent = topic.title;
-        const cardIntro = document.createElement('p');
-        applyStyles(cardIntro, {
-          fontSize: '0.95rem',
-          lineHeight: '1.6',
-          color: 'var(--text-color-light)',
-          margin: '0',
-        });
-        cardIntro.textContent = topic.intro;
-        card.append(cardTitle, cardIntro);
-        card.addEventListener('mouseenter', e => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(-5px)';
-          (e.currentTarget as HTMLElement).style.boxShadow = `0 10px 30px var(--card-shadow-hover), 0 0 20px hsla(47, 100%, 50%, 0.15)`;
-        });
-        card.addEventListener('mouseleave', e => {
-          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-          (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px var(--card-shadow)`;
-        });
-        card.addEventListener('click', () => {
-          transitionTo(() => { selectedTopic = topic; });
-        });
-        gridContainer.appendChild(card);
-      });
-    } else {
-      gridContainer.innerHTML = '<p>Nenhum tópico encontrado com sua busca.</p>';
-    }
-  };
-  searchBar.addEventListener('input', e => renderGrid((e.target as HTMLInputElement).value));
-  section.append(title, intro, searchBar, gridContainer);
-  renderGrid('');
-  return section;
-}
-
-function renderJogosPage() {
-    const section = document.createElement('section');
-    section.id = 'jogos';
-    section.className = 'custom-cursor';
-    applyStyles(section, styles.section);
+function renderRecebimentoPage() {
+    const container = document.createElement('div');
+    container.className = 'recebimento-page';
+     applyStyles(container, {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'start',
+      textAlign: 'left',
+      width: '100%',
+      maxWidth: '900px',
+      padding: '0 1rem'
+    });
+    
+    const backButton = CtaButton('← Voltar para a lista', () => {
+        transitionTo(() => { selectedTopic = null; });
+    }, { margin: '0 0 2rem 0' });
 
     const title = document.createElement('h2');
-    applyStyles(title, styles.sectionTitle);
-    title.textContent = 'Jogos Interativos';
-    const intro = document.createElement('p');
-    applyStyles(intro, styles.intro);
-    intro.textContent = 'Aprenda logística de uma forma divertida!';
+    applyStyles(title, {
+      fontSize: '2.8rem',
+      fontWeight: '700',
+      color: 'var(--text-color)',
+      marginBottom: '1rem',
+    });
+    title.textContent = 'Recebimento de Materiais';
+    
+    function createSection(titleText, content) {
+        const sectionEl = document.createElement('div');
+        const h3 = document.createElement('h3');
+        h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)'
+        });
+        sectionEl.appendChild(h3);
+        const p = document.createElement('p');
+        p.innerHTML = content;
+        p.style.fontSize = '1.1rem';
+        p.style.lineHeight = '1.8';
+        sectionEl.appendChild(p);
+        return sectionEl;
+    }
 
+    const introducao = createSection('Introdução', 'Fala, galera! Sobre recebimento de materiais não estamos falando de receber aquilo que é necessário, mas sim de um departamento estratégico que recebe os produtos essenciais para serviços, realiza vistoria física dos materiais para identificar avarias, compara a quantidade recebida com a nota fiscal e verifica a qualidade dos produtos.');
+    const definicao = createSection('Definição', 'O recebimento de mercadorias consiste em um conjunto de atividades necessárias para receber os produtos adquiridos dos fornecedores. Ou seja, é o processo que acontece assim que as mercadorias compradas são entregues na empresa.');
+    const objetivo = createSection('Objetivo', 'O objetivo do recebimento de compras é utilizar planejamento estratégico para garantir que o material seja recebido de forma certa, e com a qualidade certa. Além disso, garantir que as necessidades da empresa sejam atendidas.');
+    const importancia = createSection('Importância', `Longe de ser apenas uma função de apoio, o recebimento é uma etapa estratégica e prioritária na cadeia de suprimentos. Papel Estratégico na Logística e Geração de Receita O recebimento de materiais é um dos pilares da gestão de materiais. Ele é considerado a primeira etapa da cadeia de suprimentos interna da empresa.<br><br>Ou seja, o setor de recebimento é fundamental para o bom funcionamento de qualquer organização, pois é responsável por garantir que todos os materiais necessários para que a produção, vendas e serviços da empresa não faltem e esses processos continuem em andamento.`);
+    const comunicacao = createSection('Comunicação', 'O setor de recebimento de materiais precisa dialogar e estar estritamente integrado com diversas áreas, tanto internas quanto externas à empresa, para garantir a eficiência do processo logístico e a conformidade do estoque. Departamentos Internos<br><br>O diálogo interno é vital para antecipar as entregas, garantir que o material recebido seja o correto e finalizar a transação financeira. A área de recebimento precisa estar integrada ao setor de compras, sabendo antecipadamente a programação de entregas.');
+
+    // Interactive Animation Section
+    const animationSection = document.createElement('div');
+    animationSection.className = 'recebimento-animation-section';
+    const animationTitle = document.createElement('h3');
+    animationTitle.textContent = 'Interaja com o Processo de Recebimento';
+    applyStyles(animationTitle, {
+        fontSize: '1.8rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginTop: '3rem',
+        marginBottom: '1rem',
+        textAlign: 'center',
+        width: '100%'
+    });
+    const animationContainer = document.createElement('div');
+    animationContainer.className = 'recebimento-animation-container';
+    
+    animationContainer.innerHTML = `
+        <div class="recebimento-svg-scene">
+            <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Supplier -->
+                <g transform="translate(50, 100)">
+                    <rect x="-40" y="-30" width="80" height="60" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                    <text x="0" y="5" text-anchor="middle" font-weight="600" fill="var(--text-color)">Fornecedor</text>
+                </g>
+                <!-- Company -->
+                <g transform="translate(550, 100)">
+                     <rect x="-50" y="-50" width="100" height="100" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+                    <text x="0" y="5" text-anchor="middle" font-weight="600" fill="var(--text-color)">Empresa</text>
+                </g>
+                <!-- Road -->
+                <line x1="90" y1="130" x2="500" y2="130" stroke="var(--text-color-subtle)" stroke-width="10"/>
+                <line x1="90" y1="130" x2="500" y2="130" stroke="white" stroke-width="2" stroke-dasharray="10 10" class="road-lines"/>
+                <!-- Truck -->
+                <g id="truck-group">
+                    <path d="M 0 0 L 0 -25 L 25 -25 L 35 -15 L 35 0 Z" fill="var(--primary-color)" transform="translate(100, 120)"/>
+                    <rect x="70" y="95" width="40" height="25" fill="#fec700"/>
+                    <circle cx="80" cy="120" r="8" fill="#333"/>
+                    <circle cx="125" cy="120" r="8" fill="#333"/>
+                    <animateMotion id="truck-animation" xlink:href="#truck-group" dur="4s" begin="indefinite" fill="freeze" path="M 0 0 H 380" />
+                </g>
+            </svg>
+        </div>
+        <div class="recebimento-controls">
+             <button id="start-recebimento-btn" class="cta-button">Iniciar Recebimento</button>
+        </div>
+        <div class="step-display-container">
+            <div class="recebimento-step" id="step1">
+                <h4>1. Checagem da Nota Fiscal</h4>
+                <p>Verificar se o pedido corresponde ao que foi entregue.</p>
+            </div>
+            <div class="recebimento-step" id="step2">
+                <h4>2. Inspeção Quantitativa</h4>
+                <p>Contar os volumes e conferir se a quantidade está correta.</p>
+            </div>
+            <div class="recebimento-step" id="step3">
+                <h4>3. Inspeção Qualitativa</h4>
+                <p>Analisar a qualidade e verificar se há avarias nos produtos.</p>
+            </div>
+             <div class="recebimento-step" id="step4">
+                <h4>4. Endereçamento</h4>
+                <p>Enviar os materiais conferidos para o estoque.</p>
+            </div>
+        </div>
+    `;
+    
+    const startBtn = animationContainer.querySelector('#start-recebimento-btn');
+    const animationEl = animationContainer.querySelector('#truck-animation');
+    const steps = animationContainer.querySelectorAll('.recebimento-step');
+    
+    startBtn.addEventListener('click', () => {
+        startBtn.setAttribute('disabled', 'true');
+        startBtn.textContent = 'Em trânsito...';
+        steps.forEach(s => s.classList.remove('visible'));
+
+        // Fix: Use a type guard to ensure animationEl is an SVGAnimationElement before calling beginElement.
+        if (animationEl instanceof SVGAnimationElement) {
+            animationEl.beginElement();
+        }
+        
+        setTimeout(() => {
+            startBtn.textContent = 'Entrega Realizada!';
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    step.classList.add('visible');
+                }, index * 700);
+            });
+            setTimeout(() => {
+                startBtn.removeAttribute('disabled');
+                startBtn.textContent = 'Reiniciar Animação';
+            }, steps.length * 700);
+        }, 4000); // Same as animation duration
+    });
+    
+    animationSection.append(animationTitle, animationContainer);
+    
+    
+    // Quiz Section
+    const quizSection = document.createElement('div');
+    quizSection.className = 'quiz-section';
+
+    const quizTitle = document.createElement('h2');
+    applyStyles(quizTitle, styles.sectionTitle);
+    quizTitle.textContent = 'Teste seu conhecimento!';
+    quizTitle.style.textAlign = 'center';
+    quizTitle.style.marginBottom = '2rem';
+    
+    const quizData = [
+        { q: "Qual é o objetivo principal do processo de recebimento de materiais?", a: 2, o: ["Apenas guardar os produtos o mais rápido possível.", "Pagar os fornecedores no prazo.", "Garantir que o material recebido esteja certo e com a qualidade certa.", "Vender os produtos recebidos imediatamente."] },
+        { q: "O recebimento de materiais é considerado a primeira etapa de qual processo interno?", a: 1, o: ["Vendas", "Cadeia de suprimentos interna", "Marketing", "Recursos Humanos"] },
+        { q: "Por que a comunicação do setor de recebimento com o de compras é vital?", a: 0, o: ["Para saber antecipadamente a programação de entregas.", "Para negociar descontos de última hora.", "Para cancelar pedidos já enviados.", "Não é vital, eles operam de forma independente."] },
+        { q: "O que é a inspeção qualitativa no recebimento?", a: 3, o: ["Contar o número de caixas recebidas.", "Verificar o preço na nota fiscal.", "Pesar todos os produtos.", "Verificar a qualidade e identificar possíveis avarias nos produtos."] },
+        { q: "O que acontece logo após a entrega da mercadoria na empresa?", a: 2, o: ["O produto é enviado diretamente para a produção.", "O pagamento é feito imediatamente.", "Inicia-se o processo de recebimento e conferência.", "O fornecedor leva a mercadoria de volta."] },
+        { q: "Qual o risco de uma falha na comunicação entre o recebimento e outros setores?", a: 1, o: ["Otimização do tempo e recursos.", "Inconsistências no estoque e possíveis paradas na produção.", "Aumento automático do lucro da empresa.", "Melhora no relacionamento com o fornecedor."] },
+        { q: "Comparar a quantidade de itens recebidos com a nota fiscal é parte de qual etapa?", a: 0, o: ["Inspeção quantitativa", "Inspeção qualitativa", "Endereçamento", "Pagamento ao fornecedor"] },
+        { q: "Na animação interativa, qual é a última etapa do processo de recebimento mostrado?", a: 3, o: ["Checagem da Nota Fiscal", "Inspeção Qualitativa", "Inspeção Quantitativa", "Endereçamento"] },
+        { q: "Por que o recebimento de materiais é considerado uma etapa estratégica?", a: 2, o: ["Porque é a etapa mais cara de toda a logística.", "Porque é a única etapa que envolve contato com o fornecedor.", "Porque garante a conformidade do estoque e a qualidade dos insumos.", "Porque é a etapa mais rápida e fácil de executar."] },
+        { q: "Um recebimento eficiente ajuda a garantir:", a: 1, o: ["Que a empresa pague mais caro pelos produtos.", "A exatidão do estoque e a qualidade dos materiais.", "Que o setor de compras trabalhe menos.", "A redução do número de fornecedores."] }
+    ];
+
+    const quizForm = document.createElement('form');
+    quizForm.id = 'recebimento-quiz';
+
+    quizData.forEach((item, index) => {
+      const questionDiv = document.createElement('div');
+      questionDiv.className = 'quiz-question';
+      
+      const questionText = document.createElement('p');
+      questionText.textContent = `${index + 1}. ${item.q}`;
+      questionDiv.appendChild(questionText);
+
+      const optionsList = document.createElement('ul');
+      optionsList.className = 'quiz-options';
+
+      item.o.forEach((option, optionIndex) => {
+        const li = document.createElement('li');
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = `recebimento-question-${index}`;
+        input.value = optionIndex.toString();
+        input.required = true;
+        
+        label.appendChild(input);
+        label.append(` ${option}`);
+        li.appendChild(label);
+        optionsList.appendChild(li);
+      });
+
+      questionDiv.appendChild(optionsList);
+      quizForm.appendChild(questionDiv);
+    });
+    
+    const quizButtons = document.createElement('div');
+    quizButtons.className = 'quiz-buttons';
+    const resultsDiv = document.createElement('div');
+    resultsDiv.className = 'quiz-results';
+    const aiTipDiv = document.createElement('div');
+    aiTipDiv.className = 'quiz-ai-tip';
+
+    const submitButton = CtaButton('Verificar Respostas', (e) => {}, { margin: '0 0.5rem' });
+    const resetButton = CtaButton('Tentar Novamente', () => {}, { display: 'none', margin: '0 0.5rem' });
+
+    submitButton.addEventListener('click', (e) => handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, 'Recebimento de Materiais', submitButton, resetButton));
+
+    resetButton.addEventListener('click', () => {
+        quizForm.reset();
+        resultsDiv.textContent = '';
+        aiTipDiv.innerHTML = '';
+        quizForm.querySelectorAll('.quiz-feedback').forEach(el => el.classList.remove('correct', 'incorrect', 'quiz-feedback'));
+        submitButton.style.display = 'inline-block';
+        resetButton.style.display = 'none';
+    });
+
+
+    quizButtons.append(submitButton, resetButton);
+    quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
+
+    const topicNav = createTopicNavigation(selectedTopic.id);
+    
+    container.append(
+        backButton,
+        title,
+        introducao,
+        definicao,
+        objetivo,
+        importancia,
+        comunicacao,
+        animationSection,
+        quizSection,
+        topicNav
+    );
+    return container;
+}
+
+
+function renderConteudoPage() {
+    const section = document.createElement('section');
+    applyStyles(section, { ...styles.section, justifyContent: 'flex-start', paddingTop: '10rem' });
+    
+    if (selectedTopic) {
+        let topicContent;
+        switch (selectedTopic.id) {
+            case 'logistica-integrada':
+                topicContent = renderLogisticaIntegradaPage();
+                break;
+            case 'just-in-time':
+                topicContent = renderJustInTimePage();
+                break;
+            case 'kanban':
+                topicContent = renderKanbanPage();
+                break;
+            case 'kaizen':
+                topicContent = renderKaizenPage();
+                break;
+            case '5s':
+                topicContent = render5SPage();
+                break;
+            case 'cadeia-de-suprimentos':
+                topicContent = renderSupplyChainPage();
+                break;
+            case 'compras':
+                topicContent = renderComprasPage();
+                break;
+            case 'recebimento-de-materiais':
+                topicContent = renderRecebimentoPage();
+                break;
+            default:
+                const title = document.createElement('h1');
+                title.textContent = selectedTopic.title;
+                const content = document.createElement('p');
+                content.textContent = selectedTopic.content;
+                topicContent = document.createElement('div');
+                topicContent.append(title, content);
+        }
+        section.appendChild(topicContent);
+
+    } else {
+        const title = document.createElement('h2');
+        applyStyles(title, styles.sectionTitle);
+        title.textContent = 'Conteúdos Educacionais';
+        title.style.textAlign = 'center';
+
+        const searchContainer = document.createElement('div');
+        searchContainer.className = 'search-container';
+        applyStyles(searchContainer, {
+            margin: '2rem 0',
+            width: '100%',
+            maxWidth: '600px',
+        });
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Pesquisar conteúdo...';
+        applyStyles(searchInput, {
+            width: '100%',
+            padding: '0.8rem 1.2rem',
+            fontSize: '1rem',
+            borderRadius: '50px',
+            border: `1px solid var(--search-border)`,
+            backgroundColor: 'var(--card-bg)',
+            color: 'var(--text-color)',
+        });
+        searchContainer.appendChild(searchInput);
+        
+        const cardGrid = document.createElement('div');
+        cardGrid.className = 'card-grid';
+        applyStyles(cardGrid, {
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '2rem',
+            width: '100%',
+            maxWidth: '1200px',
+            marginTop: '2rem',
+        });
+
+        const createCard = (item) => {
+            const card = document.createElement('div');
+            card.className = 'topic-card';
+            applyStyles(card, {
+                backgroundColor: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                cursor: 'pointer',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                boxShadow: `0 4px 12px var(--card-shadow)`,
+            });
+            card.innerHTML = `
+                <h3 style="margin-top:0; color:var(--primary-color);">${item.title}</h3>
+                <p style="color:var(--text-color-light);">${item.intro}</p>
+            `;
+            card.addEventListener('click', () => {
+              transitionTo(() => {
+                selectedTopic = item;
+              });
+            });
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = `0 10px 20px var(--card-shadow-hover)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = `0 4px 12px var(--card-shadow)`;
+            });
+            return card;
+        };
+
+        const renderCards = (filter = '') => {
+            cardGrid.innerHTML = '';
+            const filteredTopics = conteudosList.filter(topic => 
+                topic.title.toLowerCase().includes(filter.toLowerCase()) || 
+                topic.intro.toLowerCase().includes(filter.toLowerCase())
+            );
+            filteredTopics.forEach(item => {
+                cardGrid.appendChild(createCard(item));
+            });
+        };
+        
+        searchInput.addEventListener('input', (e) => {
+            // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
+            // Fix: Added instanceof check to ensure e.target is an HTMLInputElement and has a 'value' property.
+            if (e.target instanceof HTMLInputElement) {
+                renderCards(e.target.value);
+            }
+        });
+
+        renderCards();
+        section.append(title, searchContainer, cardGrid);
+    }
+    
+    return section;
+}
+
+function renderGamesPage() {
+    const section = document.createElement('section');
+    applyStyles(section, { ...styles.section, justifyContent: 'flex-start', paddingTop: '10rem' });
+
+    const title = document.createElement('h2');
+    applyStyles(title, { ...styles.sectionTitle, textAlign: 'center' });
+    title.textContent = 'Aprenda Jogando';
+    
     const gamesGrid = document.createElement('div');
     gamesGrid.className = 'games-grid';
-
-    // Truck Game
-    const gameWrapper = document.createElement('div');
-    gameWrapper.className = 'game-card';
-
-    const gameTitle = document.createElement('h3');
-    gameTitle.textContent = 'Corrida Logística 3D';
+    
+    // Game 1: Delivery Dash
+    const game1Card = document.createElement('div');
+    game1Card.className = 'game-card';
+    game1Card.innerHTML = `<h3>Delivery Dash: O Desafio do Tempo Certo</h3>`;
     
     const gameContainer = document.createElement('div');
     gameContainer.id = 'game-container';
     
     const canvas = document.createElement('canvas');
     canvas.id = 'game-canvas';
-    canvas.width = 600;
-    canvas.height = 450;
-
-    const gameOverlay = document.createElement('div');
-    gameOverlay.id = 'game-overlay';
-
+    
     const scoreDisplay = document.createElement('div');
     scoreDisplay.id = 'score-display';
-
-    gameContainer.append(canvas, gameOverlay, scoreDisplay);
-    gameWrapper.append(gameTitle, gameContainer);
-    gamesGrid.appendChild(gameWrapper);
+    scoreDisplay.textContent = 'Entregas: 0';
     
-    // Placeholders
-    const placeholder1 = document.createElement('div');
-    placeholder1.className = 'game-card placeholder';
-    placeholder1.innerHTML = `
-        <h3>Organize o Estoque</h3>
+    const overlay = document.createElement('div');
+    overlay.id = 'game-overlay';
+    overlay.innerHTML = `
+        <h2>Delivery Dash</h2>
+        <p>Pilote o caminhão e colete as caixas corretas para entregar aos clientes antes que o tempo acabe! Cuidado com os obstáculos no caminho.</p>
+    `;
+
+    const startButton = CtaButton('Iniciar Jogo', () => startGame(canvas, scoreDisplay, overlay));
+    overlay.appendChild(startButton);
+    
+    gameContainer.append(canvas, scoreDisplay, overlay);
+    game1Card.appendChild(gameContainer);
+    
+    // Game 2: Placeholder
+    const game2Card = document.createElement('div');
+    game2Card.className = 'game-card placeholder';
+    game2Card.innerHTML = `
+        <h3>Em Breve</h3>
         <div class="placeholder-content">
-            <p>Em breve...</p>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-color-subtle); margin-bottom: 1rem;"><path d="M16 12V4H17V2H7V4H8V12H6V4H5V2H2V4H3V14H5V22H7V14H9V22H11V14H13V22H15V14H17V12H16M14,12H10V4H14V12Z" /></svg>
+            <p>Novo jogo em desenvolvimento!</p>
         </div>
     `;
-    gamesGrid.appendChild(placeholder1);
 
-    const placeholder2 = document.createElement('div');
-    placeholder2.className = 'game-card placeholder';
-    placeholder2.innerHTML = `
-        <h3>Simulador de Rotas</h3>
-        <div class="placeholder-content">
-            <p>Em breve...</p>
-        </div>
-    `;
-    gamesGrid.appendChild(placeholder2);
-    
-    section.append(title, intro, gamesGrid);
+    gamesGrid.append(game1Card, game2Card);
+    section.append(title, gamesGrid);
 
-    const ctx = canvas.getContext('2d');
-    
-    let truck, obstacles, roadLines, score, gameOver, gameSpeed, keys;
-    
-    const roadWidth = 300;
-    const horizon = canvas.height / 2.5;
-
-    function resetGame() {
-        truck = { x: canvas.width / 2 - 25, y: canvas.height - 100, width: 50, height: 80, speed: 7 };
-        obstacles = [];
-        roadLines = [];
-        score = 0;
-        gameOver = true;
-        gameSpeed = 5;
-        keys = { ArrowLeft: false, ArrowRight: false };
-
-        gameOverlay.style.display = 'flex';
-        scoreDisplay.style.display = 'none';
-        gameOverlay.innerHTML = `
-            <h2>Corrida Logística 3D</h2>
-            <p>Use as setas ⬅️ e ➡️ para desviar dos obstáculos e entregar sua carga!</p>
-        `;
-        const startButton = CtaButton('Iniciar Jogo', () => {
-            resetGameInternal();
-            gameOverlay.style.display = 'none';
-            scoreDisplay.style.display = 'block';
-            gameOver = false;
-            requestAnimationFrame(gameLoop);
-        });
-        gameOverlay.appendChild(startButton);
-    }
-    
-    function resetGameInternal() {
-         truck = { x: canvas.width / 2 - 25, y: canvas.height - 100, width: 50, height: 80, speed: 7 };
-        obstacles = [];
-        roadLines = [];
-        score = 0;
-        gameOver = false;
-        gameSpeed = 5;
-        keys = { ArrowLeft: false, ArrowRight: false };
-    }
-
-    function createObstacle() {
-        const width = 50 + Math.random() * 50;
-        const height = 30;
-        const x = (canvas.width / 2 - roadWidth / 2) + Math.random() * (roadWidth - width);
-        obstacles.push({ x, y: horizon - height, width, height, z: 1 });
-    }
-
-    function createRoadLine() {
-        roadLines.push({ y: horizon, z: 1 });
-    }
-
-    function drawTruck() {
-        const { x, y, width, height } = truck;
-        ctx.fillStyle = '#c0392b';
-        ctx.fillRect(x, y, width, height / 2);
-        ctx.fillStyle = '#7f8c8d';
-        ctx.fillRect(x + 5, y + height / 2, width - 10, height / 2);
-        ctx.fillStyle = '#2c3e50';
-        ctx.fillRect(x - 5, y + 10, 5, 20);
-        ctx.fillRect(x + width, y + 10, 5, 20);
-        ctx.fillRect(x - 5, y + 55, 5, 20);
-        ctx.fillRect(x + width, y + 55, 5, 20);
-    }
-
-    function drawObstacle(obs) {
-        const projX = (obs.x - canvas.width / 2) / obs.z + canvas.width / 2;
-        const projY = obs.y;
-        const projWidth = obs.width / obs.z;
-        const projHeight = obs.height / obs.z;
-
-        ctx.fillStyle = '#f1c40f';
-        ctx.fillRect(projX - projWidth / 2, projY, projWidth, projHeight);
-    }
-
-    function drawRoadLine(line) {
-        const projWidth = 10 / line.z;
-        const projY = line.y;
-        const leftX = (canvas.width / 2 - roadWidth / 2) / line.z + canvas.width / 2 - projWidth / 2;
-        const rightX = (canvas.width / 2 + roadWidth / 2) / line.z + canvas.width / 2 - projWidth / 2;
-        
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillRect(leftX, projY, projWidth, 2 / line.z * 15);
-        ctx.fillRect(rightX, projY, projWidth, 2 / line.z * 15);
-    }
-    
-    function update() {
-        if (gameOver) return;
-
-        if (keys.ArrowLeft && truck.x > canvas.width / 2 - roadWidth / 2) {
-            truck.x -= truck.speed;
-        }
-        if (keys.ArrowRight && truck.x < canvas.width / 2 + roadWidth / 2 - truck.width) {
-            truck.x += truck.speed;
-        }
-
-        for (let i = obstacles.length - 1; i >= 0; i--) {
-            const obs = obstacles[i];
-            obs.y += gameSpeed;
-            obs.z = 1 + (obs.y - horizon) / (canvas.height - horizon) * 2;
-
-            const projWidth = obs.width / obs.z;
-            const projHeight = obs.height / obs.z;
-            const projX = (obs.x - canvas.width / 2) / obs.z + canvas.width / 2 - projWidth / 2;
-            const projY = obs.y;
-
-            if (
-                truck.x < projX + projWidth &&
-                truck.x + truck.width > projX &&
-                truck.y < projY + projHeight &&
-                truck.y + truck.height > projY
-            ) {
-                gameOver = true;
-            }
-
-            if (obs.y > canvas.height) {
-                obstacles.splice(i, 1);
-                score++;
-                if (score % 10 === 0) gameSpeed += 0.5;
-            }
-        }
-        
-        for(let i = roadLines.length - 1; i >= 0; i--) {
-            const line = roadLines[i];
-            line.y += gameSpeed;
-            line.z = 1 + (line.y - horizon) / (canvas.height - horizon) * 2;
-            if (line.y > canvas.height) {
-                roadLines.splice(i, 1);
-            }
-        }
-
-        if (Math.random() < 0.03) {
-            createObstacle();
-        }
-        if (roadLines.length < 20 && roadLines.every(l => l.y > horizon + 20)) {
-             createRoadLine();
-        }
-
-        scoreDisplay.textContent = `Score: ${score}`;
-    }
-
-    function gameLoop() {
-        if (gameOver) {
-            if (score > 0) {
-                 gameOverlay.style.display = 'flex';
-                 scoreDisplay.style.display = 'none';
-                 gameOverlay.innerHTML = `
-                    <h2>Fim de Jogo!</h2>
-                    <p>Sua pontuação final: ${score}</p>
-                 `;
-                 const restartButton = CtaButton('Jogar Novamente', () => {
-                    resetGameInternal();
-                    gameOverlay.style.display = 'none';
-                    scoreDisplay.style.display = 'block';
-                    gameOver = false;
-                    requestAnimationFrame(gameLoop);
-                 });
-                 gameOverlay.appendChild(restartButton);
-            }
-            return;
-        }
-
-        update();
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.fillStyle = '#34495e';
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2 - roadWidth, horizon);
-        ctx.lineTo(0, canvas.height);
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.lineTo(canvas.width / 2 + roadWidth, horizon);
-        ctx.closePath();
-        ctx.fill();
-
-        const allObjects = [...roadLines, ...obstacles].sort((a, b) => a.z - b.z);
-        allObjects.forEach(obj => {
-           if ('width' in obj) {
-               drawObstacle(obj);
-           } else {
-               drawRoadLine(obj);
-           }
-        });
-        
-        drawTruck();
-
-        requestAnimationFrame(gameLoop);
-    }
-    
-    window.addEventListener('keydown', e => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-    });
-    window.addEventListener('keyup', e => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
-    });
-    
-    resetGame();
     return section;
 }
 
+// Game Logic
+function startGame(canvas, scoreDisplay, overlay) {
+    overlay.style.display = 'none';
+    scoreDisplay.style.display = 'block';
+
+    // Fix: Removed TypeScript type casting '(canvas as HTMLCanvasElement)'.
+    const ctx = canvas.getContext('2d');
+    canvas.width = 600;
+    canvas.height = 450;
+    
+    let score = 0;
+    let gameOver = false;
+    
+    const truck = { x: 50, y: canvas.height - 70, width: 80, height: 50, speed: 5, dy: 0, gravity: 0.5, jumpPower: -12, onGround: true };
+    const obstacles = [];
+    const packages = [];
+    let frame = 0;
+
+    function drawTruck() {
+        ctx.fillStyle = '#fec700'; // Primary color
+        ctx.fillRect(truck.x, truck.y, truck.width, truck.height);
+        ctx.fillStyle = '#333';
+        ctx.fillRect(truck.x + 10, truck.y + truck.height - 10, 15, 15); // Back wheel
+        ctx.fillRect(truck.x + truck.width - 25, truck.y + truck.height - 10, 15, 15); // Front wheel
+        ctx.fillStyle = 'lightblue';
+        ctx.fillRect(truck.x + truck.width - 30, truck.y + 10, 25, 25); // Window
+    }
+    
+    function drawRoad() {
+        ctx.fillStyle = '#555'; // Road color
+        ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 4;
+        ctx.setLineDash([20, 20]);
+        ctx.lineDashOffset = -frame * 0.1;
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height - 10);
+        ctx.lineTo(canvas.width, canvas.height - 10);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    function createObstacle() {
+        const height = Math.random() * 50 + 20;
+        obstacles.push({ x: canvas.width, y: canvas.height - 20 - height, width: 30, height: height });
+    }
+
+    function createPackage() {
+        packages.push({ x: canvas.width, y: canvas.height - 100, width: 30, height: 30 });
+    }
+
+    function drawObstacles() {
+        ctx.fillStyle = 'red';
+        obstacles.forEach(obs => {
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        });
+    }
+    
+    function drawPackages() {
+        ctx.fillStyle = 'brown';
+        packages.forEach(pkg => {
+            ctx.fillRect(pkg.x, pkg.y, pkg.width, pkg.height);
+             ctx.strokeStyle = 'white';
+             ctx.lineWidth = 2;
+             ctx.strokeRect(pkg.x, pkg.y, pkg.width, pkg.height);
+        });
+    }
+
+    function update() {
+        if (gameOver) return;
+
+        frame++;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Background
+        drawRoad();
+
+        // Truck
+        truck.dy += truck.gravity;
+        truck.y += truck.dy;
+        if (truck.y > canvas.height - 20 - truck.height) {
+            truck.y = canvas.height - 20 - truck.height;
+            truck.dy = 0;
+            truck.onGround = true;
+        }
+        drawTruck();
+        
+        // Obstacles
+        if (frame % 150 === 0) createObstacle();
+        obstacles.forEach((obs, index) => {
+            obs.x -= 4; // Obstacle speed
+            if (obs.x + obs.width < 0) obstacles.splice(index, 1);
+            
+            if (truck.x < obs.x + obs.width && truck.x + truck.width > obs.x && truck.y < obs.y + obs.height && truck.y + truck.height > obs.y) {
+                endGame();
+            }
+        });
+        drawObstacles();
+
+        // Packages
+        if (frame % 100 === 0) createPackage();
+        packages.forEach((pkg, index) => {
+            pkg.x -= 4; // Package speed
+            if (pkg.x + pkg.width < 0) packages.splice(index, 1);
+
+            // Fix: Replaced out-of-scope 'obs' variable with 'pkg' for correct package collision detection.
+            if (truck.x < pkg.x + pkg.width && truck.x + truck.width > pkg.x && truck.y < pkg.y + pkg.height && truck.y + truck.height > pkg.y) {
+                packages.splice(index, 1);
+                score++;
+                scoreDisplay.textContent = `Entregas: ${score}`;
+            }
+        });
+        drawPackages();
+
+        requestAnimationFrame(update);
+    }
+    
+    function endGame() {
+        gameOver = true;
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `
+            <h2>Fim de Jogo!</h2>
+            <p>Sua pontuação final: ${score} entregas.</p>
+        `;
+        const restartButton = CtaButton('Jogar Novamente', () => {
+            // Reset game state and restart
+            score = 0;
+            gameOver = false;
+            obstacles.length = 0;
+            packages.length = 0;
+            frame = 0;
+            truck.y = canvas.height - 70;
+            scoreDisplay.textContent = 'Entregas: 0';
+            startGame(canvas, scoreDisplay, overlay);
+        });
+        overlay.appendChild(restartButton);
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.code === 'Space' || e.code === 'ArrowUp') && truck.onGround) {
+            truck.dy = truck.jumpPower;
+            truck.onGround = false;
+        }
+    });
+
+    update();
+}
+
+
 function renderQuemSomosPage() {
     const section = document.createElement('section');
-    section.id = 'quem-somos';
-    section.className = 'custom-cursor';
-    applyStyles(section, styles.section);
-    
-    const title = document.createElement('h2');
-    applyStyles(title, styles.sectionTitle);
-    title.textContent = 'Perguntas Frequentes (FAQ)';
+    applyStyles(section, { ...styles.section, justifyContent: 'flex-start', paddingTop: '10rem' });
+    const container = document.createElement('div');
+    applyStyles(container, {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      textAlign: 'center',
+      width: '100%',
+      maxWidth: '900px',
+      padding: '0 1rem'
+    });
 
-    const intro = document.createElement('p');
-    applyStyles(intro, styles.intro);
-    intro.textContent = 'Tem alguma dúvida? Confira as respostas para as perguntas mais comuns sobre nossa plataforma e sobre logística em geral.';
+    const title = document.createElement('h2');
+    applyStyles(title, { ...styles.sectionTitle, marginBottom: '2rem' });
+    title.textContent = 'Perguntas Frequentes';
 
     const faqContainer = document.createElement('div');
     faqContainer.className = 'faq-container';
     applyStyles(faqContainer, {
-      maxWidth: '800px',
       width: '100%',
-      textAlign: 'left',
-      marginTop: '2rem'
+      textAlign: 'left'
     });
 
-    const faqData = [
-      { q: 'O que é o Descomplica Logística?', a: 'É uma plataforma educativa focada em ensinar conceitos de logística de forma simples, visual e interativa. Nosso objetivo é tornar o aprendizado sobre a cadeia de suprimentos acessível para todos.' },
-      { q: 'Todo o conteúdo é gratuito?', a: 'Sim! Atualmente, todos os nossos artigos, quizzes e jogos são 100% gratuitos. Acreditamos no poder do conhecimento aberto.' },
-      { q: 'Para quem é esta plataforma?', a: 'Para estudantes de logística, profissionais da área que buscam reciclar conhecimentos, e qualquer pessoa curiosa sobre como os produtos chegam até suas mãos.' },
-      { q: 'O que é Logística 4.0?', a: 'É a aplicação de tecnologias como Inteligência Artificial (IA), Internet das Coisas (IoT) e Big Data aos processos logísticos, tornando-os mais inteligentes, autônomos e eficientes.' },
+    const faqs = [
+        { q: "O que é o Descomplica Logística?", a: "É uma plataforma educativa com o objetivo de ensinar conceitos de logística de forma simples, didática e visual. Usamos textos, vídeos e imagens para tornar o aprendizado mais acessível a todos." },
+        { q: "Para quem é este site?", a: "Para estudantes, profissionais da área que buscam reciclar conhecimentos, e qualquer pessoa curiosa sobre como os produtos chegam até elas. Nossa abordagem é feita para ser compreendida por todos, desde o iniciante até o mais experiente." },
+        { q: "O conteúdo é gratuito?", a: "Sim, todo o conteúdo educacional e os jogos disponíveis no Descomplica Logística são 100% gratuitos." },
+        { q: "Como posso usar o assistente de IA?", a: "Clique no ícone de chat no canto inferior direito da tela. Você pode fazer perguntas sobre os temas de logística abordados no site, e nosso assistente usará o conteúdo da página para te dar uma resposta direta e precisa." },
+        { q: "Com que frequência o conteúdo é atualizado?", a: "Estamos sempre trabalhando para adicionar novos tópicos, aprofundar os existentes e criar novas formas interativas de aprendizado. Siga-nos para ficar por dentro das novidades!" }
     ];
 
-    faqData.forEach(item => {
-      const faqItem = document.createElement('details');
-      faqItem.className = 'faq-item';
-      applyStyles(faqItem, {
-        background: 'var(--card-bg)',
-        border: '1px solid var(--card-border)',
-        borderRadius: '8px',
-        marginBottom: '1rem',
-        padding: '1rem',
-        cursor: 'pointer'
-      });
+    faqs.forEach(faq => {
+        const faqItem = document.createElement('div');
+        faqItem.className = 'faq-item';
+        applyStyles(faqItem, {
+            marginBottom: '1rem',
+            border: `1px solid var(--card-border)`,
+            borderRadius: '12px',
+            overflow: 'hidden'
+        });
 
-      const summary = document.createElement('summary');
-      applyStyles(summary, {
-        fontWeight: '600',
-        fontSize: '1.1rem'
-      });
-      summary.textContent = item.q;
+        const question = document.createElement('div');
+        question.className = 'faq-question';
+        question.innerHTML = `<p>${faq.q}</p><span>+</span>`;
+        applyStyles(question, {
+            padding: '1.2rem 1.5rem',
+            cursor: 'pointer',
+            fontWeight: '600',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: 'var(--card-bg)'
+        });
+        applyStyles(question.querySelector('p'), { margin: 0 });
 
-      const answer = document.createElement('p');
-      applyStyles(answer, {
-        marginTop: '1rem',
-        lineHeight: '1.7',
-        fontSize: '1rem',
-        color: 'var(--text-color-light)'
-      });
-      answer.textContent = item.a;
-
-      faqItem.append(summary, answer);
-      faqContainer.appendChild(faqItem);
+        const answer = document.createElement('div');
+        answer.className = 'faq-answer';
+        answer.innerHTML = `<p>${faq.a}</p>`;
+        applyStyles(answer, {
+            maxHeight: '0',
+            overflow: 'hidden',
+            transition: 'max-height 0.4s ease',
+            backgroundColor: 'var(--timeline-bg)'
+        });
+        applyStyles(answer.querySelector('p'), { 
+            margin: 0,
+            padding: '1.2rem 1.5rem',
+            lineHeight: '1.7'
+        });
+        
+        question.addEventListener('click', () => {
+            const isOpen = answer.style.maxHeight !== '0px';
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                // Fix: Added instanceof check to ensure element is an HTMLElement before accessing style.
+                if (el instanceof HTMLElement) {
+                    el.style.maxHeight = '0';
+                    if (el.previousElementSibling && el.previousElementSibling.querySelector('span')) {
+                      el.previousElementSibling.querySelector('span').textContent = '+';
+                    }
+                }
+            });
+            if (!isOpen) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+                question.querySelector('span').textContent = '-';
+            }
+        });
+        
+        faqItem.append(question, answer);
+        faqContainer.appendChild(faqItem);
     });
 
-    section.append(title, intro, faqContainer);
+    container.append(title, faqContainer);
+    section.appendChild(container);
     return section;
 }
 
 function renderHeader() {
-    const header = document.createElement('header');
-    header.className = 'sticky-header';
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (lastScrollY < window.scrollY && window.scrollY > 150) {
-            header.classList.add('header-hidden');
-        } else {
-            header.classList.remove('header-hidden');
-        }
-        lastScrollY = window.scrollY;
+  const header = document.createElement('header');
+  header.id = 'main-header';
+  applyStyles(header, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1rem 2rem',
+    backgroundColor: 'var(--header-bg)',
+    backdropFilter: 'blur(10px)',
+    zIndex: '1000',
+    borderBottom: '1px solid var(--footer-border)',
+    transition: 'transform 0.3s ease-in-out',
+  });
+
+  const logo = document.createElement('a');
+  logo.href = '#';
+  logo.textContent = 'Descomplica Logística';
+  applyStyles(logo, {
+    fontSize: '1.5rem',
+    fontWeight: '700',
+    color: 'var(--text-color)',
+    textDecoration: 'none',
+  });
+  logo.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigateTo('inicio');
+  });
+
+  const nav = document.createElement('nav');
+  applyStyles(nav, {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+  });
+
+  const navLinks = [
+    { text: 'Início', page: 'inicio' },
+    { text: 'Conteúdos', page: 'conteudos' },
+    { text: 'Jogos', page: 'jogos' },
+    { text: 'FAQ', page: 'quem-somos' },
+  ];
+
+  navLinks.forEach(link => {
+    const a = document.createElement('a');
+    a.href = `#${link.page}`;
+    a.textContent = link.text;
+    applyStyles(a, {
+      color: 'var(--text-color-light)',
+      textDecoration: 'none',
+      fontWeight: '600',
+      padding: '0.5rem 0.8rem',
+      borderRadius: '8px',
+      transition: 'background-color 0.2s ease, color 0.2s ease',
     });
-
-    applyStyles(header, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1rem 2rem',
-        backgroundColor: 'var(--header-bg)',
-        backdropFilter: 'blur(10px)',
-        zIndex: '1000',
-        transition: 'transform 0.3s ease-in-out, background-color 0.3s ease',
-        borderBottom: '1px solid var(--footer-border)',
+    if (link.page === currentPage) {
+      a.style.color = 'var(--text-color)';
+      a.style.backgroundColor = 'var(--button-bg)';
+    }
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateTo(link.page);
     });
+    nav.appendChild(a);
+  });
+  
+  const themeToggleButton = document.createElement('button');
+  themeToggleButton.className = 'theme-toggle-button';
+  themeToggleButton.innerHTML = currentTheme === 'light' ? MoonIcon : SunIcon;
+  themeToggleButton.setAttribute('aria-label', `Switch to ${currentTheme === 'light' ? 'dark' : 'light'} mode`);
+  themeToggleButton.addEventListener('click', toggleTheme);
 
-    const logo = document.createElement('div');
-    applyStyles(logo, { fontSize: '1.5rem', fontWeight: '700', cursor: 'pointer' });
-    logo.textContent = 'Descomplica Logística';
-    logo.onclick = () => navigateTo('inicio');
+  nav.appendChild(themeToggleButton);
+  header.append(logo, nav);
+  
+  // Hide header on scroll
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    if(window.scrollY > lastScrollY && window.scrollY > 80) {
+      header.classList.add('header-hidden');
+    } else {
+      header.classList.remove('header-hidden');
+    }
+    lastScrollY = window.scrollY;
+  });
 
-    const nav = document.createElement('nav');
-    applyStyles(nav, { display: 'flex', alignItems: 'center', gap: '1.5rem' });
-
-    const navLinks = [
-        { page: 'inicio', text: 'Início' },
-        { page: 'conteudos', text: 'Conteúdos' },
-        { page: 'jogos', text: 'Jogos' },
-        { page: 'quem-somos', text: 'Perguntas Frequentes' },
-    ];
-
-    navLinks.forEach(link => {
-        const a = document.createElement('a');
-        a.href = '#';
-        a.textContent = link.text;
-        applyStyles(a, {
-            textDecoration: 'none',
-            color: 'var(--text-color)',
-            fontWeight: '600',
-            position: 'relative',
-            padding: '5px 0'
-        });
-        if (currentPage === link.page) {
-            a.style.color = 'var(--primary-color)';
-            a.style.setProperty('--underline-width', '100%');
-        }
-        a.onclick = (e) => { e.preventDefault(); navigateTo(link.page); };
-        const underline = document.createElement('span');
-        applyStyles(underline, {
-            position: 'absolute',
-            bottom: '0',
-            left: '0',
-            width: currentPage === link.page ? '100%' : '0',
-            height: '2px',
-            backgroundColor: 'var(--primary-color)',
-            transition: 'width 0.3s ease',
-        });
-        a.appendChild(underline);
-        a.addEventListener('mouseenter', () => {
-            underline.style.width = '100%';
-        });
-        a.addEventListener('mouseleave', () => {
-            if (currentPage !== link.page) {
-                underline.style.width = '0';
-            }
-        });
-        nav.appendChild(a);
-    });
-
-    const themeToggle = document.createElement('button');
-    themeToggle.className = 'theme-toggle-button';
-    themeToggle.setAttribute('aria-label', `Mudar para tema ${currentTheme === 'light' ? 'escuro' : 'claro'}`);
-    themeToggle.innerHTML = currentTheme === 'light' ? MoonIcon : SunIcon;
-    themeToggle.addEventListener('click', toggleTheme);
-    
-    nav.appendChild(themeToggle);
-    header.append(logo, nav);
-    return header;
+  return header;
 }
 
 function renderFooter() {
-    const footer = document.createElement('footer');
-    applyStyles(footer, {
-        backgroundColor: 'var(--footer-bg)',
-        borderTop: '1px solid var(--footer-border)',
-        textAlign: 'center',
-        padding: '2rem',
-        marginTop: 'auto',
-    });
-    footer.innerHTML = `<p>&copy; ${new Date().getFullYear()} Descomplica Logística. Todos os direitos reservados.</p>`;
-    return footer;
-}
+  const footer = document.createElement('footer');
+  applyStyles(footer, {
+    padding: '2rem',
+    textAlign: 'center',
+    backgroundColor: 'var(--footer-bg)',
+    borderTop: '1px solid var(--footer-border)',
+    marginTop: 'auto',
+    width: '100%',
+  });
 
-function renderChatFab() {
-    const fab = document.createElement('button');
-    fab.id = 'ai-chat-fab';
-    fab.setAttribute('aria-label', 'Abrir assistente de IA');
-    fab.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="12" width="16" height="8" rx="2"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M17 12v-2a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
-    fab.onclick = () => {
-        isChatOpen = !isChatOpen;
-        document.getElementById('ai-chat-widget').classList.toggle('open', isChatOpen);
-    };
-    return fab;
+  const p = document.createElement('p');
+  p.textContent = `© ${new Date().getFullYear()} Descomplica Logística. Todos os direitos reservados.`;
+  applyStyles(p, {
+    margin: '0',
+    color: 'var(--text-color-subtle)',
+  });
+
+  footer.appendChild(p);
+  return footer;
 }
 
 function renderChatWidget() {
+    const fab = document.createElement('button');
+    fab.id = 'ai-chat-fab';
+    fab.setAttribute('aria-label', 'Abrir chat com assistente de IA');
+    fab.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`;
+
     const widget = document.createElement('div');
     widget.id = 'ai-chat-widget';
-    
-    const header = document.createElement('div');
-    header.className = 'chat-header';
-    header.innerHTML = '<h3>Assistente de Logística</h3>';
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'chat-close-btn';
-    closeBtn.innerHTML = '&times;';
-    closeBtn.onclick = () => {
+
+    widget.innerHTML = `
+        <div class="chat-header">
+            <h3>Assistente de Logística</h3>
+            <button class="chat-close-btn" aria-label="Fechar chat">×</button>
+        </div>
+        <div class="chat-messages">
+             <div class="chat-message ai">Olá! Como posso ajudar com suas dúvidas sobre logística?</div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
+            <button id="chat-send-btn" aria-label="Enviar mensagem">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    `;
+
+    fab.addEventListener('click', () => {
+        isChatOpen = !isChatOpen;
+        widget.classList.toggle('open');
+        if (isChatOpen) {
+            // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
+            const chatInput = widget.querySelector('#chat-input');
+            // Fix: Added instanceof check to ensure element is an HTMLElement before calling focus.
+            if (chatInput instanceof HTMLElement) {
+                chatInput.focus();
+            }
+        }
+    });
+
+    widget.querySelector('.chat-close-btn').addEventListener('click', () => {
         isChatOpen = false;
         widget.classList.remove('open');
-    };
-    header.appendChild(closeBtn);
-
-    const messagesContainer = document.createElement('div');
-    messagesContainer.className = 'chat-messages';
-
-    const inputArea = document.createElement('div');
-    inputArea.className = 'chat-input-area';
-    const input = document.createElement('input');
-    input.id = 'chat-input';
-    input.type = 'text';
-    input.placeholder = 'Pergunte sobre logística...';
-    input.autocomplete = 'off';
-
-    const sendBtn = document.createElement('button');
-    sendBtn.id = 'chat-send-btn';
-    sendBtn.setAttribute('aria-label', 'Enviar mensagem');
-    sendBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-
-    const sendMessage = async () => {
-        const query = input.value.trim();
-        if (!query) return;
-
-        addMessage(query, 'user');
-        input.value = '';
-        addMessage('Pensando...', 'ai', true); // Loading indicator
-
-        const siteContent = conteudosList.map(c => `Tópico: ${c.title}\nConteúdo: ${c.content}`).join('\n\n');
-        const response = await getAiResponse(query, siteContent);
-        
-        const loadingMessage = messagesContainer.querySelector('.loading');
-        if (loadingMessage) {
-            loadingMessage.remove();
-        }
-        addMessage(response, 'ai');
-    };
-
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
     });
-    sendBtn.onclick = sendMessage;
-
-    const addMessage = (text, sender, isLoading = false) => {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}`;
-        if (isLoading) {
-            messageDiv.classList.add('loading');
-        }
-        messageDiv.textContent = text;
-        messagesContainer.appendChild(messageDiv);
+    
+    const messagesContainer = widget.querySelector('.chat-messages');
+    // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
+    const input = widget.querySelector('#chat-input');
+    
+    const addMessage = (text, sender) => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message ${sender}`;
+        msgDiv.textContent = text;
+        messagesContainer.appendChild(msgDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
 
-    inputArea.append(input, sendBtn);
-    widget.append(header, messagesContainer, inputArea);
+    const handleSend = async () => {
+        // Fix: Added instanceof check to ensure input is an HTMLInputElement.
+        if (input instanceof HTMLInputElement && messagesContainer) {
+            const userMessage = input.value.trim();
+            if (!userMessage) return;
+
+            addMessage(userMessage, 'user');
+            input.value = '';
+            addMessage('Pensando...', 'ai');
+
+            const context = selectedTopic ? selectedTopic.content : '';
+            const aiResponse = await getAiResponse(userMessage, context);
+            
+            const lastMessage = messagesContainer.lastChild;
+            // Fix: Added instanceof check to ensure lastMessage is an Element.
+            if(lastMessage instanceof Element && lastMessage.classList.contains('ai')) {
+                lastMessage.textContent = aiResponse;
+            } else {
+                addMessage(aiResponse, 'ai');
+            }
+        }
+    };
     
-    addMessage('Olá! Como posso te ajudar a descomplicar a logística hoje?', 'ai');
-    
-    return widget;
+    widget.querySelector('#chat-send-btn').addEventListener('click', handleSend);
+    // Fix: Removed TypeScript type annotation from event parameter.
+    if (input) {
+        input.addEventListener('keypress', (e) => {
+            // Fix: Added type guard to ensure e has the 'key' property.
+            if ('key' in e && e.key === 'Enter') {
+                handleSend();
+            }
+        });
+    }
+
+    document.body.append(fab, widget);
 }
 
 function render() {
-    if (!root) return;
+  if (!root) return;
 
-    const existingFab = document.getElementById('ai-chat-fab');
-    const existingWidget = document.getElementById('ai-chat-widget');
+  root.innerHTML = '';
+  
+  const header = renderHeader();
+  const main = document.createElement('main');
+  main.className = 'page-fade-in';
+  
+  let pageContent;
+  switch (currentPage) {
+    case 'inicio':
+      pageContent = renderInicioPage();
+      break;
+    case 'conteudos':
+      pageContent = renderConteudoPage();
+      break;
+    case 'jogos':
+      pageContent = renderGamesPage();
+      break;
+    case 'quem-somos':
+      pageContent = renderQuemSomosPage();
+      break;
+    default:
+      pageContent = renderInicioPage();
+  }
+  main.appendChild(pageContent);
+  
+  const footer = renderFooter();
 
-    root.innerHTML = '';
-    root.appendChild(renderHeader());
-    
-    const main = document.createElement('main');
-    main.id = 'main-content';
-    applyStyles(main, {
-        paddingTop: '80px', /* Header height */
-    });
-    
-    let pageContent;
-    switch (currentPage) {
-        case 'conteudos':
-            pageContent = renderConteudosPage();
-            break;
-        case 'jogos':
-            pageContent = renderJogosPage();
-            break;
-        case 'quem-somos':
-            pageContent = renderQuemSomosPage();
-            break;
-        case 'inicio':
-        default:
-            pageContent = renderInicioPage();
-            break;
-    }
-    
-    main.appendChild(pageContent);
-    
-    if (isTransitioning) {
-        main.classList.add('page-fade-in');
-        isTransitioning = false;
-    } else {
-        main.style.opacity = '0';
-        setTimeout(() => {
-            main.style.transition = 'opacity 0.4s ease';
-            main.style.opacity = '1';
-        }, 10);
-    }
+  root.append(header, main, footer);
+  
+  if (!document.getElementById('ai-chat-fab')) {
+      renderChatWidget();
+  }
 
-    root.appendChild(main);
-    root.appendChild(renderFooter());
-
-    // Re-append or create AI components if they don't exist
-    if (!existingFab) root.appendChild(renderChatFab());
-    else root.appendChild(existingFab);
-
-    if (!existingWidget) root.appendChild(renderChatWidget());
-    else root.appendChild(existingWidget);
+  isTransitioning = false;
 }
 
-function init() {
-    initTheme();
-    render();
-}
-
-init();
+initTheme();
+render();
