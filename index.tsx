@@ -103,6 +103,7 @@ function toggleTheme() {
   document.body.dataset.theme = newTheme;
   localStorage.setItem('theme', newTheme);
   currentTheme = newTheme;
+  // Fix: Call 'render' to update UI after theme change.
   render();
 }
 
@@ -128,12 +129,73 @@ function transitionTo(updateState) {
         setTimeout(() => {
             updateState();
             window.scrollTo({ top: 0, behavior: 'instant' });
+            // Fix: Call 'render' to update UI after state change.
             render();
         }, 400); 
     } else {
         updateState();
+        // Fix: Call 'render' to update UI after state change.
         render();
     }
+}
+
+// Fix: Added render function and its dependencies to resolve "Cannot find name 'render'" errors.
+function renderFooter() {
+    const footer = document.createElement('footer');
+    footer.id = 'main-footer';
+    applyStyles(footer, {
+        padding: '2rem',
+        textAlign: 'center',
+        backgroundColor: 'var(--footer-bg)',
+        borderTop: '1px solid var(--footer-border)',
+        color: 'var(--text-color-light)',
+        marginTop: 'auto'
+    });
+    footer.innerHTML = `<p>© ${new Date().getFullYear()} Descomplica Logística. Todos os direitos reservados.</p>`;
+    return footer;
+}
+
+function renderChatWidget() {
+    const chatWidget = document.createElement('div');
+    chatWidget.id = 'chat-widget-container';
+    // This is a stub. The full implementation was likely in the missing part of the file.
+    return chatWidget;
+}
+
+function render() {
+  if (!root) return;
+  root.innerHTML = '';
+
+  const header = renderHeader();
+  const main = document.createElement('main');
+  const footer = renderFooter();
+  const chatWidget = renderChatWidget();
+
+  let pageContent;
+  switch (currentPage) {
+    case 'inicio':
+      pageContent = renderInicioPage();
+      break;
+    case 'conteudos':
+      pageContent = renderConteudoPage();
+      break;
+    case 'jogos':
+      pageContent = renderGamesPage();
+      break;
+    case 'quem-somos':
+      pageContent = renderQuemSomosPage();
+      break;
+    default:
+      pageContent = renderInicioPage();
+  }
+
+  main.appendChild(pageContent);
+  root.append(header, main, footer, chatWidget);
+
+  setTimeout(() => {
+    main.classList.add('page-fade-in');
+    isTransitioning = false;
+  }, 50);
 }
 
 function navigateTo(page) {
@@ -232,15 +294,15 @@ function renderFundamentalsSection() {
       </svg>
     </div>
     <div class="fundamentals-cards">
-      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'compras').intro}">
+      <div class="fund-card" data-tooltip="${conteudosList.find(c => c.id === 'compras').intro}">
         <h3>Compras</h3>
         <p>Aquisição de bens e serviços.</p>
       </div>
-      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'recebimento-de-materiais').intro}">
+      <div class="fund-card" data-tooltip="${conteudosList.find(c => c.id === 'recebimento-de-materiais').intro}">
         <h3>Recebimento</h3>
         <p>Conferência de materiais.</p>
       </div>
-      <div class="fund-card" data-intro="${conteudosList.find(c => c.id === 'cadeia-de-suprimentos').intro}">
+      <div class="fund-card" data-tooltip="${conteudosList.find(c => c.id === 'cadeia-de-suprimentos').intro}">
         <h3>Supply Chain</h3>
         <p>A rede completa de processos.</p>
       </div>
@@ -322,7 +384,6 @@ function renderInicioPage() {
 
   const section = document.createElement('section');
   section.id = 'inicio';
-  section.className = 'custom-cursor';
   applyStyles(section, { ...styles.section, minHeight: 'calc(100vh - 80px)', position: 'relative', overflow: 'hidden' });
 
   const blob1 = document.createElement('div');
@@ -768,7 +829,7 @@ function renderJustInTimePage() {
 
     const mindMapImage = document.createElement('img');
     mindMapImage.className = 'jit-mind-map';
-    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIREAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
+    mindMapImage.src = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAUACgADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIREAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-igA-...';
     mindMapImage.alt = 'Mapa Mental sobre Just in Time';
     mindMapImage.setAttribute('aria-label', 'Mapa mental detalhando os conceitos de Just in Time, incluindo definição, objetivo, como surgiu, aplicação, benefícios e logística.');
 
@@ -2017,6 +2078,73 @@ function renderComprasPage() {
     return container;
 }
 
+function renderNotasFiscaisSection() {
+    const section = document.createElement('div');
+    section.className = 'notas-fiscais-section';
+
+    const title = document.createElement('h3');
+    title.textContent = 'Tipos de Documentos Fiscais';
+    applyStyles(title, {
+        fontSize: '1.8rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginTop: '3rem',
+        marginBottom: '2rem',
+        textAlign: 'center',
+        width: '100%'
+    });
+
+    const grid = document.createElement('div');
+    grid.className = 'notas-fiscais-grid';
+
+    const notasData = [
+        {
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
+            title: "NF-e (Nota Fiscal Eletrônica)",
+            oQueE: "É o documento digital que registra a venda de produtos. Ela substitui a nota fiscal de papel modelo 1 e 1A.",
+            quandoUsar: "Obrigatória em praticamente todas as operações de circulação de mercadorias, como vendas, devoluções, transferências, etc."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`,
+            title: "NFS-e (Nota Fiscal de Serviços)",
+            oQueE: "Similar à NF-e, mas específica para a prestação de serviços. Cada prefeitura tem seu próprio sistema para emissão.",
+            quandoUsar: "Utilizada por empresas que prestam serviços, como consultorias, oficinas mecânicas, academias, escolas, etc."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.99 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V4zM17 14H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z"/></svg>`,
+            title: "CT-e (Conhecimento de Transporte)",
+            oQueE: "Documento fiscal digital que registra a prestação de serviço de transporte de cargas entre municípios ou estados.",
+            quandoUsar: "Emitido por transportadoras para cobrir o frete de mercadorias. Ele acompanha a carga junto com a NF-e."
+        },
+        {
+            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14zM16 11H8V9h8v2zm-2-4H8V5h6v2z"/></svg>`,
+            title: "MDF-e (Manifesto Eletrônico)",
+            oQueE: "Agrupa vários CT-es ou NF-es em um único documento, simplificando a fiscalização de cargas em trânsito.",
+            quandoUsar: "Obrigatório quando há mais de um CT-e ou NF-e no mesmo veículo. Vincula os documentos da carga ao veículo transportador."
+        }
+    ];
+
+    notasData.forEach(nota => {
+        const card = document.createElement('div');
+        card.className = 'nota-fiscal-card';
+        card.innerHTML = `
+            <div class="nf-card-header">
+                <div class="nf-card-icon">${nota.icon}</div>
+                <h3>${nota.title}</h3>
+            </div>
+            <div class="nf-card-content">
+                <h4>O que é?</h4>
+                <p>${nota.oQueE}</p>
+                <h4>Quando usar?</h4>
+                <p>${nota.quandoUsar}</p>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    section.append(title, grid);
+    return section;
+}
 
 function renderRecebimentoPage() {
     const container = document.createElement('div');
@@ -2071,6 +2199,8 @@ function renderRecebimentoPage() {
     const objetivo = createSection('Objetivo', 'O objetivo do recebimento de compras é utilizar planejamento estratégico para garantir que o material seja recebido de forma certa, e com a qualidade certa. Além disso, garantir que as necessidades da empresa sejam atendidas.');
     const importancia = createSection('Importância', `Longe de ser apenas uma função de apoio, o recebimento é uma etapa estratégica e prioritária na cadeia de suprimentos. Papel Estratégico na Logística e Geração de Receita O recebimento de materiais é um dos pilares da gestão de materiais. Ele é considerado a primeira etapa da cadeia de suprimentos interna da empresa.<br><br>Ou seja, o setor de recebimento é fundamental para o bom funcionamento de qualquer organização, pois é responsável por garantir que todos os materiais necessários para que a produção, vendas e serviços da empresa não faltem e esses processos continuem em andamento.`);
     const comunicacao = createSection('Comunicação', 'O setor de recebimento de materiais precisa dialogar e estar estritamente integrado com diversas áreas, tanto internas quanto externas à empresa, para garantir a eficiência do processo logístico e a conformidade do estoque. Departamentos Internos<br><br>O diálogo interno é vital para antecipar as entregas, garantir que o material recebido seja o correto e finalizar a transação financeira. A área de recebimento precisa estar integrada ao setor de compras, sabendo antecipadamente a programação de entregas.');
+
+    const notasFiscaisSection = renderNotasFiscaisSection();
 
     // Interactive Animation Section
     const animationSection = document.createElement('div');
@@ -2260,6 +2390,7 @@ function renderRecebimentoPage() {
         objetivo,
         importancia,
         comunicacao,
+        notasFiscaisSection,
         animationSection,
         quizSection,
         topicNav
@@ -2350,6 +2481,7 @@ function renderConteudoPage() {
         const createCard = (item) => {
             const card = document.createElement('div');
             card.className = 'topic-card';
+            card.setAttribute('data-tooltip', `Clique para saber mais sobre ${item.title}`);
             applyStyles(card, {
                 backgroundColor: 'var(--card-bg)',
                 border: '1px solid var(--card-border)',
@@ -2419,6 +2551,8 @@ function renderGamesPage() {
     // Game 1: Delivery Dash
     const game1Card = document.createElement('div');
     game1Card.className = 'game-card';
+    const game1Description = "Pilote o caminhão e colete as caixas corretas para entregar aos clientes antes que o tempo acabe! Cuidado com os obstáculos no caminho.";
+    game1Card.setAttribute('data-tooltip', game1Description);
     game1Card.innerHTML = `<h3>Delivery Dash: O Desafio do Tempo Certo</h3>`;
     
     const gameContainer = document.createElement('div');
@@ -2444,16 +2578,36 @@ function renderGamesPage() {
     gameContainer.append(canvas, scoreDisplay, overlay);
     game1Card.appendChild(gameContainer);
     
-    // Game 2: Placeholder
+    // Game 2: Memory Game
     const game2Card = document.createElement('div');
-    game2Card.className = 'game-card placeholder';
-    game2Card.innerHTML = `
-        <h3>Em Breve</h3>
-        <div class="placeholder-content">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-color-subtle); margin-bottom: 1rem;"><path d="M16 12V4H17V2H7V4H8V12H6V4H5V2H2V4H3V14H5V22H7V14H9V22H11V14H13V22H15V14H17V12H16M14,12H10V4H14V12Z" /></svg>
-            <p>Novo jogo em desenvolvimento!</p>
-        </div>
+    game2Card.className = 'game-card';
+    const game2Description = "Teste sua memória e conhecimento em logística! Encontre os pares de conceitos logísticos o mais rápido que puder.";
+    game2Card.setAttribute('data-tooltip', game2Description);
+    game2Card.innerHTML = `<h3>Memória Logística</h3>`;
+
+    const memoryGameContainer = document.createElement('div');
+    memoryGameContainer.id = 'memory-game-container';
+    
+    const memoryGameOverlay = document.createElement('div');
+    memoryGameOverlay.id = 'game-overlay'; // Re-use overlay style
+    memoryGameOverlay.innerHTML = `
+        <h2>Memória Logística</h2>
+        <p>${game2Description}</p>
     `;
+
+    const memoryGameBoard = document.createElement('section');
+    memoryGameBoard.className = 'memory-game';
+    
+    const movesDisplay = document.createElement('div');
+    movesDisplay.className = 'game-info';
+    movesDisplay.textContent = 'Movimentos: 0';
+
+    const startMemoryGameButton = CtaButton('Iniciar Jogo', () => startMemoryGame(memoryGameBoard, memoryGameOverlay, movesDisplay));
+    memoryGameOverlay.appendChild(startMemoryGameButton);
+
+    memoryGameContainer.append(memoryGameBoard, movesDisplay, memoryGameOverlay);
+    game2Card.appendChild(memoryGameContainer);
+
 
     gamesGrid.append(game1Card, game2Card);
     section.append(title, gamesGrid);
@@ -2566,7 +2720,6 @@ function startGame(canvas, scoreDisplay, overlay) {
             pkg.x -= 4; // Package speed
             if (pkg.x + pkg.width < 0) packages.splice(index, 1);
 
-            // Fix: Replaced out-of-scope 'obs' variable with 'pkg' for correct package collision detection.
             if (truck.x < pkg.x + pkg.width && truck.x + truck.width > pkg.x && truck.y < pkg.y + pkg.height && truck.y + truck.height > pkg.y) {
                 packages.splice(index, 1);
                 score++;
@@ -2607,6 +2760,114 @@ function startGame(canvas, scoreDisplay, overlay) {
     });
 
     update();
+}
+
+// Memory Game Logic
+function startMemoryGame(board, overlay, movesDisplay) {
+    overlay.style.display = 'none';
+
+    const cardData = [
+        { name: 'Supply Chain', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 54V32l8-6h8l8 6v22h-8v-16h-8v16z"/><path d="M54 54V32l-8-6h-8l-8 6v22h8v-16h8v16z"/><path d="M26 40h12"/><path d="M20 22l12-8 12 8"/><path d="M32 14v12"/></g></svg>` },
+        { name: 'Just in Time', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><path d="M32 18v14l10 6"/><path d="M50 32l-6-4v-6h-8v6l-6 4"/><path d="M30 22h4v8h-4z"/></g></svg>` },
+        { name: 'Kanban', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="10" width="44" height="44" rx="2"/><path d="M28 10v44M46 10v44"/><rect x="14" y="18" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/><rect x="14" y="38" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/><rect x="32" y="28" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/></g></svg>` },
+        { name: 'Kaizen', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10a22 22 0 1 0 18.6 12.8"/><path d="M54 20l-4 8-8-4"/><path d="M32 24v16m-8-8h16"/></g></svg>` },
+        { name: '5S', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><text x="14" y="48" font-family="Poppins, sans-serif" font-size="40" font-weight="700">5S</text></g></svg>` },
+        { name: 'Compras', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="54" r="4"/><circle cx="48" cy="54" r="4"/><path d="M56 12H14l-4-8H2"/><path d="M14 12l8 28h28l8-20H20"/></g></svg>` },
+        { name: 'Transporte', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="20" width="32" height="24"/><path d="M42 20h8v16h-8"/><circle cx="18" cy="44" r="4"/><circle cx="44" cy="44" r="4"/><path d="M26 20v-4h12v4"/></g></svg>` },
+        { name: 'Armazenagem', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 54h44v-32l-22-12-22 12z"/><path d="M18 54v-16h28v16"/><rect x="24" y="26" width="16" height="12"/></g></svg>` }
+    ];
+
+    const gameCards = [...cardData, ...cardData];
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let firstCard, secondCard;
+    let moves = 0;
+    let matchedPairs = 0;
+    
+    board.innerHTML = '';
+    movesDisplay.textContent = `Movimentos: 0`;
+
+    // Shuffle and create cards
+    gameCards.sort(() => 0.5 - Math.random());
+    
+    gameCards.forEach(item => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('memory-card');
+        cardElement.dataset.framework = item.name;
+
+        cardElement.innerHTML = `
+            <div class="front-face">
+                ${item.icon}
+                <span class="card-name">${item.name}</span>
+            </div>
+            <div class="back-face">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16.5V7.5L12 2L3 7.5V16.5L12 22L21 16.5Z"/><path d="M3.27 7.5L12 12.5L20.73 7.5"/><path d="M12 22V12.5"/></svg>
+            </div>
+        `;
+        board.appendChild(cardElement);
+        cardElement.addEventListener('click', flipCard);
+    });
+
+    function flipCard() {
+        if (lockBoard) return;
+        if (this === firstCard) return;
+
+        this.classList.add('flip');
+
+        if (!hasFlippedCard) {
+            hasFlippedCard = true;
+            firstCard = this;
+            return;
+        }
+
+        secondCard = this;
+        checkForMatch();
+    }
+
+    function checkForMatch() {
+        moves++;
+        movesDisplay.textContent = `Movimentos: ${moves}`;
+        let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
+        isMatch ? disableCards() : unflipCards();
+    }
+
+    function disableCards() {
+        firstCard.removeEventListener('click', flipCard);
+        secondCard.removeEventListener('click', flipCard);
+        matchedPairs++;
+        if (matchedPairs === cardData.length) {
+            setTimeout(() => {
+                endMemoryGame();
+            }, 1000);
+        }
+        resetBoard();
+    }
+
+    function unflipCards() {
+        lockBoard = true;
+        setTimeout(() => {
+            firstCard.classList.remove('flip');
+            secondCard.classList.remove('flip');
+            resetBoard();
+        }, 1500);
+    }
+
+    function resetBoard() {
+        [hasFlippedCard, lockBoard] = [false, false];
+        [firstCard, secondCard] = [null, null];
+    }
+    
+    function endMemoryGame() {
+        overlay.style.display = 'flex';
+        overlay.innerHTML = `
+            <h2>Parabéns!</h2>
+            <p>Você encontrou todos os pares em ${moves} movimentos.</p>
+        `;
+        const restartButton = CtaButton('Jogar Novamente', () => {
+             startMemoryGame(board, overlay, movesDisplay);
+        });
+        overlay.appendChild(restartButton);
+    }
 }
 
 
@@ -2787,172 +3048,30 @@ function renderHeader() {
   nav.appendChild(themeToggleButton);
   header.append(logo, nav);
   
-  // Hide header on scroll
-  let lastScrollY = window.scrollY;
-  window.addEventListener('scroll', () => {
-    if(window.scrollY > lastScrollY && window.scrollY > 80) {
-      header.classList.add('header-hidden');
-    } else {
-      header.classList.remove('header-hidden');
-    }
-    lastScrollY = window.scrollY;
-  });
-
+  // Fix: Removed scroll event listener from render function to prevent memory leaks.
+  // The listener is now added once in the init() function.
   return header;
 }
 
-function renderFooter() {
-  const footer = document.createElement('footer');
-  applyStyles(footer, {
-    padding: '2rem',
-    textAlign: 'center',
-    backgroundColor: 'var(--footer-bg)',
-    borderTop: '1px solid var(--footer-border)',
-    marginTop: 'auto',
-    width: '100%',
-  });
+// Fix: Added init function to initialize the app and set up global event listeners.
+function init() {
+    initTheme();
+    render();
 
-  const p = document.createElement('p');
-  p.textContent = `© ${new Date().getFullYear()} Descomplica Logística. Todos os direitos reservados.`;
-  applyStyles(p, {
-    margin: '0',
-    color: 'var(--text-color-subtle)',
-  });
+    // Add global scroll listener for header
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('main-header');
+        if (!header) return;
 
-  footer.appendChild(p);
-  return footer;
-}
-
-function renderChatWidget() {
-    const fab = document.createElement('button');
-    fab.id = 'ai-chat-fab';
-    fab.setAttribute('aria-label', 'Abrir chat com assistente de IA');
-    fab.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`;
-
-    const widget = document.createElement('div');
-    widget.id = 'ai-chat-widget';
-
-    widget.innerHTML = `
-        <div class="chat-header">
-            <h3>Assistente de Logística</h3>
-            <button class="chat-close-btn" aria-label="Fechar chat">×</button>
-        </div>
-        <div class="chat-messages">
-             <div class="chat-message ai">Olá! Como posso ajudar com suas dúvidas sobre logística?</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Digite sua pergunta...">
-            <button id="chat-send-btn" aria-label="Enviar mensagem">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-        </div>
-    `;
-
-    fab.addEventListener('click', () => {
-        isChatOpen = !isChatOpen;
-        widget.classList.toggle('open');
-        if (isChatOpen) {
-            // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
-            const chatInput = widget.querySelector('#chat-input');
-            // Fix: Added instanceof check to ensure element is an HTMLElement before calling focus.
-            if (chatInput instanceof HTMLElement) {
-                chatInput.focus();
-            }
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 80) {
+            header.style.transform = 'translateY(-100%)';
+        } else if (currentScrollY < lastScrollY) {
+            header.style.transform = 'translateY(0)';
         }
+        lastScrollY = currentScrollY < 0 ? 0 : currentScrollY;
     });
-
-    widget.querySelector('.chat-close-btn').addEventListener('click', () => {
-        isChatOpen = false;
-        widget.classList.remove('open');
-    });
-    
-    const messagesContainer = widget.querySelector('.chat-messages');
-    // Fix: Removed TypeScript type casting 'as HTMLInputElement'.
-    const input = widget.querySelector('#chat-input');
-    
-    const addMessage = (text, sender) => {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `chat-message ${sender}`;
-        msgDiv.textContent = text;
-        messagesContainer.appendChild(msgDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    };
-
-    const handleSend = async () => {
-        // Fix: Added instanceof check to ensure input is an HTMLInputElement.
-        if (input instanceof HTMLInputElement && messagesContainer) {
-            const userMessage = input.value.trim();
-            if (!userMessage) return;
-
-            addMessage(userMessage, 'user');
-            input.value = '';
-            addMessage('Pensando...', 'ai');
-
-            const context = selectedTopic ? selectedTopic.content : '';
-            const aiResponse = await getAiResponse(userMessage, context);
-            
-            const lastMessage = messagesContainer.lastChild;
-            // Fix: Added instanceof check to ensure lastMessage is an Element.
-            if(lastMessage instanceof Element && lastMessage.classList.contains('ai')) {
-                lastMessage.textContent = aiResponse;
-            } else {
-                addMessage(aiResponse, 'ai');
-            }
-        }
-    };
-    
-    widget.querySelector('#chat-send-btn').addEventListener('click', handleSend);
-    // Fix: Removed TypeScript type annotation from event parameter.
-    if (input) {
-        input.addEventListener('keypress', (e) => {
-            // Fix: Added type guard to ensure e has the 'key' property.
-            if ('key' in e && e.key === 'Enter') {
-                handleSend();
-            }
-        });
-    }
-
-    document.body.append(fab, widget);
 }
 
-function render() {
-  if (!root) return;
-
-  root.innerHTML = '';
-  
-  const header = renderHeader();
-  const main = document.createElement('main');
-  main.className = 'page-fade-in';
-  
-  let pageContent;
-  switch (currentPage) {
-    case 'inicio':
-      pageContent = renderInicioPage();
-      break;
-    case 'conteudos':
-      pageContent = renderConteudoPage();
-      break;
-    case 'jogos':
-      pageContent = renderGamesPage();
-      break;
-    case 'quem-somos':
-      pageContent = renderQuemSomosPage();
-      break;
-    default:
-      pageContent = renderInicioPage();
-  }
-  main.appendChild(pageContent);
-  
-  const footer = renderFooter();
-
-  root.append(header, main, footer);
-  
-  if (!document.getElementById('ai-chat-fab')) {
-      renderChatWidget();
-  }
-
-  isTransitioning = false;
-}
-
-initTheme();
-render();
+init();

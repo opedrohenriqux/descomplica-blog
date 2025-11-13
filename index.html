@@ -66,6 +66,8 @@
       }
       html {
         scroll-behavior: smooth;
+        --custom-cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 16.5V7.5L12 2L3 7.5V16.5L12 22L21 16.5Z" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.27 7.5L12 12.5L20.73 7.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22V12.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 16 16, auto;
+        cursor: var(--custom-cursor);
       }
       body {
         margin: 0;
@@ -75,9 +77,15 @@
         transition: background-color 0.3s ease, color 0.3s ease;
         overflow-x: hidden; /* Prevent horizontal scrollbar during transition */
       }
-      .custom-cursor {
-        cursor: url('data:image/svg+xml;utf8,<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 16.5V7.5L12 2L3 7.5V16.5L12 22L21 16.5Z" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.27 7.5L12 12.5L20.73 7.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22V12.5" stroke="%23fec700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>') 16 16, auto;
+      a, button, [role="button"], input, select, textarea, .fund-card, .topic-card, .game-card, .faq-question {
+        cursor: inherit;
       }
+
+      input[type="text"],
+      textarea {
+        cursor: text;
+      }
+      
       .background-blob {
         position: absolute;
         border-radius: 50%;
@@ -758,22 +766,6 @@
         color: var(--text-color);
       }
 
-      .game-card.placeholder .placeholder-content {
-        width: 600px;
-        height: 450px;
-        max-width: 100%;
-        background-color: var(--timeline-bg);
-        border: 2px dashed var(--timeline-border);
-        border-radius: 12px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-color-subtle);
-      }
-
       #game-container {
         position: relative;
         width: 600px;
@@ -842,6 +834,105 @@
           display: none;
       }
 
+      /* Memory Game Styles */
+      #memory-game-container {
+        position: relative;
+        width: 600px;
+        height: 450px;
+        max-width: 100%;
+        margin: 0 auto;
+        background-color: var(--timeline-bg);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px var(--card-shadow-hover);
+        padding: 1.5rem;
+      }
+      
+      .memory-game {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 10px;
+        perspective: 1000px;
+      }
+
+      .memory-card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-radius: 8px;
+      }
+
+      .memory-card.flip {
+        transform: rotateY(180deg);
+      }
+
+      .front-face, .back-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
+        text-align: center;
+      }
+
+      .front-face {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        transform: rotateY(180deg);
+      }
+      
+      .front-face svg {
+        width: 40%;
+        height: 40%;
+        stroke: var(--primary-color);
+        fill: var(--primary-color);
+      }
+      
+      .front-face .card-name {
+        font-size: clamp(0.6rem, 2vw, 0.9rem);
+        font-weight: 600;
+        margin-top: 5px;
+        color: var(--text-color);
+      }
+
+      .back-face {
+        background-color: var(--primary-color);
+        background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+        background-size: 30px 30px;
+      }
+      
+      .back-face svg {
+        width: 60%;
+        height: 60%;
+        stroke: #333;
+      }
+      
+      #memory-game-container .game-info {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        background-color: var(--card-bg);
+        padding: 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px var(--card-shadow);
+      }
+
+
       /* Fundamentals Section */
       .fundamentals-section {
         background-color: var(--timeline-bg);
@@ -890,7 +981,6 @@
         box-shadow: 0 4px 12px var(--card-shadow);
         cursor: pointer;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        position: relative;
       }
 
       .fund-card:hover {
@@ -909,30 +999,41 @@
         font-size: 0.9rem;
       }
       
-      .fund-card:hover::after {
-        content: attr(data-intro);
-        position: absolute;
-        bottom: 110%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 250px;
-        background-color: var(--text-color);
-        color: var(--bg-color);
-        padding: 1rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        line-height: 1.5;
-        z-index: 10;
-        opacity: 0;
-        animation: tooltip-fade-in 0.3s ease forwards;
-        pointer-events: none;
+      /* Generic Tooltip Styles */
+      [data-tooltip] {
+        position: relative;
       }
 
-      @keyframes tooltip-fade-in {
-        to {
-          opacity: 1;
-          bottom: 105%;
-        }
+      [data-tooltip]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translate(-50%, -10px); /* Start above and away */
+        
+        width: max-content;
+        max-width: 280px;
+        background-color: var(--text-color);
+        color: var(--bg-color);
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        z-index: 1002;
+
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transition-delay: 0.2s;
+      }
+
+      [data-tooltip]:hover::after {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        transition-delay: 0.2s;
       }
 
       /* Logistics Rights Section */
@@ -1191,7 +1292,74 @@
         line-height: 1.7;
         color: var(--text-color-light);
       }
+      
+      /* New styles for Fiscal Notes Section */
+      .notas-fiscais-section {
+        width: 100%;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--timeline-border);
+      }
 
+      .notas-fiscais-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .nota-fiscal-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 12px var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .nota-fiscal-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px var(--card-shadow-hover);
+      }
+
+      .nf-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 1rem;
+      }
+
+      .nf-card-icon {
+        flex-shrink: 0;
+        color: var(--primary-color);
+      }
+
+      .nf-card-icon svg {
+        width: 32px;
+        height: 32px;
+      }
+
+      .nf-card-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--text-color);
+      }
+
+      .nf-card-content h4 {
+        margin: 1rem 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-color-light);
+      }
+
+      .nf-card-content p {
+        margin: 0;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+      }
 
     </style>
 <script type="importmap">
