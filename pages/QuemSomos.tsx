@@ -304,7 +304,7 @@ export function renderQuemSomosPage() {
             age: "19 anos", // Dado Fictício
             hardSkills: ["Análise de Dados", "Gestão de Projetos", "Tecnologia"],
             softSkills: ["Trabalho em Equipe", "Pensamento Crítico", "Adaptabilidade"],
-            projectRole: "Atuação como Tech Lead no projeto e focado em desenvolver soluções estratégicas para implementação e manutenção dos conteúdos, visando uma otimização de tempo e de recursos.",
+            projectRole: "Atuação como responsável pela execução técnica do projeto e focado em desenvolver soluções estratégicas para implementação e manutenção dos conteúdos, visando uma otimização de tempo e de recursos.",
             imgId: "1TXPQ5toyv9MVHsc5Ky0TJZvx7mRV2uai",
             isPlaceholder: false
         },

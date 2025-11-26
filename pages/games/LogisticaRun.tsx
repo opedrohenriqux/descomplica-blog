@@ -89,9 +89,13 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
         color: '#fff'
     });
 
+    // Recuperar recorde inicial
+    const initialHighScore = localStorage.getItem('logistica-run-highscore') || '0';
+
     overlay.innerHTML = `
         <h2 style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color);">Pronto?</h2>
-        <p style="font-size: 1.2rem; margin-bottom: 2rem;">Use ESPAÇO ou TOQUE na tela para pular.</p>
+        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">Use ESPAÇO ou TOQUE na tela para pular.</p>
+        <p style="font-size: 1rem; margin-bottom: 2rem; color: #fef4d6;">🏆 Recorde Atual: ${initialHighScore}</p>
     `;
 
     const startBtn = CtaButton('Começar Corrida', () => {
@@ -112,6 +116,7 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
         let gameSpeed = 6;
         let gameOver = false;
         let frame = 0;
+        let spawnTimer = 0; // Temporizador para controlar o surgimento de obstáculos
 
         // Ajuste de Resolução
         function resize() {
@@ -318,10 +323,28 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
             clouds.forEach(c => { c.update(); c.draw(); });
             clouds = clouds.filter(c => !c.markedForDeletion);
 
-            // Spawns
-            if (frame % Math.floor(1000 / (gameSpeed * 1.5)) === 0) {
-                if (Math.random() < 0.6) obstacles.push(new Obstacle());
-                else items.push(new Item());
+            // Spawns Dinâmicos
+            spawnTimer--;
+            if (spawnTimer <= 0) {
+                // Cálculo de probabilidade: começa com 60% chance de obstáculo
+                // Aumenta conforme a pontuação sobe, até o máximo de 90%
+                const obstacleChance = Math.min(0.6 + (score * 0.005), 0.9);
+
+                if (Math.random() < obstacleChance) {
+                    obstacles.push(new Obstacle());
+                } else {
+                    items.push(new Item());
+                }
+
+                // Reset do Timer
+                // Intervalo base diminui conforme a velocidade aumenta para manter o desafio
+                // Mas garantimos um mínimo de frames para que seja fisicamente possível pular
+                const minFrames = 50; 
+                const maxFrames = 110;
+                // Quanto maior a velocidade, menor o fator, diminuindo o tempo entre spawns
+                const speedFactor = 6 / gameSpeed; 
+                
+                spawnTimer = Math.floor((Math.random() * (maxFrames - minFrames) + minFrames) * speedFactor);
             }
 
             // Obstacles & Collision
@@ -343,7 +366,7 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
                 const truckBox = { x: truck.x, y: truck.y + (canvas.height - GROUND_HEIGHT - truck.height), w: truck.width, h: truck.height };
                 const itemY = item.visualY || item.y;
                 if (truckBox.x < item.x + item.w && truckBox.x + truckBox.w > item.x && truckBox.y < itemY + item.h && truckBox.y + truckBox.h > itemY) {
-                    score += 10;
+                    score += 50; // Agora vale 50 pontos!
                     item.markedForDeletion = true;
                 }
             });
@@ -356,17 +379,32 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
             ctx.fillStyle = "#333";
             ctx.font = "bold 20px Poppins";
             ctx.fillText(`Pontos: ${Math.floor(score + (frame/10))}`, 20, 40);
+            
+            // Exibir velocidade (opcional, para debug ou feedback visual)
+            // ctx.font = "12px Poppins";
+            // ctx.fillText(`Velocidade: ${gameSpeed.toFixed(2)}`, 20, 60);
 
             frame++;
-            gameSpeed += 0.001;
+            // Aceleração mais agressiva (antes era 0.001)
+            gameSpeed += 0.0025; 
             gameAnimationId = requestAnimationFrame(animate);
         }
 
         function showGameOver() {
+            const finalScore = Math.floor(score + (frame/10));
+            const currentHighScore = parseInt(localStorage.getItem('logistica-run-highscore') || '0');
+            let isNewRecord = false;
+
+            if (finalScore > currentHighScore) {
+                localStorage.setItem('logistica-run-highscore', finalScore.toString());
+                isNewRecord = true;
+            }
+
             overlay.style.display = 'flex';
             overlay.innerHTML = `
-                <h2>Fim da Entrega!</h2>
-                <p>Pontuação: ${Math.floor(score + (frame/10))}</p>
+                <h2 style="color: ${isNewRecord ? 'var(--primary-color)' : '#fff'}">${isNewRecord ? 'NOVO RECORDE!' : 'Fim da Entrega!'}</h2>
+                <p style="font-size: 1.5rem; font-weight: bold; color: var(--primary-color);">Pontuação: ${finalScore}</p>
+                <p style="margin-bottom: 2rem; font-size: 1rem; color: #ccc;">Melhor Pontuação: ${isNewRecord ? finalScore : currentHighScore}</p>
             `;
             const restartBtn = CtaButton('Jogar Novamente', () => {
                 overlay.style.display = 'none';
@@ -375,8 +413,6 @@ export function renderLogisticaRun(transitionTo, setSelectedGame) {
                 startGame();
             });
             
-            // Remove previous buttons to avoid duplicates if re-appended
-            // But here we overwrite innerHTML so it's fine.
             overlay.appendChild(restartBtn);
         }
 

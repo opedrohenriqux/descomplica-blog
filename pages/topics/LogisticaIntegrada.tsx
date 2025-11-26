@@ -16,6 +16,149 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
       margin: '0 auto'
     });
 
+    // --- GLOSSARY LOGIC & STYLES ---
+    const glossaryStyles = document.createElement('style');
+    glossaryStyles.textContent = `
+        .glossary-term {
+            color: var(--primary-color);
+            border-bottom: 1px dashed var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .glossary-term:hover {
+            background-color: rgba(254, 199, 0, 0.1);
+            color: var(--text-color);
+        }
+        .glossary-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(3px);
+        }
+        .glossary-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .glossary-modal {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid var(--primary-color);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        .glossary-overlay.open .glossary-modal {
+            transform: translateY(0);
+        }
+        .glossary-title {
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .glossary-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+        .glossary-close {
+            margin-top: 1.5rem;
+            background: var(--button-bg);
+            border: 1px solid var(--card-border);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text-color);
+            transition: background 0.2s;
+        }
+        .glossary-close:hover {
+            background: var(--button-bg-hover);
+        }
+    `;
+    document.head.appendChild(glossaryStyles);
+
+    const glossaryDefinitions = {
+        erp: {
+            title: "Sistema ERP",
+            text: "Sigla para 'Enterprise Resource Planning' (Planejamento dos Recursos da Empresa). É um software que integra todos os dados da empresa (vendas, estoque, financeiro, RH) em um único lugar, garantindo que a informação seja a mesma para todos os setores."
+        },
+        ecommerce: {
+            title: "E-commerce",
+            text: "Comércio Eletrônico. É a compra e venda de produtos ou serviços realizada através da internet. Na logística, exige processos ágeis de separação e entrega fracionada."
+        },
+        log40: {
+            title: "Logística 4.0",
+            text: "A evolução da logística através da tecnologia digital. Envolve o uso de dados, conectividade e máquinas inteligentes para tornar a operação mais rápida, barata e precisa."
+        },
+        iot: {
+            title: "IoT (Internet das Coisas)",
+            text: "Objetos físicos conectados à internet. Na logística, podem ser sensores em caminhões, prateleiras inteligentes ou etiquetas que avisam onde o produto está em tempo real."
+        },
+        bigdata: {
+            title: "Big Data",
+            text: "Análise de grandes volumes de dados. Permite que a empresa descubra padrões, preveja tendências de vendas e tome decisões mais inteligentes baseadas em números."
+        },
+        automacao: {
+            title: "Automações",
+            text: "Uso de máquinas, robôs ou softwares para realizar tarefas repetitivas automaticamente, sem necessidade de intervenção humana constante (ex: robôs que separam pedidos)."
+        },
+        ia: {
+            title: "Inteligência Artificial (IA)",
+            text: "Capacidade de sistemas computacionais de aprender e tomar decisões. Na logística, a IA ajuda a prever demandas futuras, calcular as rotas de entrega mais rápidas e gerenciar estoques de forma autônoma."
+        }
+    };
+
+    function showGlossary(termKey) {
+        const def = glossaryDefinitions[termKey];
+        if (!def) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'glossary-overlay';
+        
+        const modal = document.createElement('div');
+        modal.className = 'glossary-modal';
+        
+        modal.innerHTML = `
+            <h3 class="glossary-title">${def.title}</h3>
+            <p class="glossary-text">${def.text}</p>
+            <button class="glossary-close">Entendi</button>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        // Animate in
+        requestAnimationFrame(() => overlay.classList.add('open'));
+
+        // Close logic
+        const close = () => {
+            overlay.classList.remove('open');
+            setTimeout(() => overlay.remove(), 300);
+        };
+
+        modal.querySelector('.glossary-close').addEventListener('click', close);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) close();
+        });
+    }
+
     const backButton = CtaButton('← Voltar para a lista', () => {
         transitionTo(() => { setSelectedTopic(null); });
     }, { margin: '0 0 2rem 0' });
@@ -92,8 +235,8 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         { id: '1960', label: '1950–1960', content: 'Após a 2ª Guerra Mundial, empresas começaram a aplicar conceitos militares de logística (movimentação estratégica de suprimentos) no setor empresarial.' },
         { id: '1970', label: '1970', content: 'Crises do petróleo aumentaram os custos, e as empresas perceberam a necessidade de reduzir desperdícios e integrar melhor suas operações.' },
         { id: '1980', label: '1980', content: 'Surge o conceito de Supply Chain Management (Gestão da Cadeia de Suprimentos), com visão mais ampla, considerando fornecedores, produção e clientes como partes de um mesmo sistema.' },
-        { id: '1990', label: '1990', content: 'Avanço da tecnologia da informação (sistemas ERP, código de barras, rastreamento) permite integração em tempo real entre áreas da empresa e parceiros externos.' },
-        { id: '2000', label: '2000 em diante', content: 'Globalização, e-commerce e logística 4.0 (uso de IA, IoT, Big Data, automações) consolidam a logística integrada como diferencial competitivo.' },
+        { id: '1990', label: '1990', content: 'Avanço da tecnologia da informação (<span class="glossary-term" data-term="erp">sistemas ERP</span>, código de barras, rastreamento) permite integração em tempo real entre áreas da empresa e parceiros externos.' },
+        { id: '2000', label: '2000 em diante', content: 'Globalização, <span class="glossary-term" data-term="ecommerce">e-commerce</span> e <span class="glossary-term" data-term="log40">logística 4.0</span> (uso de <span class="glossary-term" data-term="ia">IA</span>, <span class="glossary-term" data-term="iot">IoT</span>, <span class="glossary-term" data-term="bigdata">Big Data</span>, <span class="glossary-term" data-term="automacao">automações</span>) consolidam a logística integrada como diferencial competitivo.' },
     ];
     const timelineSection = document.createElement('div');
     timelineSection.className = 'timeline-section';
@@ -110,7 +253,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         const contentItem = document.createElement('div');
         contentItem.className = 'timeline-content';
         contentItem.id = `timeline-${item.id}`;
-        contentItem.textContent = item.content;
+        contentItem.innerHTML = item.content; // Changed from textContent to innerHTML
 
         if (index === 0) {
             navItem.classList.add('active');
@@ -137,8 +280,153 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
             }
         }
     });
+
+    // Event listener delegation for glossary terms
+    timelineContentContainer.addEventListener('click', (e) => {
+        if (e.target instanceof HTMLElement && e.target.classList.contains('glossary-term')) {
+            const term = e.target.dataset.term;
+            if (term) showGlossary(term);
+        }
+    });
+
     timelineSection.append(timelineNav, timelineContentContainer);
     
+    // --- NOVA SEÇÃO: Fluxos Logísticos ---
+    const fluxosTitle = document.createElement('h3');
+    fluxosTitle.textContent = 'Os Dois Fluxos da Logística';
+    applyH3Style(fluxosTitle);
+
+    const fluxosContent = document.createElement('div');
+    fluxosContent.innerHTML = `
+        <p>Para entender a integração, precisamos entender que a logística não movimenta apenas caixas. Ela movimenta informações. Existem dois fluxos principais que correm simultaneamente, mas em direções (geralmente) opostas:</p>
+    `;
+    
+    const fluxosGrid = document.createElement('div');
+    applyStyles(fluxosGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '1.5rem',
+        marginTop: '1.5rem'
+    });
+
+    const fluxoFisico = document.createElement('div');
+    applyStyles(fluxoFisico, {
+        backgroundColor: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        borderRadius: '12px',
+        padding: '1.5rem',
+        boxShadow: '0 4px 12px var(--card-shadow)'
+    });
+    fluxoFisico.innerHTML = `
+        <h4 style="color: var(--primary-color); margin-top: 0;">📦 Fluxo Físico</h4>
+        <p style="font-size: 0.95rem;">É o movimento real dos materiais. Começa nos fornecedores, passa pela fábrica, armazéns, transportadoras e termina no cliente final.</p>
+        <p style="font-size: 0.95rem;"><strong>Direção:</strong> Origem → Consumidor</p>
+    `;
+
+    const fluxoInfo = document.createElement('div');
+    applyStyles(fluxoInfo, {
+        backgroundColor: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        borderRadius: '12px',
+        padding: '1.5rem',
+        boxShadow: '0 4px 12px var(--card-shadow)'
+    });
+    fluxoInfo.innerHTML = `
+        <h4 style="color: var(--primary-color); margin-top: 0;">📊 Fluxo de Informação</h4>
+        <p style="font-size: 0.95rem;">São os dados necessários para o fluxo físico acontecer: pedidos de compra, notas fiscais, rastreamento, inventário, etc. Sem informação precisa, o produto não sai do lugar.</p>
+        <p style="font-size: 0.95rem;"><strong>Direção:</strong> Bidirecional (vai e volta)</p>
+    `;
+    
+    fluxosGrid.append(fluxoFisico, fluxoInfo);
+    
+    // --- NOVA SEÇÃO: Diagrama Visual ---
+    const diagramContainer = document.createElement('div');
+    applyStyles(diagramContainer, {
+        width: '100%',
+        margin: '3rem 0',
+        textAlign: 'center'
+    });
+    
+    diagramContainer.innerHTML = `
+        <h3 style="margin-bottom: 2rem;">O Ciclo da Logística Integrada</h3>
+        <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Arrows -->
+            <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L0,6 L9,3 z" fill="var(--primary-color)" />
+                </marker>
+            </defs>
+            
+            <line x1="150" y1="150" x2="250" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
+            <line x1="350" y1="150" x2="450" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
+            <line x1="550" y1="150" x2="650" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
+            
+            <!-- Nodes -->
+            <g>
+                <circle cx="100" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
+                <text x="100" y="155" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Fornecedor</text>
+            </g>
+            
+            <g>
+                <circle cx="300" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
+                <text x="300" y="145" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Indústria</text>
+                <text x="300" y="165" text-anchor="middle" fill="var(--text-color-light)" font-size="10">(Produção)</text>
+            </g>
+            
+            <g>
+                <circle cx="500" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
+                <text x="500" y="145" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Distribuição</text>
+                <text x="500" y="165" text-anchor="middle" fill="var(--text-color-light)" font-size="10">(Transporte)</text>
+            </g>
+            
+            <g>
+                <circle cx="700" cy="150" r="50" fill="var(--primary-color)" stroke="var(--text-color)" stroke-width="2"/>
+                <text x="700" y="155" text-anchor="middle" font-weight="bold" fill="#333" font-size="12">Cliente Final</text>
+            </g>
+            
+            <!-- Information Flow (Dashed lines underneath) -->
+            <path d="M 700 210 Q 400 260 100 210" fill="none" stroke="var(--text-color-subtle)" stroke-width="2" stroke-dasharray="5,5" />
+            <text x="400" y="240" text-anchor="middle" fill="var(--text-color-light)" font-size="12">Fluxo de Informação (Pedidos, Feedback)</text>
+        </svg>
+    `;
+
+    // --- NOVA SEÇÃO: Os 4 Pilares ---
+    const pilaresTitle = document.createElement('h3');
+    pilaresTitle.textContent = 'Os 4 Pilares da Logística Integrada';
+    applyH3Style(pilaresTitle);
+
+    const pilaresGrid = document.createElement('div');
+    applyStyles(pilaresGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '2rem',
+        marginTop: '2rem'
+    });
+
+    const createPilarCard = (icon, title, desc) => {
+        const card = document.createElement('div');
+        applyStyles(card, {
+            backgroundColor: 'var(--timeline-bg)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            borderLeft: '5px solid var(--primary-color)'
+        });
+        card.innerHTML = `
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">${icon}</div>
+            <h4 style="margin: 0 0 0.5rem 0; color: var(--text-color);">${title}</h4>
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">${desc}</p>
+        `;
+        return card;
+    };
+
+    pilaresGrid.append(
+        createPilarCard('🛒', 'Administração de Materiais', 'Envolve tudo que entra na empresa: negociação com fornecedores, compras, transporte de entrada (Inbound) e armazenamento de matéria-prima. O objetivo é garantir que não falte insumo para a produção.'),
+        createPilarCard('🏭', 'Movimentação Interna', 'É o controle do fluxo dentro da fábrica ou armazém. Envolve abastecer a linha de produção, controle de estoque em processo e embalagem do produto final.'),
+        createPilarCard('🚚', 'Distribuição Física', 'É a logística de saída (Outbound). Envolve o processamento de pedidos, armazenamento de produtos acabados, transporte até o cliente e monitoramento da entrega.'),
+        createPilarCard('🔄', 'Logística Reversa', 'O caminho de volta. Cuida do retorno de produtos para troca, devolução, reciclagem ou descarte correto, fechando o ciclo sustentável da cadeia.')
+    );
+
+
     const cardsContainer = document.createElement('div');
     cardsContainer.className = 'info-cards-container';
     
@@ -262,13 +550,19 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     container.append(
         backButton, 
         title, 
-        tradTitle, // Alterado
+        tradTitle,
         tradIntro,
         columns,
-        intTitle, // Alterado
+        intTitle,
         intIntro,
         intTopics,
         timelineSection,
+        fluxosTitle,
+        fluxosContent,
+        fluxosGrid,
+        diagramContainer,
+        pilaresTitle,
+        pilaresGrid,
         cardsContainer,
         quizSection,
         topicNav
