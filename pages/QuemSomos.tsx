@@ -1,4 +1,5 @@
 
+
 import { styles, applyStyles } from '../utils.tsx';
 
 export function renderQuemSomosPage() {
@@ -30,8 +31,8 @@ export function renderQuemSomosPage() {
       
       .team-avatar-container {
         position: relative;
-        width: 150px;
-        height: 150px;
+        width: 220px; /* Aumentado de 150px */
+        height: 220px; /* Aumentado de 150px */
         margin: 0 auto 1.5rem;
         border-radius: 50%;
         padding: 5px;
@@ -118,8 +119,8 @@ export function renderQuemSomosPage() {
         padding-bottom: 1rem;
       }
       .modal-avatar {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         border-radius: 50%;
         object-fit: cover;
         border: 3px solid var(--primary-color);
@@ -165,7 +166,7 @@ export function renderQuemSomosPage() {
       alignItems: 'center',
       textAlign: 'center',
       width: '100%',
-      maxWidth: '900px',
+      maxWidth: '1200px', // Aumentado para permitir 3 itens lado a lado
       padding: '0 1rem'
     });
 
@@ -178,7 +179,9 @@ export function renderQuemSomosPage() {
     faqContainer.className = 'faq-container';
     applyStyles(faqContainer, {
       width: '100%',
-      textAlign: 'left'
+      maxWidth: '800px', // Limitando largura do FAQ para ficar mais elegante
+      textAlign: 'left',
+      margin: '0 auto'
     });
 
     const faqs = [
@@ -277,7 +280,7 @@ export function renderQuemSomosPage() {
         display: 'flex',
         justifyContent: 'center',
         flexWrap: 'wrap',
-        gap: '3rem',
+        gap: '2rem', // Ajustado gap para caber melhor
         width: '100%'
     });
 
@@ -397,7 +400,8 @@ export function renderQuemSomosPage() {
         card.setAttribute('aria-label', `Ver detalhes de ${member.name}`);
         applyStyles(card, {
             textAlign: 'center',
-            width: '250px'
+            width: '300px', // Aumentado para acomodar a foto maior
+            flex: '0 1 300px' // Permite flexibilidade mas mantém base
         });
 
         // Adiciona evento de clique para abrir o modal
@@ -417,7 +421,8 @@ export function renderQuemSomosPage() {
                 backgroundColor: 'var(--timeline-border)',
                 color: 'var(--text-color-light)'
             });
-            imgContent.innerHTML = `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+            // Aumentado ícone do placeholder
+            imgContent.innerHTML = `<svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
         } else {
             imgContent = document.createElement('img');
             imgContent.className = 'team-avatar';
