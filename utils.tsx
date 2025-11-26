@@ -1,6 +1,3 @@
-
-import { GoogleGenAI } from "@google/genai";
-
 // Styles
 export const styles = {
   section: {
@@ -68,33 +65,6 @@ export const conteudosList = [
 // Icons
 export const MoonIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
 export const SunIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-
-// API Call
-export async function getAiResponse(prompt, context = '') {
-    try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const fullPrompt = `
-            Você é um assistente amigável e prestativo para o site "Descomplica Logística".
-            Sua função é responder às perguntas dos usuários sobre logística.
-            ${context ? `Responda a pergunta a seguir usando APENAS o seguinte contexto. Não adicione informações que não estejam no texto.
-            Contexto:
-            ---
-            ${context}
-            ---
-            Pergunta do usuário: ${prompt}` : prompt}
-        `;
-
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: fullPrompt
-        });
-        
-        return response.text;
-    } catch (error) {
-        console.error("Erro ao chamar a API do Gemini:", error);
-        return "Desculpe, não consigo responder agora. Tente novamente mais tarde.";
-    }
-}
 
 // DOM Helpers
 export function applyStyles(element, styles) {
@@ -320,7 +290,7 @@ export function createVideo(src, caption = '') {
 }
 
 // Quiz Logic
-export async function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, topicName, submitButton, resetButton) {
+export function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, topicName, submitButton, resetButton) {
     e.preventDefault();
     let score = 0;
     const incorrectAnswers = [];
@@ -351,12 +321,7 @@ export async function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipD
     resultsDiv.textContent = `Você acertou ${score} de ${quizData.length}!`;
     submitButton.style.display = 'none';
     resetButton.style.display = 'inline-block';
-
+    
+    // AI Tip logic removed as requested
     aiTipDiv.innerHTML = '';
-    if (incorrectAnswers.length > 0) {
-        aiTipDiv.innerHTML = `<h4>Dica do Assistente</h4><p>Estou gerando uma dica de estudo para você...</p>`;
-        const prompt = `O usuário errou questões sobre ${topicName}. As perguntas erradas foram: "${incorrectAnswers.join('", "')}". Com base nisso, dê uma dica de estudo amigável e curta, sugerindo que ele revise o conteúdo da página para entender melhor esses pontos.`;
-        const tip = await getAiResponse(prompt);
-        aiTipDiv.innerHTML = `<h4>💡 Dica do Assistente</h4><p>${tip}</p>`;
-    }
 }

@@ -1,3 +1,4 @@
+
 import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -76,6 +77,16 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         const sectionEl = document.createElement('div');
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)',
+            width: '100%'
+        });
         sectionEl.appendChild(h3);
 
         if (typeof content === 'string') {
@@ -102,6 +113,46 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
     ]);
     const limitacao = createSection('LIMITAÇÃO DE TAREFAS', 'Limites de WIP (Work In Progress/Trabalho em Progresso) são restrições sobre a quantidade máxima de tarefas que podem estar em andamento simultaneamente em cada etapa do processo. O objetivo é evitar sobrecarga, aumentar o foco da equipe e identificar gargalos no fluxo de trabalho. Ao respeitar esses limites, o time consegue entregar mais rápido e com mais qualidade, pois as tarefas são concluídas antes de novas serem iniciadas.');
     const melhoria = createSection('Melhoria Contínua (Kaizen) no Kanban', 'Melhoria Contínua (Kaizen) no Kanban é a prática de revisar e ajustar processos regularmente para torná-los mais eficientes e reduzir desperdícios. No Kanban, isso envolve observar o fluxo de trabalho para identificar gargalos ou etapas que atrasam tarefas, analisar dados do quadro, como tempo de conclusão e número de tarefas em andamento, e fazer pequenas mudanças constantes para melhorar a produtividade da equipe. Exemplos de ações incluem reduzir tarefas paradas na coluna “Fazendo”, melhorar a comunicação entre membros da equipe e ajustar prioridades ou redefinir limites de WIP. Com essas melhorias contínuas, a equipe trabalha de forma mais eficiente e organizada, e os resultados evoluem ao longo do tempo.');
+
+    // New Image Section
+    const exampleBoard = document.createElement('div');
+    exampleBoard.className = 'media-container';
+    exampleBoard.style.marginBottom = '3rem';
+    exampleBoard.style.marginTop = '2rem';
+    
+    const exampleTitle = document.createElement('h3');
+    exampleTitle.textContent = 'Exemplo de Quadro Kanban';
+    applyStyles(exampleTitle, {
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginBottom: '1rem',
+        paddingBottom: '0.5rem',
+        borderBottom: '2px solid var(--primary-color)',
+        width: '100%'
+    });
+
+    const iframeWrapper = document.createElement('div');
+    iframeWrapper.className = 'video-wrapper';
+    iframeWrapper.innerHTML = `
+        <iframe 
+            src="https://drive.google.com/file/d/18CUHSjupFlepTkXbskLqv3YOs35U39tU/preview" 
+            width="640" 
+            height="480" 
+            allow="autoplay"
+            title="Exemplo de Quadro Kanban">
+        </iframe>
+    `;
+    
+    const driveLink = document.createElement('div');
+    driveLink.style.marginTop = '0.5rem';
+    driveLink.innerHTML = `<a href="https://drive.google.com/file/d/18CUHSjupFlepTkXbskLqv3YOs35U39tU/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 0.9rem;">Abrir imagem em nova guia <svg style="vertical-align: middle;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>`;
+
+    const caption = document.createElement('p');
+    caption.className = 'media-caption';
+    caption.textContent = 'Quadro Kanban ilustrando o fluxo: Para Fazer, Em Progresso e Concluído.';
+
+    exampleBoard.append(exampleTitle, iframeWrapper, driveLink, caption);
 
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
@@ -196,6 +247,7 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         principios,
         limitacao,
         melhoria,
+        exampleBoard,
         quizSection,
         topicNav
     );

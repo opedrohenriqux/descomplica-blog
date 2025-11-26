@@ -1,154 +1,128 @@
+
 import { styles, applyStyles, CtaButton } from '../utils.tsx';
+import { renderMemoryGame } from './games/MemoryGame.tsx';
+import { renderLogisticaRun } from './games/LogisticaRun.tsx';
 
-// Memory Game Logic
-function startMemoryGame(board, overlay, movesDisplay) {
-    overlay.style.display = 'none';
-
-    const cardData = [
-        { name: 'Supply Chain', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 54V32l8-6h8l8 6v22h-8v-16h-8v16z"/><path d="M54 54V32l-8-6h-8l-8 6v22h8v-16h8v16z"/><path d="M26 40h12"/><path d="M20 22l12-8 12 8"/><path d="M32 14v12"/></g></svg>` },
-        { name: 'Just in Time', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="22"/><path d="M32 18v14l10 6"/><path d="M50 32l-6-4v-6h-8v6l-6 4"/><path d="M30 22h4v8h-4z"/></g></svg>` },
-        { name: 'Kanban', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="10" width="44" height="44" rx="2"/><path d="M28 10v44M46 10v44"/><rect x="14" y="18" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/><rect x="14" y="38" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/><rect x="32" y="28" width="10" height="8" rx="1" fill="var(--primary-color)" fill-opacity="0.3"/></g></svg>` },
-        { name: 'Kaizen', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M32 10a22 22 0 1 0 18.6 12.8"/><path d="M54 20l-4 8-8-4"/><path d="M32 24v16m-8-8h16"/></g></svg>` },
-        { name: '5S', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><text x="14" y="48" font-family="Poppins, sans-serif" font-size="40" font-weight="700">5S</text></g></svg>` },
-        { name: 'Compras', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="22" cy="54" r="4"/><circle cx="48" cy="54" r="4"/><path d="M56 12H14l-4-8H2"/><path d="M14 12l8 28h28l8-20H20"/></g></svg>` },
-        { name: 'Transporte', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="20" width="32" height="24"/><path d="M42 20h8v16h-8"/><circle cx="18" cy="44" r="4"/><circle cx="44" cy="44" r="4"/><path d="M26 20v-4h12v4"/></g></svg>` },
-        { name: 'Armazenagem', icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 54h44v-32l-22-12-22 12z"/><path d="M18 54v-16h28v16"/><rect x="24" y="26" width="16" height="12"/></g></svg>` }
-    ];
-
-    const gameCards = [...cardData, ...cardData];
-    let hasFlippedCard = false;
-    let lockBoard = false;
-    let firstCard, secondCard;
-    let moves = 0;
-    let matchedPairs = 0;
-    
-    board.innerHTML = '';
-    movesDisplay.textContent = `Movimentos: 0`;
-
-    gameCards.sort(() => 0.5 - Math.random());
-    
-    gameCards.forEach(item => {
-        const cardElement = document.createElement('div');
-        cardElement.classList.add('memory-card');
-        cardElement.dataset.framework = item.name;
-
-        cardElement.innerHTML = `
-            <div class="front-face">
-                ${item.icon}
-                <span class="card-name">${item.name}</span>
-            </div>
-            <div class="back-face">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16.5V7.5L12 2L3 7.5V16.5L12 22L21 16.5Z"/><path d="M3.27 7.5L12 12.5L20.73 7.5"/><path d="M12 22V12.5"/></svg>
-            </div>
-        `;
-        board.appendChild(cardElement);
-        cardElement.addEventListener('click', flipCard);
-    });
-
-    function flipCard() {
-        if (lockBoard) return;
-        if (this === firstCard) return;
-
-        this.classList.add('flip');
-
-        if (!hasFlippedCard) {
-            hasFlippedCard = true;
-            firstCard = this;
-            return;
-        }
-
-        secondCard = this;
-        checkForMatch();
+// Lista de Jogos Disponíveis
+const gamesList = [
+    {
+        id: 'memory-game',
+        title: 'Memória Logística',
+        description: 'Teste sua memória e conhecimento! Encontre os pares de conceitos logísticos (como Kanban, 5S e Supply Chain) o mais rápido que puder.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="35" height="35" rx="5" fill="#fec700"/><rect x="55" y="10" width="35" height="35" rx="5" fill="#333" fill-opacity="0.1"/><rect x="10" y="55" width="35" height="35" rx="5" fill="#333" fill-opacity="0.1"/><rect x="55" y="55" width="35" height="35" rx="5" fill="#fec700"/><text x="27" y="35" font-family="Arial" font-weight="bold" font-size="20" fill="#333">?</text><text x="72" y="80" font-family="Arial" font-weight="bold" font-size="20" fill="#333">?</text></svg>`
+    },
+    {
+        id: 'logistica-run',
+        title: 'Logística Run 2D',
+        description: 'Assuma o volante! Corra com o caminhão de entrega, desvie de cones e buracos e colete caixas para garantir a satisfação do cliente.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="100" height="100" fill="#87CEEB"/><rect x="0" y="70" width="100" height="30" fill="#4CAF50"/><rect x="20" y="50" width="40" height="25" fill="#fec700"/><rect x="60" y="55" width="15" height="20" fill="#fec700"/><circle cx="30" cy="75" r="5" fill="#333"/><circle cx="70" cy="75" r="5" fill="#333"/><rect x="85" y="60" width="10" height="10" fill="#8d6e63"/></svg>`
     }
+];
 
-    function checkForMatch() {
-        moves++;
-        movesDisplay.textContent = `Movimentos: ${moves}`;
-        let isMatch = firstCard.dataset.framework === secondCard.dataset.framework;
-        isMatch ? disableCards() : unflipCards();
-    }
-
-    function disableCards() {
-        firstCard.removeEventListener('click', flipCard);
-        secondCard.removeEventListener('click', flipCard);
-        matchedPairs++;
-        if (matchedPairs === cardData.length) {
-            setTimeout(() => {
-                endMemoryGame();
-            }, 1000);
-        }
-        resetBoard();
-    }
-
-    function unflipCards() {
-        lockBoard = true;
-        setTimeout(() => {
-            firstCard.classList.remove('flip');
-            secondCard.classList.remove('flip');
-            resetBoard();
-        }, 1500);
-    }
-
-    function resetBoard() {
-        [hasFlippedCard, lockBoard] = [false, false];
-        [firstCard, secondCard] = [null, null];
-    }
-    
-    function endMemoryGame() {
-        overlay.style.display = 'flex';
-        overlay.innerHTML = `
-            <h2>Parabéns!</h2>
-            <p>Você encontrou todos os pares em ${moves} movimentos.</p>
-        `;
-        const restartButton = CtaButton('Jogar Novamente', () => {
-             startMemoryGame(board, overlay, movesDisplay);
-        });
-        overlay.appendChild(restartButton);
-    }
-}
-
-export function renderGamesPage() {
+export function renderGamesPage(selectedGame, transitionTo, setSelectedGame) {
     const section = document.createElement('section');
+    
+    // Se um jogo estiver selecionado, renderiza o jogo específico
+    if (selectedGame) {
+        let gameContent;
+        switch (selectedGame.id) {
+            case 'memory-game':
+                gameContent = renderMemoryGame(transitionTo, setSelectedGame);
+                break;
+            case 'logistica-run':
+                gameContent = renderLogisticaRun(transitionTo, setSelectedGame);
+                break;
+            default:
+                // Fallback caso o ID não exista
+                transitionTo(() => setSelectedGame(null));
+                return section;
+        }
+        section.appendChild(gameContent);
+        return section;
+    }
+
+    // Caso contrário, renderiza o Catálogo de Jogos
     applyStyles(section, { ...styles.section, justifyContent: 'flex-start', paddingTop: '12rem' });
 
     const title = document.createElement('h2');
     applyStyles(title, { ...styles.sectionTitle, textAlign: 'center' });
     title.textContent = 'Aprenda Jogando';
-    
+
+    const intro = document.createElement('p');
+    applyStyles(intro, { ...styles.intro, marginBottom: '3rem' });
+    intro.textContent = 'Reforce seu aprendizado de forma divertida! Escolha um dos jogos abaixo para praticar conceitos de logística e desafiar suas habilidades.';
+
     const gamesGrid = document.createElement('div');
-    gamesGrid.className = 'games-grid';
-    
-    const game2Card = document.createElement('div');
-    game2Card.className = 'game-card';
-    const game2Description = "Teste sua memória e conhecimento em logística! Encontre os pares de conceitos logísticos o mais rápido que puder.";
-    game2Card.setAttribute('data-tooltip', game2Description);
-    game2Card.innerHTML = `<h3>Memória Logística</h3>`;
+    applyStyles(gamesGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '2rem',
+        width: '100%',
+        maxWidth: '1200px',
+    });
 
-    const memoryGameContainer = document.createElement('div');
-    memoryGameContainer.id = 'memory-game-container';
-    
-    const memoryGameOverlay = document.createElement('div');
-    memoryGameOverlay.id = 'game-overlay';
-    memoryGameOverlay.innerHTML = `
-        <h2>Memória Logística</h2>
-        <p>${game2Description}</p>
-    `;
+    gamesList.forEach(game => {
+        const card = document.createElement('div');
+        applyStyles(card, {
+            backgroundColor: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '12px',
+            padding: '2rem',
+            boxShadow: '0 4px 12px var(--card-shadow)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+            height: '100%' // Garante altura igual
+        });
 
-    const memoryGameBoard = document.createElement('section');
-    memoryGameBoard.className = 'memory-game';
-    
-    const movesDisplay = document.createElement('div');
-    movesDisplay.className = 'game-info';
-    movesDisplay.textContent = 'Movimentos: 0';
+        // Hover Effect
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+            card.style.boxShadow = '0 10px 20px var(--card-shadow-hover)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+            card.style.boxShadow = '0 4px 12px var(--card-shadow)';
+        });
 
-    const startMemoryGameButton = CtaButton('Iniciar Jogo', () => startMemoryGame(memoryGameBoard, memoryGameOverlay, movesDisplay));
-    memoryGameOverlay.appendChild(startMemoryGameButton);
+        // Thumbnail
+        const thumbContainer = document.createElement('div');
+        applyStyles(thumbContainer, {
+            width: '100px',
+            height: '100px',
+            marginBottom: '1.5rem',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: '3px solid var(--primary-color)',
+            backgroundColor: 'var(--timeline-bg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        });
+        thumbContainer.innerHTML = game.thumbnail;
+        
+        // Content
+        const gameTitle = document.createElement('h3');
+        gameTitle.textContent = game.title;
+        applyStyles(gameTitle, { color: 'var(--primary-color)', margin: '0 0 1rem 0', fontSize: '1.5rem' });
 
-    memoryGameContainer.append(memoryGameBoard, movesDisplay, memoryGameOverlay);
-    game2Card.appendChild(memoryGameContainer);
+        const gameDesc = document.createElement('p');
+        gameDesc.textContent = game.description;
+        applyStyles(gameDesc, { color: 'var(--text-color)', marginBottom: '2rem', flex: '1' }); // Flex 1 empurra botão p/ baixo
 
-    gamesGrid.append(game2Card);
-    section.append(title, gamesGrid);
+        const playBtn = CtaButton('Jogar Agora', () => {
+            transitionTo(() => {
+                setSelectedGame(game);
+            });
+        });
+
+        card.append(thumbContainer, gameTitle, gameDesc, playBtn);
+        gamesGrid.appendChild(card);
+    });
+
+    section.append(title, intro, gamesGrid);
 
     return section;
 }

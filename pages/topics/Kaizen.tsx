@@ -1,4 +1,5 @@
 
+
 import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -32,6 +33,15 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
         const sectionEl = document.createElement('div');
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)'
+        });
         sectionEl.appendChild(h3);
 
         if (typeof content === 'string') {
@@ -151,7 +161,15 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
     
     const pdcaTitle = document.createElement('h3');
     pdcaTitle.textContent = 'O Motor do Kaizen: Ciclo PDCA';
-    applyStyles(pdcaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1rem', borderBottom: '2px solid var(--primary-color)' });
+    applyStyles(pdcaTitle, { 
+        fontSize: '1.5rem', 
+        fontWeight: '700', 
+        color: 'var(--text-color)', 
+        marginTop: '2.5rem',
+        marginBottom: '1rem', 
+        paddingBottom: '0.5rem',
+        borderBottom: '2px solid var(--primary-color)' 
+    });
     
     const pdcaText = document.createElement('p');
     pdcaText.innerHTML = 'Para aplicar o Kaizen, utilizamos o Ciclo <strong>PDCA</strong>. É um método iterativo de gestão de quatro passos utilizado para o controle e melhoria contínua de processos e produtos.';
@@ -231,7 +249,15 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
 
     const logisticaTitle = document.createElement('h3');
     logisticaTitle.textContent = 'Kaizen na Logística: Exemplos Reais';
-    applyStyles(logisticaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1.5rem', borderBottom: '2px solid var(--primary-color)' });
+    applyStyles(logisticaTitle, { 
+        fontSize: '1.5rem', 
+        fontWeight: '700', 
+        color: 'var(--text-color)', 
+        marginTop: '2.5rem',
+        marginBottom: '1rem', 
+        paddingBottom: '0.5rem',
+        borderBottom: '2px solid var(--primary-color)' 
+    });
 
     const examplesGrid = document.createElement('div');
     applyStyles(examplesGrid, {

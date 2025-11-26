@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
@@ -923,6 +924,9 @@
         text-align: center;
         width: calc(600px + 3rem);
         max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .game-card h3 {
@@ -931,13 +935,13 @@
         color: var(--text-color);
       }
 
-      #game-overlay {
+      #game-overlay, #runner-overlay {
           position: absolute;
           top: 0;
           left: 0;
           width: 100%;
           height: 100%;
-          background-color: rgba(0, 0, 0, 0.6);
+          background-color: rgba(0, 0, 0, 0.7);
           color: white;
           display: flex;
           flex-direction: column;
@@ -945,26 +949,30 @@
           align-items: center;
           text-align: center;
           gap: 1.5rem;
+          z-index: 10;
+          border-radius: 12px;
       }
 
-      #game-overlay h2 {
+      #game-overlay h2, #runner-overlay h2 {
           font-size: 2.5rem;
           margin-bottom: 0.5rem;
+          color: #fff;
       }
 
-      #game-overlay p {
+      #game-overlay p, #runner-overlay p {
           font-size: 1.1rem;
           max-width: 80%;
+          color: #eee;
       }
       
-      #game-overlay button {
+      #game-overlay button, #runner-overlay button {
         background-color: var(--primary-color) !important;
         color: #333 !important;
         border: none !important;
         font-size: 1.1rem !important;
         padding: 0.8rem 1.5rem !important;
       }
-      #game-overlay button:hover {
+      #game-overlay button:hover, #runner-overlay button:hover {
           transform: translateY(-3px) scale(1.05) !important;
           box-shadow: 0 8px 15px rgba(0,0,0,0.2) !important;
       }
@@ -1065,6 +1073,27 @@
         padding: 5px 10px;
         border-radius: 5px;
         box-shadow: 0 2px 4px var(--card-shadow);
+        z-index: 5;
+      }
+
+      /* Runner Game Styles */
+      #runner-game-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        height: 400px;
+        margin: 0 auto;
+        background-color: #87CEEB; /* Sky blue background fallback */
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px var(--card-shadow-hover);
+        border: 2px solid var(--primary-color);
+      }
+
+      #runner-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
       }
 
 
@@ -1291,143 +1320,6 @@
         font-style: normal;
       }
       
-      /* AI Chat Styles */
-      #ai-chat-fab {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        width: 60px;
-        height: 60px;
-        background-color: var(--primary-color);
-        color: #333;
-        border-radius: 50%;
-        border: none;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1001;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      #ai-chat-fab:hover {
-        transform: scale(1.1);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      }
-      #ai-chat-widget {
-        position: fixed;
-        bottom: 6rem;
-        right: 2rem;
-        width: 90%;
-        max-width: 400px;
-        height: 60vh;
-        max-height: 500px;
-        background-color: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        display: none;
-        flex-direction: column;
-        z-index: 1000;
-        overflow: hidden;
-        transform-origin: bottom right;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-      }
-      #ai-chat-widget.open {
-        display: flex;
-        animation: chat-widget-open 0.3s ease-out forwards;
-      }
-      @keyframes chat-widget-open {
-        from { opacity: 0; transform: scale(0.8); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      .chat-header {
-        padding: 1rem;
-        border-bottom: 1px solid var(--card-border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: var(--timeline-bg);
-      }
-      .chat-header h3 {
-        margin: 0;
-        font-size: 1.2rem;
-      }
-      .chat-close-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: var(--text-color-light);
-      }
-      .chat-messages {
-        flex-grow: 1;
-        padding: 1rem;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .chat-message {
-        padding: 0.75rem 1rem;
-        border-radius: 12px;
-        max-width: 80%;
-        line-height: 1.5;
-      }
-      .chat-message.user {
-        background-color: var(--primary-color);
-        color: #333;
-        align-self: flex-end;
-        border-bottom-right-radius: 2px;
-      }
-      .chat-message.ai {
-        background-color: var(--timeline-bg);
-        color: var(--text-color);
-        align-self: flex-start;
-        border-bottom-left-radius: 2px;
-      }
-      .chat-input-area {
-        display: flex;
-        padding: 1rem;
-        border-top: 1px solid var(--card-border);
-        gap: 0.5rem;
-      }
-      #chat-input {
-        flex-grow: 1;
-        padding: 0.75rem;
-        border: 1px solid var(--search-border);
-        border-radius: 20px;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        font-size: 1rem;
-      }
-      #chat-send-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--primary-color);
-        padding: 0.5rem;
-      }
-
-      /* Quiz AI Tip */
-      .quiz-ai-tip {
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background-color: var(--button-bg);
-        border-left: 5px solid var(--primary-color);
-        border-radius: 0 8px 8px 0;
-      }
-      .quiz-ai-tip h4 {
-        margin: 0 0 0.5rem 0;
-        color: var(--text-color);
-      }
-      .quiz-ai-tip p {
-        margin: 0;
-        font-size: 1rem !important;
-        line-height: 1.7;
-        color: var(--text-color-light);
-      }
-      
       /* New styles for Fiscal Notes Section */
       .notas-fiscais-section {
         width: 100%;
@@ -1497,13 +1389,6 @@
       }
 
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.26.0"
-  }
-}
-</script>
 </head>
   <body>
     <div id="root"></div>

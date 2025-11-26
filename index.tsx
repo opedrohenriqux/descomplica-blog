@@ -1,4 +1,5 @@
-import { getAiResponse, MoonIcon, SunIcon, applyStyles } from './utils.tsx';
+
+import { MoonIcon, SunIcon, applyStyles } from './utils.tsx';
 import { renderInicioPage } from './pages/Inicio.tsx';
 import { renderConteudoPage } from './pages/Conteudos.tsx';
 import { renderGamesPage } from './pages/Jogos.tsx';
@@ -7,9 +8,9 @@ import { renderQuemSomosPage } from './pages/QuemSomos.tsx';
 const root = document.getElementById('root');
 let currentPage = 'inicio';
 let selectedTopic = null;
+let selectedGame = null; // Novo estado para jogos
 let currentTheme = 'light';
 let isTransitioning = false;
-let isChatOpen = false;
 let isMenuOpen = false;
 
 function toggleTheme() {
@@ -64,98 +65,6 @@ function renderFooter() {
     return footer;
 }
 
-function renderChatWidget() {
-    const chatWidget = document.createElement('div');
-    chatWidget.id = 'chat-widget-container';
-    
-    const fab = document.createElement('button');
-    fab.id = 'ai-chat-fab';
-    fab.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
-    fab.addEventListener('click', () => {
-        isChatOpen = !isChatOpen;
-        const widget = document.getElementById('ai-chat-widget');
-        if (widget) {
-            if (isChatOpen) {
-                widget.classList.add('open');
-            } else {
-                widget.classList.remove('open');
-            }
-        }
-    });
-
-    const widgetWindow = document.createElement('div');
-    widgetWindow.id = 'ai-chat-widget';
-    widgetWindow.innerHTML = `
-        <div class="chat-header">
-            <h3>Assistente Logística</h3>
-            <button class="chat-close-btn">×</button>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <div class="chat-message ai">Olá! Sou o assistente virtual do Descomplica Logística. Como posso te ajudar hoje?</div>
-        </div>
-        <div class="chat-input-area">
-            <input type="text" id="chat-input" placeholder="Digite sua pergunta..." />
-            <button id="chat-send-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-        </div>
-    `;
-
-    const closeBtn = widgetWindow.querySelector('.chat-close-btn');
-    closeBtn.addEventListener('click', () => {
-        isChatOpen = false;
-        widgetWindow.classList.remove('open');
-    });
-
-    const sendBtn = widgetWindow.querySelector('#chat-send-btn');
-    const input = widgetWindow.querySelector('#chat-input');
-    const messagesContainer = widgetWindow.querySelector('#chat-messages');
-
-    const sendMessage = async () => {
-        if (!(input instanceof HTMLInputElement) || !messagesContainer) return;
-        const text = input.value.trim();
-        if (!text) return;
-
-        const userMsg = document.createElement('div');
-        userMsg.className = 'chat-message user';
-        userMsg.textContent = text;
-        messagesContainer.appendChild(userMsg);
-        input.value = '';
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        const loadingMsg = document.createElement('div');
-        loadingMsg.className = 'chat-message ai';
-        loadingMsg.textContent = 'Digitando...';
-        messagesContainer.appendChild(loadingMsg);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        let context = '';
-        if (selectedTopic) {
-            context = `O usuário está visualizando a página sobre "${selectedTopic.title}". Conteúdo da página: ${selectedTopic.content || selectedTopic.intro}.`;
-        } else {
-             context = `O usuário está na página principal. Contexto geral: O Descomplica Logística ensina sobre Logística Integrada, Just in Time, Kanban, Kaizen, 5S, Supply Chain, Compras e Recebimento.`;
-        }
-
-        const response = await getAiResponse(text, context);
-        
-        messagesContainer.removeChild(loadingMsg);
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'chat-message ai';
-        aiMsg.textContent = response;
-        messagesContainer.appendChild(aiMsg);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    };
-
-    sendBtn.addEventListener('click', sendMessage);
-    input.addEventListener('keypress', (e) => {
-        if (e instanceof KeyboardEvent && e.key === 'Enter') sendMessage();
-    });
-
-    chatWidget.appendChild(fab);
-    chatWidget.appendChild(widgetWindow);
-    return chatWidget;
-}
-
 function renderBackToTopButton() {
     const button = document.createElement('button');
     button.id = 'back-to-top-btn';
@@ -172,7 +81,8 @@ function renderBackToTopButton() {
 }
 
 function navigateTo(page) {
-    if (currentPage === page && !selectedTopic) {
+    // Se já estiver na página e não houver sub-seleção (tópico ou jogo), não faz nada
+    if (currentPage === page && !selectedTopic && !selectedGame) {
         isMenuOpen = false; 
         render(); 
         return;
@@ -182,7 +92,9 @@ function navigateTo(page) {
     
     transitionTo(() => {
         currentPage = page;
+        // Reseta seleções ao mudar de "aba" principal
         selectedTopic = null;
+        selectedGame = null;
     });
 }
 
@@ -231,7 +143,7 @@ function renderHeader() {
     { text: 'Início', page: 'inicio' },
     { text: 'Conteúdos', page: 'conteudos' },
     { text: 'Jogos', page: 'jogos' },
-    { text: 'FAQ', page: 'quem-somos' },
+    { text: 'Quem Somos', page: 'quem-somos' },
   ];
 
   navLinks.forEach(link => {
@@ -290,11 +202,14 @@ function render() {
   const header = renderHeader();
   const main = document.createElement('main');
   const footer = renderFooter();
-  const chatWidget = renderChatWidget();
   const backToTopButton = renderBackToTopButton();
 
   const setSelectedTopic = (topic) => {
     selectedTopic = topic;
+  };
+
+  const setSelectedGame = (game) => {
+    selectedGame = game;
   };
 
   let pageContent;
@@ -306,7 +221,7 @@ function render() {
       pageContent = renderConteudoPage(selectedTopic, transitionTo, setSelectedTopic);
       break;
     case 'jogos':
-      pageContent = renderGamesPage();
+      pageContent = renderGamesPage(selectedGame, transitionTo, setSelectedGame);
       break;
     case 'quem-somos':
       pageContent = renderQuemSomosPage();
@@ -316,7 +231,7 @@ function render() {
   }
 
   main.appendChild(pageContent);
-  root.append(header, main, footer, chatWidget, backToTopButton);
+  root.append(header, main, footer, backToTopButton);
 
   setTimeout(() => {
     main.classList.add('page-fade-in');

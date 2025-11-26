@@ -188,7 +188,6 @@ export function renderQuemSomosPage() {
         { q: "O que é o Descomplica Logística?", a: "É uma plataforma educativa com o objetivo de ensinar conceitos de logística de forma simples, didática e visual. Usamos textos, vídeos e imagens para tornar o aprendizado mais acessível a todos." },
         { q: "Para quem é este site?", a: "Para estudantes, profissionais da área que buscam reciclar conhecimentos, e qualquer pessoa curiosa sobre como os produtos chegam até elas. Nossa abordagem é feita para ser compreendida por todos, desde o iniciante até o mais experiente." },
         { q: "O conteúdo é gratuito?", a: "Sim, todo o conteúdo educacional e os jogos disponíveis no Descomplica Logística são 100% gratuitos." },
-        { q: "Como posso usar o assistente de IA?", a: "Clique no ícone de chat no canto inferior direito da tela. Você pode fazer perguntas sobre os temas de logística abordados no site, e nosso assistente usará o conteúdo da página para te dar uma resposta direta e precisa." },
         { q: "Com que frequência o conteúdo é atualizado?", a: "Estamos sempre trabalhando para adicionar novos tópicos, aprofundar os existentes e criar novas formas interativas de aprendizado. Siga-nos para ficar por dentro das novidades!" }
     ];
 
@@ -303,7 +302,7 @@ export function renderQuemSomosPage() {
             name: "Pedro Henrique",
             role: "Idealizador",
             age: "19 anos", // Dado Fictício
-            hardSkills: ["Análise de Dados", "Processos Logísticos", "Ferramentas Ágeis"],
+            hardSkills: ["Análise de Dados", "Gestão de Projetos", "Tecnologia"],
             softSkills: ["Trabalho em Equipe", "Pensamento Crítico", "Adaptabilidade"],
             projectRole: "Atuação como Tech Lead no projeto e focado em desenvolver soluções estratégicas para implementação e manutenção dos conteúdos, visando uma otimização de tempo e de recursos.",
             imgId: "1TXPQ5toyv9MVHsc5Ky0TJZvx7mRV2uai",

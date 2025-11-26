@@ -1,3 +1,5 @@
+
+
 import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -27,9 +29,24 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     });
     title.textContent = 'Logística Integrada';
 
-    const tradHighlight = document.createElement('div');
-    tradHighlight.className = 'highlight-text';
-    tradHighlight.textContent = 'Logística tradicional';
+    // Helper para estilo padrão de título
+    const applyH3Style = (element) => {
+        applyStyles(element, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)',
+            width: '100%' // Garante que a linha vá até o final
+        });
+    };
+
+    const tradTitle = document.createElement('h3');
+    tradTitle.textContent = 'Logística tradicional';
+    applyH3Style(tradTitle);
+
     const tradIntro = document.createElement('p');
     tradIntro.textContent = 'Fala, pessoal! Você sabe o que é Logística? Aposto que você pensou na definição de Logística como entrega de "algo". E não está errado, bom... De certa maneira! Sabia que existe um processo muito legal e bacana por trás de cada produto que compramos e recebemos? É o que hoje chamamos de Logística Integrada e veremos isso mais adiante, agora vamos falar sobre a Logística tradicional quando o processo se resumia apenas a transporte e movimentação.';
     
@@ -52,9 +69,10 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     <p>Esse isolamento não era nada bom, com a falta de comunicação e organização interna, a empresa não conseguia obter melhores resultados e como não havia coordenação, havia excesso de estoque, rotas mal planejadas, atrasos e retrabalhos, o que aumentava os gastos.</p>`;
     columns.append(imageCol, textCol);
 
-    const intHighlight = document.createElement('div');
-    intHighlight.className = 'highlight-text';
-    intHighlight.textContent = 'Logística Integrada';
+    const intTitle = document.createElement('h3');
+    intTitle.textContent = 'Logística Integrada';
+    applyH3Style(intTitle);
+
     const intIntro = document.createElement('div');
     intIntro.innerHTML = `<p>Fala galera, de boa? Como solução para os problemas da Logística tradicional surgiu a Logística Integrada.</p>
     <p>Saca só: Logística Integrada nada mais é do que juntar tudo que acontece dentro de uma empresa, desde pegar o material lá no começo até entregar o produto na mão do cliente. É igual fazer todas as partes do rolê se conectarem, sem bagunça e sem atraso.</p>
@@ -244,10 +262,10 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     container.append(
         backButton, 
         title, 
-        tradHighlight, 
+        tradTitle, // Alterado
         tradIntro,
         columns,
-        intHighlight,
+        intTitle, // Alterado
         intIntro,
         intTopics,
         timelineSection,

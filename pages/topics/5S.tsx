@@ -1,4 +1,5 @@
 
+
 import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -32,6 +33,15 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         const sectionEl = document.createElement('div');
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)'
+        });
         sectionEl.appendChild(h3);
         const p = document.createElement('p');
         p.innerHTML = content;

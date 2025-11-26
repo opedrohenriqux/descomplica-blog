@@ -32,6 +32,20 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     const intro = document.createElement('p');
     intro.textContent = 'Fala, pessoal! Dentro da Logística Integrada nós temos o Just In Time (Na hora certa), uma estratégia de gestão da produção e logística que tem como objetivo produzir e entregar apenas o necessário, no momento exato, na quantidade certa, evitando estoques excessivos e desperdícios.';
     
+    // Helper para estilo padrão de título
+    const applyH3Style = (element) => {
+        applyStyles(element, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)',
+            width: '100%' // Garante que a linha vá até o final
+        });
+    };
+
     // Seção de Imagem (Substituindo o Vídeo)
     const mediaSection = document.createElement('div');
     mediaSection.style.width = '100%';
@@ -39,7 +53,7 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     
     const mediaTitle = document.createElement('h3');
     mediaTitle.textContent = 'Fluxo do Just in Time';
-    applyStyles(mediaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1rem' });
+    applyH3Style(mediaTitle);
     
     const imageContainer = document.createElement('div');
     imageContainer.className = 'media-container';
@@ -68,12 +82,16 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     mediaSection.append(mediaTitle, imageContainer);
 
     const comoSurgiuTitle = document.createElement('h3');
-    comoSurgiuTitle.textContent = 'COMO SURGIU?';
+    comoSurgiuTitle.textContent = 'Como surgiu?';
+    applyH3Style(comoSurgiuTitle);
+
     const comoSurgiuText = document.createElement('p');
     comoSurgiuText.textContent = 'O Just in Time (JIT) surgiu no Japão, nas décadas de 1950 e 1960, principalmente na Toyota, com o engenheiro Taiichi Ohno como idealizador. Foi desenvolvido para enfrentar a escassez de recursos e aumentar a eficiência industrial, evitando desperdícios e estoques excessivos. O JIT baseia-se em produzir apenas o necessário, na hora certa, mantendo um fluxo contínuo de produção e priorizando a qualidade total, já que não há estoques para compensar falhas. Essa filosofia reduziu custos, otimizou processos e se tornou referência mundial, especialmente na indústria automotiva.';
 
     const comoFuncionaTitle = document.createElement('h3');
-    comoFuncionaTitle.textContent = 'COMO FUNCIONA';
+    comoFuncionaTitle.textContent = 'Como funciona?';
+    applyH3Style(comoFuncionaTitle);
+
     const comoFuncionaList = createTopicList([
         'Produção puxada pela demanda → só se fabrica quando há pedido/necessidade.',
         'Controle rigoroso de estoques → materiais chegam quase no momento da produção.',
@@ -82,12 +100,16 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     ]);
 
     const exemploTitle = document.createElement('h3');
-    exemploTitle.textContent = 'EXEMPLO PRÁTICO';
+    exemploTitle.textContent = 'Exemplo prático';
+    applyH3Style(exemploTitle);
+
     const exemploText = document.createElement('p');
     exemploText.innerHTML = 'A Toyota, no Japão, foi pioneira no JIT: Em vez de manter grandes estoques de peças, os fornecedores entregam exatamente o que será usado na linha de produção no momento certo, isso reduz custos de armazenagem e aumenta a eficiência.<br>O Just in Time é um dos pilares da logística integrada e da filosofia de produção enxuta, pois conecta produção, fornecedores e clientes de forma sincronizada.';
     
     const importanciaTitle = document.createElement('h3');
-    importanciaTitle.textContent = 'IMPORTÂNCIA';
+    importanciaTitle.textContent = 'Importância';
+    applyH3Style(importanciaTitle);
+
     const importanciaText = document.createElement('p');
     importanciaText.textContent = 'O Just in Time (JIT) é importante porque aumenta a eficiência e reduz custos, produzindo apenas o necessário, garantindo qualidade e flexibilidade, e permitindo que as empresas se adaptem rapidamente às demandas do mercado.';
 
