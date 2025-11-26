@@ -5,6 +5,8 @@
 
 
 
+
+
 import { styles, applyStyles, CtaButton } from '../utils.tsx';
 import { renderMemoryGame } from './games/MemoryGame.tsx';
 import { renderLogisticaRun } from './games/LogisticaRun.tsx';
@@ -13,6 +15,7 @@ import { renderStockMethodGame } from './games/StockMethodGame.tsx';
 import { renderKanbanSimulator } from './games/KanbanSimulator.tsx';
 import { renderJitManager } from './games/JitManager.tsx';
 import { renderHangmanGame } from './games/HangmanGame.tsx';
+import { renderEcoLogistica } from './games/EcoLogistica.tsx';
 
 // Lista de Jogos Disponíveis
 const gamesList = [
@@ -39,6 +42,12 @@ const gamesList = [
         title: 'Logística Run 2D',
         description: 'Assuma o volante! Corra com o caminhão de entrega, desvie de cones e buracos e colete caixas para garantir a satisfação do cliente.',
         thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="100" height="100" fill="#87CEEB"/><rect x="0" y="70" width="100" height="30" fill="#4CAF50"/><rect x="20" y="50" width="40" height="25" fill="#fec700"/><rect x="60" y="55" width="15" height="20" fill="#fec700"/><circle cx="30" cy="75" r="5" fill="#333"/><circle cx="70" cy="75" r="5" fill="#333"/><rect x="85" y="60" width="10" height="10" fill="#8d6e63"/></svg>`
+    },
+    {
+        id: 'eco-logistica',
+        title: 'Eco Logística',
+        description: 'Pratique a Logística Reversa! Classifique rapidamente os itens que chegam na esteira: Reciclagem, Conserto ou Revenda.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="40" width="80" height="20" fill="#555"/><circle cx="20" cy="50" r="3" fill="#fff"/><circle cx="40" cy="50" r="3" fill="#fff"/><circle cx="60" cy="50" r="3" fill="#fff"/><circle cx="80" cy="50" r="3" fill="#fff"/><rect x="15" y="65" width="20" height="25" fill="#2ecc71"/><rect x="40" y="65" width="20" height="25" fill="#f39c12"/><rect x="65" y="65" width="20" height="25" fill="#3498db"/><text x="50" y="30" font-family="Arial" font-size="20" text-anchor="middle">♻️</text></svg>`
     },
     {
         id: 'word-search',
@@ -87,6 +96,9 @@ export function renderGamesPage(selectedGame, transitionTo, setSelectedGame) {
                 break;
             case 'hangman-game':
                 gameContent = renderHangmanGame(transitionTo, setSelectedGame);
+                break;
+            case 'eco-logistica':
+                gameContent = renderEcoLogistica(transitionTo, setSelectedGame);
                 break;
             default:
                 // Fallback caso o ID não exista
