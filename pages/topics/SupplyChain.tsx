@@ -1,4 +1,5 @@
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createImage } from '../../utils.tsx';
 
 export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -33,11 +34,22 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
         
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
+        applyStyles(h3, {
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginTop: '2.5rem',
+            marginBottom: '1rem',
+            paddingBottom: '0.5rem',
+            borderBottom: '2px solid var(--primary-color)'
+        });
         sectionEl.appendChild(h3);
 
         if (typeof content === 'string') {
             const p = document.createElement('p');
             p.innerHTML = content;
+            p.style.fontSize = '1.1rem';
+            p.style.lineHeight = '1.8';
             sectionEl.appendChild(p);
         } else if (Array.isArray(content)) {
             sectionEl.appendChild(createTopicList(content));
@@ -49,64 +61,118 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
 
     const intro = createSection('O que é?', 'Fala, galera! A Cadeia de Suprimentos (ou Supply Chain, em inglês) é todo o caminho que um produto faz, desde a matéria-prima até chegar na sua mão. Pensa no seu celular: a cadeia de suprimentos inclui a mineração dos metais, a fabricação das peças, a montagem do aparelho, o transporte para a loja e, finalmente, a venda para você. É uma rede gigante que conecta fornecedores, fabricantes, distribuidores, lojas e clientes.');
     
-    const diagramContainer = document.createElement('div');
-    diagramContainer.className = 'supply-chain-diagram-container';
-    diagramContainer.innerHTML = `
-        <svg viewBox="0 0 800 150" xmlns="http://www.w3.org/2000/svg">
-            <style>
-                .sc-node { transition: transform 0.3s ease; }
-                .sc-node:hover { transform: scale(1.1); }
-                .sc-text { font-family: 'Poppins', sans-serif; font-weight: 600; fill: var(--text-color); }
-                .sc-subtext { font-family: 'Poppins', sans-serif; font-size: 12px; fill: var(--text-color-light); }
-            </style>
-            <!-- Flow Line -->
-            <path d="M 75 75 H 725" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="8 4">
-                <animate attributeName="stroke-dashoffset" from="0" to="24" dur="1s" repeatCount="indefinite" />
-            </path>
-            
-            <!-- Nodes -->
-            <g class="sc-node" transform="translate(50, 75)">
-                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                <text class="sc-text" text-anchor="middle" y="-5">Matéria-Prima</text>
-                <text class="sc-subtext" text-anchor="middle" y="15">(Fornecedor)</text>
-            </g>
-            <g class="sc-node" transform="translate(225, 75)">
-                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                <text class="sc-text" text-anchor="middle" y="-5">Produção</text>
-                 <text class="sc-subtext" text-anchor="middle" y="15">(Fábrica)</text>
-            </g>
-            <g class="sc-node" transform="translate(400, 75)">
-                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                <text class="sc-text" text-anchor="middle" y="-5">Armazenagem</text>
-                 <text class="sc-subtext" text-anchor="middle" y="15">(Distribuidor)</text>
-            </g>
-            <g class="sc-node" transform="translate(575, 75)">
-                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                <text class="sc-text" text-anchor="middle" y="-5">Varejo</text>
-                 <text class="sc-subtext" text-anchor="middle" y="15">(Loja)</text>
-            </g>
-            <g class="sc-node" transform="translate(750, 75)">
-                <circle r="40" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                <text class="sc-text" text-anchor="middle" y="5">Cliente Final</text>
-            </g>
-        </svg>
+    // Correção: Usando iframe para garantir a visualização da imagem do Google Drive
+    const imageDiagram = document.createElement('div');
+    imageDiagram.className = 'media-container';
+    
+    const iframeWrapper = document.createElement('div');
+    iframeWrapper.className = 'video-wrapper'; // Mantém proporção responsiva
+    iframeWrapper.innerHTML = `
+        <iframe 
+            src="https://drive.google.com/file/d/1EGKuZFzTNSZe_YGYc5tw9-ujt_3SY2JP/preview" 
+            width="640" 
+            height="480" 
+            allow="autoplay"
+            title="Diagrama Cadeia de Suprimentos">
+        </iframe>
     `;
+
+    const driveLink = document.createElement('div');
+    driveLink.style.marginTop = '0.5rem';
+    driveLink.innerHTML = `<a href="https://drive.google.com/file/d/1EGKuZFzTNSZe_YGYc5tw9-ujt_3SY2JP/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 0.9rem;">Abrir imagem em nova guia <svg style="vertical-align: middle;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>`;
+
+    const caption = document.createElement('p');
+    caption.className = 'media-caption';
+    caption.textContent = 'Diagrama Ilustrativo da Cadeia de Suprimentos';
+
+    imageDiagram.append(iframeWrapper, driveLink, caption);
     
     const logisticaVsSCM = createSection('Logística vs. Supply Chain Management (SCM)', 'Muita gente confunde, mas saca só a diferença: a <strong>Logística</strong> é uma parte da cadeia de suprimentos. Ela cuida da movimentação e armazenagem dos produtos (transporte, estoque, etc.). Já o <strong>Supply Chain Management (SCM)</strong> é a gestão de TUDO: desde a negociação com fornecedores, produção, logística, até o serviço ao cliente. Ou seja, a logística é o "como" (movimentar), e o SCM é o "o quê" e o "porquê" (gerenciar o processo todo).');
     
+    // Seção: Importância
+    const importanciaSection = createSection('Qual a importância?', 'A gestão da Cadeia de Suprimentos é o coração pulsante de qualquer empresa moderna. Sem ela, os produtos não chegariam às prateleiras, os hospitais ficariam sem remédios e as fábricas parariam. <br><br>Em um mundo globalizado, uma falha em um fornecedor do outro lado do mundo pode parar uma linha de montagem inteira aqui no Brasil. Por isso, gerenciar essa cadeia não é apenas sobre "transportar caixas", mas sobre <strong>estratégia, inteligência e previsão</strong> para garantir que o negócio continue rodando mesmo diante de imprevistos.');
+
+    // Seção: Benefícios
+    const beneficiosSection = createSection('Principais Benefícios', [
+        'Redução de Custos Operacionais: Identificar desperdícios e otimizar rotas economiza muito dinheiro.',
+        'Melhoria na Qualidade: Controle rigoroso desde a matéria-prima garante um produto final melhor.',
+        'Satisfação do Cliente: Entregar no prazo e sem avarias fideliza quem compra.',
+        'Gestão de Riscos: Ter planos para lidar com crises, greves ou falta de material.',
+        'Fluxo de Caixa Otimizado: Estoque parado é dinheiro parado; o SCM ajuda a girar o estoque mais rápido.'
+    ]);
+
+    // Seção: Tipos de Cadeia de Suprimentos
+    const typesTitle = document.createElement('h3');
+    typesTitle.textContent = 'Tipos de Cadeia de Suprimentos';
+    applyStyles(typesTitle, {
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginTop: '2.5rem',
+        marginBottom: '1rem',
+        paddingBottom: '0.5rem',
+        borderBottom: '2px solid var(--primary-color)'
+    });
+
+    const typesGrid = document.createElement('div');
+    applyStyles(typesGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '1.5rem',
+        marginTop: '1.5rem',
+        width: '100%'
+    });
+
+    const typesData = [
+        {
+            title: 'Cadeia de Suprimentos Ágil',
+            desc: 'Focada em velocidade e capacidade de resposta. Ideal para mercados onde a demanda muda muito rápido (como moda ou tecnologia). A prioridade é se adaptar e entregar rápido, mesmo que custe um pouco mais.',
+            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`
+        },
+        {
+            title: 'Cadeia de Suprimentos Enxuta (Lean)',
+            desc: 'Focada na eficiência e baixo custo. O objetivo é eliminar todo tipo de desperdício (tempo, material, estoque). Funciona muito bem para produtos com alta demanda e pouca variação, como alimentos básicos.',
+            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
+        },
+        {
+            title: 'Reposição Contínua',
+            desc: 'Baseada na fidelidade e previsibilidade. A entrega de produtos é feita de forma constante e programada, garantindo que o cliente nunca fique sem estoque. Muito comum em parcerias B2B (empresa para empresa).',
+            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>`
+        }
+    ];
+
+    typesData.forEach(type => {
+        const card = document.createElement('div');
+        applyStyles(card, {
+            backgroundColor: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            boxShadow: '0 4px 12px var(--card-shadow)',
+        });
+        card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <div style="color:var(--primary-color); width:30px; height:30px;">${type.icon}</div>
+                <h4 style="margin:0; font-size:1.1rem; color:var(--text-color);">${type.title}</h4>
+            </div>
+            <p style="margin:0; font-size:0.95rem; color:var(--text-color-light); line-height:1.6;">${type.desc}</p>
+        `;
+        typesGrid.appendChild(card);
+    });
+
+    const typesSection = document.createElement('div');
+    typesSection.append(typesTitle, typesGrid);
+
+    // Imagem 2: Tecnologia
+    const imageTech = createImage(
+        'https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&h=600&q=80',
+        'Armazém automatizado moderno',
+        'A tecnologia é vital para gerenciar os diferentes tipos de cadeias de suprimentos com eficiência.'
+    );
+
     const cardContainer = document.createElement('div');
     cardContainer.className = 'info-cards-container';
-
-    const importanciaCard = document.createElement('div');
-    importanciaCard.className = 'info-card';
-    importanciaCard.innerHTML = '<h3>Importância da Gestão</h3>';
-    importanciaCard.appendChild(createTopicList([
-        'Redução de custos → Processos eficientes evitam desperdícios.',
-        'Satisfação do cliente → O produto certo chega na hora certa.',
-        'Vantagem competitiva → Empresas com boa gestão de SCM são mais rápidas e confiáveis.',
-        'Flexibilidade → Consegue se adaptar a mudanças no mercado (como aumento de demanda).',
-    ]));
-
+    
     const etapasCard = document.createElement('div');
     etapasCard.className = 'info-card';
     etapasCard.innerHTML = '<h3>Principais Etapas</h3>';
@@ -118,7 +184,18 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
         'Logística Reversa → Lidar com devoluções ou reciclagem de produtos.',
     ]));
     
-    cardContainer.append(importanciaCard, etapasCard);
+    const componentsCard = document.createElement('div');
+    componentsCard.className = 'info-card';
+    componentsCard.innerHTML = '<h3>Quem participa?</h3>';
+    componentsCard.appendChild(createTopicList([
+        'Fornecedores primários e secundários.',
+        'Fabricantes e montadoras.',
+        'Distribuidores e atacadistas.',
+        'Varejistas (físicos e e-commerce).',
+        'Consumidor final (Você!).'
+    ]));
+    
+    cardContainer.append(etapasCard, componentsCard);
 
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
@@ -132,14 +209,14 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     const quizData = [
         { q: "O que é a Cadeia de Suprimentos (Supply Chain)?", a: 1, o: ["Apenas o transporte de produtos da fábrica para a loja.", "Todo o caminho do produto, da matéria-prima ao cliente final.", "Apenas o processo de venda no varejo.", "O gerenciamento do estoque dentro do armazém."] },
         { q: "Qual a principal diferença entre Logística e Supply Chain Management (SCM)?", a: 2, o: ["Não há diferença, são a mesma coisa.", "Logística gerencia tudo, enquanto SCM cuida apenas do transporte.", "A Logística é uma parte do SCM, que gerencia todo o processo.", "SCM foca em fornecedores e Logística foca em clientes."] },
+        { q: "Qual tipo de Cadeia de Suprimentos foca em eliminar desperdícios e reduzir custos?", a: 1, o: ["Cadeia Ágil", "Cadeia Enxuta (Lean)", "Cadeia de Reposição Contínua", "Cadeia Flexível"] },
         { q: "Qual etapa da cadeia de suprimentos envolve a escolha de fornecedores e a compra de matéria-prima?", a: 0, o: ["Compras (Sourcing)", "Produção", "Distribuição", "Logística Reversa"] },
         { q: "Uma boa gestão da cadeia de suprimentos resulta em:", a: 3, o: ["Aumento de custos e mais desperdícios.", "Clientes insatisfeitos com atrasos.", "Menos flexibilidade para o mercado.", "Redução de custos e clientes mais satisfeitos."] },
-        { q: "A gestão de devoluções e reciclagem de produtos é responsabilidade de qual área?", a: 1, o: ["Planejamento", "Logística Reversa", "Produção", "Varejo"] },
+        { q: "A cadeia de suprimentos Ágil é ideal para:", a: 0, o: ["Mercados onde a demanda muda rápido (ex: moda).", "Produtos básicos com demanda estável (ex: arroz).", "Produtos que nunca mudam.", "Empresas que não querem inovar."] },
         { q: "No diagrama da cadeia de suprimentos, qual é o elo que vem imediatamente antes do 'Cliente Final'?", a: 3, o: ["Produção", "Matéria-Prima", "Armazenagem", "Varejo (Loja)"] },
         { q: "O termo em inglês para Cadeia de Suprimentos é:", a: 2, o: ["Just in Time", "Kaizen", "Supply Chain", "Kanban"] },
         { q: "Prever a demanda dos clientes e planejar a produção faz parte de qual etapa do SCM?", a: 0, o: ["Planejamento", "Compras", "Distribuição", "Venda"] },
         { q: "Por que a gestão da cadeia de suprimentos é considerada uma vantagem competitiva?", a: 1, o: ["Porque aumenta o preço final do produto.", "Porque torna a empresa mais rápida, confiável e eficiente.", "Porque elimina a necessidade de fornecedores.", "Porque foca apenas na produção interna."] },
-        { q: "A 'fábrica' está associada a qual etapa da cadeia de suprimentos?", a: 2, o: ["Compras", "Armazenagem", "Produção", "Cliente Final"] },
     ];
     
     const quizForm = document.createElement('form');
@@ -206,8 +283,12 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
         backButton, 
         title,
         intro,
-        diagramContainer,
+        imageDiagram,
         logisticaVsSCM,
+        importanciaSection,
+        beneficiosSection,
+        typesSection,
+        imageTech,
         cardContainer,
         quizSection,
         topicNav

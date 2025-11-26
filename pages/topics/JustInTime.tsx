@@ -32,19 +32,40 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     const intro = document.createElement('p');
     intro.textContent = 'Fala, pessoal! Dentro da Logística Integrada nós temos o Just In Time (Na hora certa), uma estratégia de gestão da produção e logística que tem como objetivo produzir e entregar apenas o necessário, no momento exato, na quantidade certa, evitando estoques excessivos e desperdícios.';
     
-    // Example Video Section demonstrating createVideo usage
-    const videoSection = document.createElement('div');
-    videoSection.style.width = '100%';
-    videoSection.style.marginBottom = '2rem';
+    // Seção de Imagem (Substituindo o Vídeo)
+    const mediaSection = document.createElement('div');
+    mediaSection.style.width = '100%';
+    mediaSection.style.marginBottom = '2rem';
     
-    const videoTitle = document.createElement('h3');
-    videoTitle.textContent = 'Entenda o JIT em 2 minutos';
-    applyStyles(videoTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1rem' });
+    const mediaTitle = document.createElement('h3');
+    mediaTitle.textContent = 'Fluxo do Just in Time';
+    applyStyles(mediaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1rem' });
     
-    // ATENÇÃO: Se o link do Youtube der erro (153), substitua pela URL do seu vídeo no Google Drive.
-    // O código agora detecta automaticamente se é Youtube ou Drive.
-    const jitVideo = createVideo('https://www.youtube.com/watch?v=BYw3TemL2Fk', 'Conceito Básico do Sistema Toyota de Produção');
-    videoSection.append(videoTitle, jitVideo);
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'media-container';
+    
+    const iframeWrapper = document.createElement('div');
+    iframeWrapper.className = 'video-wrapper'; 
+    iframeWrapper.innerHTML = `
+        <iframe 
+            src="https://drive.google.com/file/d/12oA58IBZC3oT6ixN2UTbSZRU73CAB9RI/preview" 
+            width="640" 
+            height="480" 
+            allow="autoplay"
+            title="Diagrama Just in Time">
+        </iframe>
+    `;
+
+    const driveLink = document.createElement('div');
+    driveLink.style.marginTop = '0.5rem';
+    driveLink.innerHTML = `<a href="https://drive.google.com/file/d/12oA58IBZC3oT6ixN2UTbSZRU73CAB9RI/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 0.9rem;">Abrir imagem em nova guia <svg style="vertical-align: middle;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>`;
+
+    const caption = document.createElement('p');
+    caption.className = 'media-caption';
+    caption.textContent = 'Diagrama ilustrativo do sistema Just in Time';
+
+    imageContainer.append(iframeWrapper, driveLink, caption);
+    mediaSection.append(mediaTitle, imageContainer);
 
     const comoSurgiuTitle = document.createElement('h3');
     comoSurgiuTitle.textContent = 'COMO SURGIU?';
@@ -181,7 +202,7 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
         backButton, 
         title,
         intro,
-        videoSection,
+        mediaSection,
         comoSurgiuTitle,
         comoSurgiuText,
         comoFuncionaTitle,
