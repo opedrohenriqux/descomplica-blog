@@ -1,3 +1,4 @@
+
 import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -50,42 +51,164 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
     const comoFunciona = createSection('Como funciona?', 'O Kaizen funciona com a colaboração de todos na empresa. A ideia é identificar problemas e sugerir pequenas melhorias no dia a dia, como organizar melhor as ferramentas ou mudar um passo em uma tarefa para ser mais rápido. Em vez de esperar por grandes mudanças, o Kaizen foca em fazer ajustes simples e contínuos que, juntos, geram grandes resultados a longo prazo, tornando o trabalho mais fácil, seguro e eficiente.');
     const importancia = createSection('Importância', 'O Kaizen é importante porque incentiva a empresa a melhorar sempre, eliminando desperdícios e aumentando a eficiência. Isso leva a produtos e serviços de maior qualidade, custos mais baixos e clientes mais satisfeitos. Além disso, valoriza os funcionários, que participam ativamente das melhorias, criando um ambiente de trabalho mais colaborativo e motivador.');
     
+    // Diagrama das 7 Etapas do Kaizen (MANTIDO)
     const imageContainer = document.createElement('div');
     imageContainer.className = 'kaizen-main-image';
+    imageContainer.style.maxWidth = '100%';
     imageContainer.innerHTML = `
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--button-bg);stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:var(--card-bg);stop-opacity:1" />
-                </linearGradient>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.2)"/>
+                </filter>
             </defs>
-            <rect x="0" y="0" width="400" height="200" rx="10" fill="url(#grad1)" />
-            <text x="200" y="50" font-family="Poppins" font-size="24" font-weight="700" fill="var(--primary-color)" text-anchor="middle">KAIZEN</text>
-            <text x="200" y="75" font-family="Poppins" font-size="14" fill="var(--text-color)" text-anchor="middle">Melhoria Contínua</text>
             
-            <g transform="translate(50, 120)">
-                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
-                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Planejar</text>
+            <!-- Lines connecting to center -->
+            <g stroke="var(--primary-color)" stroke-width="2" opacity="0.5">
+                <line x1="400" y1="250" x2="200" y2="100" /> <!-- 1 -->
+                <line x1="400" y1="250" x2="400" y2="60" />  <!-- 2 -->
+                <line x1="400" y1="250" x2="600" y2="100" /> <!-- 3 -->
+                <line x1="400" y1="250" x2="700" y2="250" /> <!-- 4 -->
+                <line x1="400" y1="250" x2="600" y2="400" /> <!-- 5 -->
+                <line x1="400" y1="250" x2="400" y2="440" /> <!-- 6 -->
+                <line x1="400" y1="250" x2="200" y2="400" /> <!-- 7 -->
             </g>
-            <path d="M75 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
-            <g transform="translate(140, 120)">
-                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
-                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Fazer</text>
+
+            <!-- Center Circle -->
+            <circle cx="400" cy="250" r="100" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="5" filter="url(#shadow)"/>
+            <text x="400" y="230" font-family="Poppins" font-size="20" font-weight="700" fill="var(--text-color)" text-anchor="middle">7 ETAPAS</text>
+            <text x="400" y="255" font-family="Poppins" font-size="20" font-weight="700" fill="var(--text-color)" text-anchor="middle">DO KAIZEN</text>
+            <text x="400" y="295" font-family="Poppins" font-size="32" font-weight="700" fill="var(--primary-color)" text-anchor="middle">改善</text>
+
+            <!-- Node 1: Top Left -->
+            <g transform="translate(110, 70)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Identificar</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">oportunidades</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">1</text>
             </g>
-             <path d="M165 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
-            <g transform="translate(230, 120)">
-                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
-                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Checar</text>
+
+            <!-- Node 2: Top -->
+            <g transform="translate(310, 30)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Mapear o</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">processo atual</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">2</text>
             </g>
-             <path d="M255 120 h 40" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4" />
-            <g transform="translate(320, 120)">
-                <circle cx="0" cy="0" r="20" fill="var(--primary-color)" fill-opacity="0.3"/>
-                <text x="0" y="5" font-family="Poppins" font-size="10" fill="var(--text-color)" text-anchor="middle">Agir</text>
+
+            <!-- Node 3: Top Right -->
+            <g transform="translate(510, 70)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Desenvolver</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">uma solução</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">3</text>
+            </g>
+
+            <!-- Node 4: Right -->
+            <g transform="translate(600, 220)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="35" font-family="Poppins" font-size="13" font-weight="700" fill="#333" text-anchor="middle">Implementar</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">4</text>
+            </g>
+
+            <!-- Node 5: Bottom Right -->
+            <g transform="translate(510, 370)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Analisar os</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">resultados</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">5</text>
+            </g>
+
+             <!-- Node 6: Bottom -->
+            <g transform="translate(310, 410)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Criar um</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">padrão</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">6</text>
+            </g>
+
+            <!-- Node 7: Bottom Left -->
+            <g transform="translate(110, 370)" filter="url(#shadow)">
+                <rect x="0" y="0" width="180" height="60" rx="10" fill="var(--primary-color)" />
+                <text x="90" y="25" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">Planejar os</text>
+                <text x="90" y="45" font-family="Poppins" font-size="12" font-weight="700" fill="#333" text-anchor="middle">próximos passos</text>
+                <circle cx="0" cy="30" r="22" fill="var(--card-bg)" stroke="var(--primary-color)" stroke-width="3"/>
+                <text x="0" y="37" font-family="Poppins" font-size="18" font-weight="700" fill="var(--text-color)" text-anchor="middle">7</text>
             </g>
         </svg>
     `;
+
+    // NOVA SEÇÃO: O Ciclo PDCA
+    const pdcaSection = document.createElement('div');
+    pdcaSection.style.width = '100%';
+    pdcaSection.style.marginTop = '2rem';
     
+    const pdcaTitle = document.createElement('h3');
+    pdcaTitle.textContent = 'O Motor do Kaizen: Ciclo PDCA';
+    applyStyles(pdcaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1rem', borderBottom: '2px solid var(--primary-color)' });
+    
+    const pdcaText = document.createElement('p');
+    pdcaText.innerHTML = 'Para aplicar o Kaizen, utilizamos o Ciclo <strong>PDCA</strong>. É um método iterativo de gestão de quatro passos utilizado para o controle e melhoria contínua de processos e produtos.';
+    
+    const pdcaVisual = document.createElement('div');
+    pdcaVisual.className = 'pdca-visual';
+    pdcaVisual.innerHTML = `
+        <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="var(--text-color)" />
+                </marker>
+            </defs>
+            
+            <!-- PLAN -->
+            <path d="M 300 150 L 300 30 A 120 120 0 0 1 420 150 Z" fill="#FFD700" stroke="var(--card-bg)" stroke-width="2" />
+            <text x="360" y="100" font-family="Poppins" font-weight="700" font-size="18" fill="#333" text-anchor="middle">PLAN</text>
+            <text x="360" y="120" font-family="Poppins" font-size="12" fill="#333" text-anchor="middle">(Planejar)</text>
+            
+            <!-- DO -->
+            <path d="M 300 150 L 420 150 A 120 120 0 0 1 300 270 Z" fill="#FFA500" stroke="var(--card-bg)" stroke-width="2" />
+            <text x="360" y="200" font-family="Poppins" font-weight="700" font-size="18" fill="#333" text-anchor="middle">DO</text>
+            <text x="360" y="220" font-family="Poppins" font-size="12" fill="#333" text-anchor="middle">(Fazer)</text>
+
+            <!-- CHECK -->
+            <path d="M 300 150 L 300 270 A 120 120 0 0 1 180 150 Z" fill="#FF8C00" stroke="var(--card-bg)" stroke-width="2" />
+            <text x="240" y="200" font-family="Poppins" font-weight="700" font-size="18" fill="#333" text-anchor="middle">CHECK</text>
+            <text x="240" y="220" font-family="Poppins" font-size="12" fill="#333" text-anchor="middle">(Checar)</text>
+
+            <!-- ACT -->
+            <path d="M 300 150 L 180 150 A 120 120 0 0 1 300 30 Z" fill="#F4A460" stroke="var(--card-bg)" stroke-width="2" />
+            <text x="240" y="100" font-family="Poppins" font-weight="700" font-size="18" fill="#333" text-anchor="middle">ACT</text>
+            <text x="240" y="120" font-family="Poppins" font-size="12" fill="#333" text-anchor="middle">(Agir)</text>
+            
+            <!-- Descriptions -->
+            <text x="440" y="80" font-family="Poppins" font-size="12" fill="var(--text-color)" width="150">
+                <tspan x="440" dy="0">Identificar o problema</tspan>
+                <tspan x="440" dy="15">e criar um plano de ação.</tspan>
+            </text>
+            <text x="440" y="220" font-family="Poppins" font-size="12" fill="var(--text-color)">
+                <tspan x="440" dy="0">Executar o plano</tspan>
+                <tspan x="440" dy="15">definido.</tspan>
+            </text>
+            <text x="20" y="220" font-family="Poppins" font-size="12" fill="var(--text-color)">
+                <tspan x="20" dy="0">Verificar se o resultado</tspan>
+                <tspan x="20" dy="15">foi alcançado.</tspan>
+            </text>
+            <text x="20" y="80" font-family="Poppins" font-size="12" fill="var(--text-color)">
+                <tspan x="20" dy="0">Padronizar se funcionou</tspan>
+                <tspan x="20" dy="15">ou corrigir se falhou.</tspan>
+            </text>
+        </svg>
+    `;
+    
+    pdcaSection.append(pdcaTitle, pdcaText, pdcaVisual);
+
+    // Cards de Benefícios (Mantido)
     const cardContainer = document.createElement('div');
     cardContainer.className = 'info-cards-container';
     
@@ -101,19 +224,61 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
         'Processos mais eficientes e seguros.',
     ]));
     
-    const aplicacaoCard = document.createElement('div');
-    aplicacaoCard.className = 'info-card';
-    aplicacaoCard.innerHTML = '<h3>Onde se aplica?</h3><p>O Kaizen se aplica em qualquer área ou processo que precise de melhoria, como:</p>';
-    aplicacaoCard.appendChild(createTopicList([
-        'Indústria → otimizando linhas de produção;',
-        'Escritórios → melhorando o fluxo de trabalho;',
-        'Hospitais → agilizando o atendimento;',
-        'Logística → reduzindo tempos de entrega;',
-        'Vida Pessoal → aprimorando hábitos e rotinas.',
-    ]));
+    // NOVA SEÇÃO: Kaizen na Logística (Exemplos Reais)
+    const logisticaExamplesSection = document.createElement('div');
+    logisticaExamplesSection.style.width = '100%';
+    logisticaExamplesSection.style.marginTop = '3rem';
 
-    cardContainer.append(beneficiosCard, aplicacaoCard);
+    const logisticaTitle = document.createElement('h3');
+    logisticaTitle.textContent = 'Kaizen na Logística: Exemplos Reais';
+    applyStyles(logisticaTitle, { fontSize: '1.5rem', fontWeight: '700', color: 'var(--text-color)', marginBottom: '1.5rem', borderBottom: '2px solid var(--primary-color)' });
+
+    const examplesGrid = document.createElement('div');
+    applyStyles(examplesGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '1.5rem',
+    });
+
+    const example1 = document.createElement('div');
+    applyStyles(example1, {
+        backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 12px var(--card-shadow)'
+    });
+    example1.innerHTML = `
+        <h4 style="color:var(--primary-color); margin-top:0;">1. Picking (Separação de Pedidos)</h4>
+        <p style="font-size:0.95rem;"><strong>Problema:</strong> Os separadores andavam muito tempo para pegar os itens mais vendidos, que ficavam no fundo do armazém.</p>
+        <p style="font-size:0.95rem;"><strong>Ação Kaizen:</strong> Reorganizar o layout usando a Curva ABC. Colocar os produtos "A" (mais vendidos) perto da expedição.</p>
+        <p style="font-size:0.95rem;"><strong>Resultado:</strong> Redução de 20% no tempo de caminhada e aumento na velocidade de separação.</p>
+    `;
+
+    const example2 = document.createElement('div');
+    applyStyles(example2, {
+        backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 12px var(--card-shadow)'
+    });
+    example2.innerHTML = `
+        <h4 style="color:var(--primary-color); margin-top:0;">2. Carga e Descarga</h4>
+        <p style="font-size:0.95rem;"><strong>Problema:</strong> Caminhões ficavam parados muito tempo esperando doca livre, gerando multas e atrasos.</p>
+        <p style="font-size:0.95rem;"><strong>Ação Kaizen:</strong> Implementar agendamento de janelas de entrega e padronizar o processo de conferência.</p>
+        <p style="font-size:0.95rem;"><strong>Resultado:</strong> Redução do tempo de espera em 40% e eliminação de multas por estadia (demurrage).</p>
+    `;
+
+    const example3 = document.createElement('div');
+    applyStyles(example3, {
+        backgroundColor: 'var(--card-bg)', border: '1px solid var(--card-border)', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 12px var(--card-shadow)'
+    });
+    example3.innerHTML = `
+        <h4 style="color:var(--primary-color); margin-top:0;">3. Inventário Rotativo</h4>
+        <p style="font-size:0.95rem;"><strong>Problema:</strong> A empresa parava 3 dias por ano para contar estoque, perdendo vendas.</p>
+        <p style="font-size:0.95rem;"><strong>Ação Kaizen:</strong> Substituir o inventário anual pelo Inventário Cíclico (contar um pouco todo dia).</p>
+        <p style="font-size:0.95rem;"><strong>Resultado:</strong> Acuracidade do estoque subiu para 99% e a operação nunca mais precisou parar.</p>
+    `;
+
+    examplesGrid.append(example1, example2, example3);
+    logisticaExamplesSection.append(logisticaTitle, examplesGrid);
+
+    cardContainer.append(beneficiosCard); // Mantendo apenas benefícios no grid antigo
     
+    // Side Images (Mantido)
     const sideImagesContainer = document.createElement('div');
     sideImagesContainer.className = 'kaizen-side-images-container';
     sideImagesContainer.innerHTML = `
@@ -160,8 +325,8 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
         { q: "Qual destes NÃO é um benefício direto do Kaizen?", a: 2, o: ["Redução de desperdícios", "Aumento da produtividade", "Aumento do estoque de segurança", "Melhora do ambiente de trabalho"] },
         { q: "O ciclo PDCA (Planejar, Fazer, Checar, Agir) é frequentemente associado ao Kaizen porque ele:", a: 0, o: ["Estrutura o processo de melhoria contínua.", "É usado apenas para grandes projetos de inovação.", "Substitui a necessidade de colaboração da equipe.", "Serve para documentar erros sem corrigi-los."] },
         { q: "O Kaizen pode ser aplicado na vida pessoal?", a: 0, o: ["Sim, para aprimorar hábitos e rotinas.", "Não, é uma filosofia estritamente empresarial.", "Apenas em atividades financeiras.", "Apenas para organização de tarefas domésticas."] },
-        { q: "O principal objetivo de criar uma 'Cultura Kaizen' é:", a: 3, o: ["Punir os funcionários que não sugerem melhorias.", "Fazer com que apenas a liderança pense em melhorias.", "Copiar exatamente o que outras empresas fazem.", "Engajar todos na busca constante por melhorias."] },
-        { q: "Em qual cenário o Kaizen é mais eficaz?", a: 1, o: ["Em empresas que raramente mudam seus processos.", "Em ambientes que valorizam o aprendizado e a evolução constante.", "Em processos que já são perfeitos e não precisam de ajustes.", "Em equipes que trabalham de forma totalmente isolada."] },
+        { q: "No exemplo de 'Picking' na logística, qual foi a ação Kaizen aplicada?", a: 2, o: ["Contratar mais funcionários.", "Aumentar o tamanho do armazém.", "Reorganizar o layout usando a Curva ABC.", "Comprar empilhadeiras novas."] },
+        { q: "Qual é o significado do 'C' no ciclo PDCA?", a: 1, o: ["Create (Criar)", "Check (Checar/Verificar)", "Control (Controlar)", "Calculate (Calcular)"] },
     ];
 
     const quizForm = document.createElement('form');
@@ -231,8 +396,10 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
         comoSurgiu,
         comoFunciona,
         importancia,
-        imageContainer,
-        cardContainer,
+        imageContainer, // Diagrama 7 Etapas
+        pdcaSection,    // NOVO: Ciclo PDCA
+        cardContainer,  // Benefícios
+        logisticaExamplesSection, // NOVO: Exemplos na Logística
         sideImagesContainer,
         quizSection,
         topicNav

@@ -1,3 +1,4 @@
+
 import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
@@ -84,6 +85,32 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         `;
         s5Grid.appendChild(card);
     });
+
+    const image5S = document.createElement('div');
+    image5S.className = 'media-container';
+    image5S.style.marginTop = '3rem';
+
+    const iframeWrapper = document.createElement('div');
+    iframeWrapper.className = 'video-wrapper';
+    iframeWrapper.innerHTML = `
+        <iframe 
+            src="https://drive.google.com/file/d/1NB9V6w5gioOpTpUFwR3vLPRFSSZtFlkN/preview" 
+            width="640" 
+            height="480" 
+            allow="autoplay"
+            title="Exemplo 5S">
+        </iframe>
+    `;
+
+    const driveLink = document.createElement('div');
+    driveLink.style.marginTop = '0.5rem';
+    driveLink.innerHTML = `<a href="https://drive.google.com/file/d/1NB9V6w5gioOpTpUFwR3vLPRFSSZtFlkN/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 0.9rem;">Abrir imagem em nova guia <svg style="vertical-align: middle;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>`;
+
+    const caption = document.createElement('p');
+    caption.className = 'media-caption';
+    caption.textContent = 'Aplicação do 5S na prática';
+
+    image5S.append(iframeWrapper, driveLink, caption);
 
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
@@ -173,6 +200,7 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         intro,
         comoSurgiu,
         s5Grid,
+        image5S,
         quizSection,
         topicNav
     );
