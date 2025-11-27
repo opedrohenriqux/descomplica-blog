@@ -1,6 +1,7 @@
 
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo, createImage } from '../../utils.tsx';
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo, createImage, createCommentSection } from '../../utils.tsx';
 
 export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -218,6 +219,7 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('just-in-time');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -235,6 +237,7 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
         importanciaText,
         cardsContainer,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

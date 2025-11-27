@@ -1,3 +1,4 @@
+
 // Styles
 export const styles = {
   section: {
@@ -91,6 +92,8 @@ export function CtaButton(text, onClick, customStyle = {}) {
     transition: 'background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease',
     transform: 'translateY(0)',
     boxShadow: 'none',
+    maxWidth: '100%',
+    whiteSpace: 'normal',
     ...customStyle,
   };
   applyStyles(button, baseStyle);
@@ -131,14 +134,15 @@ export function createTopicList(items) {
 export function createTopicNavigation(topicId, transitionTo, selectedTopicUpdater) {
     const navContainer = document.createElement('div');
     navContainer.className = 'topic-navigation';
-
+    // Estilos agora gerenciados via CSS class no index.html para responsividade (@media)
+    
     const currentIndex = conteudosList.findIndex(t => t.id === topicId);
 
     const prevTopic = currentIndex > 0 ? conteudosList[currentIndex - 1] : null;
     const nextTopic = currentIndex < conteudosList.length - 1 ? conteudosList[currentIndex + 1] : null;
 
     if (prevTopic) {
-        const prevButton = CtaButton(`← Anterior`, () => {
+        const prevButton = CtaButton(`← Anterior: ${prevTopic.title}`, () => {
             transitionTo(() => { selectedTopicUpdater(prevTopic); });
         }, { margin: '0' });
         navContainer.appendChild(prevButton);
@@ -147,13 +151,212 @@ export function createTopicNavigation(topicId, transitionTo, selectedTopicUpdate
     }
 
     if (nextTopic) {
-        const nextButton = CtaButton(`Próximo →`, () => {
+        const nextButton = CtaButton(`Próximo: ${nextTopic.title} →`, () => {
             transitionTo(() => { selectedTopicUpdater(nextTopic); });
         }, { margin: '0' });
         navContainer.appendChild(nextButton);
     }
 
     return navContainer;
+}
+
+// Comments Section Component
+export function createCommentSection(topicId) {
+    const container = document.createElement('div');
+    container.className = 'comments-section';
+    applyStyles(container, {
+        width: '100%',
+        marginTop: '3rem',
+        paddingTop: '2rem',
+        borderTop: '2px solid var(--timeline-border)',
+    });
+
+    const title = document.createElement('h3');
+    title.textContent = 'Comentários';
+    applyStyles(title, {
+        fontSize: '1.8rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginBottom: '1.5rem',
+        borderBottom: '2px solid var(--primary-color)',
+        paddingBottom: '0.5rem',
+        display: 'inline-block'
+    });
+
+    // Input Area
+    const formContainer = document.createElement('div');
+    applyStyles(formContainer, {
+        backgroundColor: 'var(--card-bg)',
+        padding: '1.5rem',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px var(--card-shadow)',
+        marginBottom: '2rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem'
+    });
+
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Seu nome (Opcional)';
+    applyStyles(nameInput, {
+        padding: '0.8rem',
+        borderRadius: '8px',
+        border: '1px solid var(--card-border)',
+        backgroundColor: 'var(--timeline-bg)',
+        color: 'var(--text-color)',
+        fontSize: '1rem',
+        width: '100%'
+    });
+
+    const commentInput = document.createElement('textarea');
+    commentInput.placeholder = 'Deixe seu comentário, dúvida ou sugestão...';
+    applyStyles(commentInput, {
+        padding: '0.8rem',
+        borderRadius: '8px',
+        border: '1px solid var(--card-border)',
+        backgroundColor: 'var(--timeline-bg)',
+        color: 'var(--text-color)',
+        fontSize: '1rem',
+        width: '100%',
+        minHeight: '100px',
+        resize: 'vertical',
+        fontFamily: 'inherit'
+    });
+
+    const submitBtn = CtaButton('Enviar Comentário', () => handleSubmit(), { alignSelf: 'flex-end', margin: '0' });
+
+    formContainer.append(nameInput, commentInput, submitBtn);
+
+    // List Area
+    const commentsList = document.createElement('div');
+    applyStyles(commentsList, {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.5rem'
+    });
+
+    // Logic
+    const storageKey = `comments_${topicId}`;
+    
+    const loadComments = () => {
+        const saved = localStorage.getItem(storageKey);
+        return saved ? JSON.parse(saved) : [];
+    };
+
+    const saveComments = (comments) => {
+        localStorage.setItem(storageKey, JSON.stringify(comments));
+    };
+
+    const renderComments = () => {
+        commentsList.innerHTML = '';
+        const comments = loadComments();
+
+        if (comments.length === 0) {
+            commentsList.innerHTML = '<p style="text-align: center; color: var(--text-color-light); font-style: italic;">Seja o primeiro a comentar!</p>';
+            return;
+        }
+
+        // Sort by newest first
+        comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+        comments.forEach(comment => {
+            const item = document.createElement('div');
+            applyStyles(item, {
+                backgroundColor: 'var(--card-bg)',
+                padding: '1.5rem',
+                borderRadius: '12px',
+                border: '1px solid var(--card-border)',
+                boxShadow: '0 2px 6px var(--card-shadow)',
+                position: 'relative'
+            });
+
+            const header = document.createElement('div');
+            applyStyles(header, {
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.5rem'
+            });
+
+            const author = document.createElement('strong');
+            author.textContent = comment.author || 'Anônimo';
+            author.style.color = 'var(--primary-color)';
+            author.style.fontSize = '1.1rem';
+
+            const date = document.createElement('span');
+            date.textContent = new Date(comment.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            date.style.fontSize = '0.85rem';
+            date.style.color = 'var(--text-color-light)';
+
+            header.append(author, date);
+
+            const text = document.createElement('p');
+            text.textContent = comment.text;
+            text.style.margin = '0';
+            text.style.lineHeight = '1.6';
+            text.style.color = 'var(--text-color)';
+            text.style.whiteSpace = 'pre-wrap'; // Preserves line breaks
+
+            // Optional: Delete button (simulating admin/user control for local storage)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '×';
+            deleteBtn.title = 'Excluir comentário';
+            applyStyles(deleteBtn, {
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-color-light)',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                opacity: '0.5'
+            });
+            deleteBtn.addEventListener('mouseenter', () => deleteBtn.style.opacity = '1');
+            deleteBtn.addEventListener('mouseleave', () => deleteBtn.style.opacity = '0.5');
+            deleteBtn.addEventListener('click', () => {
+                if(confirm('Deseja excluir este comentário?')) {
+                    const newComments = comments.filter(c => c.id !== comment.id);
+                    saveComments(newComments);
+                    renderComments();
+                }
+            });
+
+            item.append(deleteBtn, header, text);
+            commentsList.appendChild(item);
+        });
+    };
+
+    const handleSubmit = () => {
+        const text = commentInput.value.trim();
+        const author = nameInput.value.trim();
+
+        if (!text) {
+            alert('Por favor, escreva um comentário.');
+            return;
+        }
+
+        const newComment = {
+            id: Date.now(),
+            text: text,
+            author: author,
+            date: new Date().toISOString()
+        };
+
+        const comments = loadComments();
+        comments.push(newComment);
+        saveComments(comments);
+
+        commentInput.value = '';
+        // Optional: nameInput.value = ''; // Keep name for convenience
+        
+        renderComments();
+    };
+
+    renderComments();
+    container.append(title, formContainer, commentsList);
+    return container;
 }
 
 // Media Helpers

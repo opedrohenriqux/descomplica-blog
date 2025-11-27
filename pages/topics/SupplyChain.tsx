@@ -1,5 +1,7 @@
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createImage } from '../../utils.tsx';
+
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createImage, createCommentSection } from '../../utils.tsx';
 
 export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -277,6 +279,7 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
     
+    const commentsSection = createCommentSection('supply-chain');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -291,6 +294,7 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
         imageTech,
         cardContainer,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

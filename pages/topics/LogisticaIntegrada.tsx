@@ -1,6 +1,7 @@
 
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
 
 export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -545,6 +546,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('logistica-integrada');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -565,6 +567,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         pilaresGrid,
         cardsContainer,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

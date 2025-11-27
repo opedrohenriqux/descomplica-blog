@@ -1,6 +1,8 @@
 
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
 
 export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -413,6 +415,7 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
     
+    const commentsSection = createCommentSection('kaizen');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -428,6 +431,7 @@ export function renderKaizenPage(transitionTo, selectedTopic, setSelectedTopic) 
         logisticaExamplesSection, // NOVO: Exemplos na Logística
         sideImagesContainer,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

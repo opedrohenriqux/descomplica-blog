@@ -31,13 +31,23 @@ export function renderQuemSomosPage() {
       
       .team-avatar-container {
         position: relative;
-        width: 220px; /* Aumentado de 150px */
-        height: 220px; /* Aumentado de 150px */
+        width: 220px;
+        height: 220px;
         margin: 0 auto 1.5rem;
         border-radius: 50%;
-        padding: 5px;
+        padding: 5px; /* Espaço para a borda gradient aparecer */
         background: linear-gradient(45deg, var(--primary-color), transparent);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .team-avatar-mask {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden; /* Corta o excesso da imagem com zoom */
+        position: relative;
+        background-color: var(--timeline-bg);
+        z-index: 1;
       }
       
       .team-card:hover .team-avatar-container {
@@ -48,10 +58,9 @@ export function renderQuemSomosPage() {
       .team-avatar {
         width: 100%;
         height: 100%;
-        border-radius: 50%;
         object-fit: cover;
-        border: 4px solid var(--card-bg);
-        background-color: var(--timeline-bg);
+        display: block;
+        transition: transform 0.3s ease; 
       }
 
       /* Modal Styles */
@@ -166,7 +175,7 @@ export function renderQuemSomosPage() {
       alignItems: 'center',
       textAlign: 'center',
       width: '100%',
-      maxWidth: '1200px', // Aumentado para permitir 3 itens lado a lado
+      maxWidth: '1200px',
       padding: '0 1rem'
     });
 
@@ -179,7 +188,7 @@ export function renderQuemSomosPage() {
     faqContainer.className = 'faq-container';
     applyStyles(faqContainer, {
       width: '100%',
-      maxWidth: '800px', // Limitando largura do FAQ para ficar mais elegante
+      maxWidth: '800px',
       textAlign: 'left',
       margin: '0 auto'
     });
@@ -279,19 +288,19 @@ export function renderQuemSomosPage() {
         display: 'flex',
         justifyContent: 'center',
         flexWrap: 'wrap',
-        gap: '2rem', // Ajustado gap para caber melhor
+        gap: '2rem',
         width: '100%'
     });
 
     // Helper para gerar URL de thumbnail do Drive
     const getDriveImg = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w500`;
 
-    // Dados da Equipe (com informações extras para o modal)
+    // Dados da Equipe
     const teamMembers = [
         {
             name: "Heloisa Dias",
             role: "Idealizadora",
-            age: "18 anos", // Dado Fictício
+            age: "18 anos", 
             hardSkills: ["Gestão de Estoque", "Planejamento Estratégico", "Pacote Office"],
             softSkills: ["Liderança", "Comunicação", "Resolução de Problemas"],
             projectRole: "Responsável pela pesquisa de conteúdo, estruturação didática e revisão técnica dos materiais.",
@@ -301,7 +310,7 @@ export function renderQuemSomosPage() {
         {
             name: "Pedro Henrique",
             role: "Idealizador",
-            age: "19 anos", // Dado Fictício
+            age: "19 anos",
             hardSkills: ["Análise de Dados", "Gestão de Projetos", "Tecnologia"],
             softSkills: ["Trabalho em Equipe", "Pensamento Crítico", "Adaptabilidade"],
             projectRole: "Atuação como responsável pela execução técnica do projeto e focado em desenvolver soluções estratégicas para implementação e manutenção dos conteúdos, visando uma otimização de tempo e de recursos.",
@@ -309,20 +318,23 @@ export function renderQuemSomosPage() {
             isPlaceholder: false
         },
         {
-            name: "Arthur Arthur",
+            name: "Arthur Augusto",
             role: "Idealizador",
-            age: "18 anos", // Dado Fictício
+            age: "18 anos",
             hardSkills: ["Design Gráfico", "Edição de Vídeo", "Marketing Digital"],
             softSkills: ["Criatividade", "Inovação", "Empatia"],
             projectRole: "Cuida da identidade visual, criação de mídias e experiência do usuário na plataforma.",
-            imgId: null,
-            isPlaceholder: true
+            imgId: "1GAVSKeHNMvUt4S0wJEzNn8Bkqn1_fPqw",
+            isPlaceholder: false,
+            imgStyle: {
+                objectPosition: 'center 20%', // Foca mais acima (rosto)
+                transform: 'scale(1.4)'       // Dá um zoom na imagem
+            }
         }
     ];
 
     // Função para criar e abrir o modal
     const openTeamModal = (member) => {
-        // Remove modal anterior se existir
         const existingModal = document.querySelector('.team-modal-overlay');
         if (existingModal) existingModal.remove();
 
@@ -374,12 +386,10 @@ export function renderQuemSomosPage() {
         overlay.appendChild(content);
         document.body.appendChild(overlay);
 
-        // Animação de entrada
         requestAnimationFrame(() => {
             overlay.classList.add('open');
         });
 
-        // Fechar Modal
         const closeBtn = content.querySelector('.close-modal-btn');
         const closeModal = () => {
             overlay.classList.remove('open');
@@ -399,15 +409,19 @@ export function renderQuemSomosPage() {
         card.setAttribute('aria-label', `Ver detalhes de ${member.name}`);
         applyStyles(card, {
             textAlign: 'center',
-            width: '300px', // Aumentado para acomodar a foto maior
-            flex: '0 1 300px' // Permite flexibilidade mas mantém base
+            width: '300px',
+            flex: '0 1 300px'
         });
 
-        // Adiciona evento de clique para abrir o modal
         card.addEventListener('click', () => openTeamModal(member));
 
+        // Container Externo (Borda/Gradiente)
         const imgContainer = document.createElement('div');
         imgContainer.className = 'team-avatar-container';
+
+        // Container Interno (Máscara)
+        const imgMask = document.createElement('div');
+        imgMask.className = 'team-avatar-mask';
 
         let imgContent;
         if (member.isPlaceholder) {
@@ -420,14 +434,20 @@ export function renderQuemSomosPage() {
                 backgroundColor: 'var(--timeline-border)',
                 color: 'var(--text-color-light)'
             });
-            // Aumentado ícone do placeholder
             imgContent.innerHTML = `<svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
         } else {
             imgContent = document.createElement('img');
             imgContent.className = 'team-avatar';
             imgContent.src = getDriveImg(member.imgId);
             imgContent.alt = member.name;
+            
+            if (member.imgStyle) {
+                applyStyles(imgContent, member.imgStyle);
+            }
         }
+
+        imgMask.appendChild(imgContent);
+        imgContainer.appendChild(imgMask);
 
         const name = document.createElement('h3');
         name.textContent = member.name;
@@ -449,7 +469,6 @@ export function renderQuemSomosPage() {
             letterSpacing: '1px'
         });
 
-        imgContainer.appendChild(imgContent);
         card.append(imgContainer, name, role);
         teamGrid.appendChild(card);
     });

@@ -538,6 +538,8 @@
         padding-top: 2rem;
         margin-top: 2rem;
         border-top: 2px solid var(--timeline-border);
+        flex-wrap: wrap; /* Allow wrapping on small screens */
+        gap: 1rem; /* Gap between buttons if wrapped */
       }
 
       /* JIT Page styles */
@@ -1386,6 +1388,82 @@
         margin: 0;
         font-size: 0.95rem !important;
         line-height: 1.6 !important;
+      }
+
+      /* MOBILE OPTIMIZATION RULES */
+      @media (max-width: 768px) {
+        body {
+          font-size: 14px; /* Base font size reduction */
+        }
+        
+        /* Adjust global section padding */
+        section {
+          padding: 3rem 1rem !important; 
+        }
+
+        /* Typography adjustments */
+        h1 { font-size: 2.5rem !important; }
+        h2 { font-size: 2rem !important; }
+        h3 { font-size: 1.5rem !important; }
+        p, li { font-size: 1rem !important; }
+
+        /* Topic Navigation stacking */
+        .topic-navigation {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .topic-navigation button {
+          width: 100%;
+          margin: 0 !important;
+        }
+
+        /* Content Columns */
+        .content-columns {
+          flex-direction: column;
+        }
+        .content-columns .image-col, .content-columns .text-col {
+          min-width: 100%;
+        }
+
+        /* Video/Iframes */
+        .video-wrapper {
+          margin-bottom: 1rem;
+        }
+
+        /* Game Cards */
+        .game-card {
+          width: 100% !important;
+          padding: 1rem;
+        }
+
+        /* Quiz Options - Better touch targets */
+        .quiz-options label {
+          padding: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        /* Tables/Grids fallback */
+        .compras-cycle-grid, .notas-fiscais-grid, .s5-visual-grid, .card-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Specific Elements */
+        .quote-card .quote-mark {
+          font-size: 3rem;
+          top: 0;
+        }
+        
+        .fund-card, .topic-card {
+          min-width: 100%;
+        }
+
+        /* Buttons general fix */
+        button {
+          max-width: 100%;
+          white-space: normal;
+          height: auto;
+          padding: 0.8rem 1rem !important;
+        }
       }
 
     </style>

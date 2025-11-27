@@ -1,4 +1,6 @@
 
+
+
 import { styles, applyStyles, CtaButton } from '../../utils.tsx';
 
 export function renderJitManager(transitionTo, setSelectedGame) {
@@ -67,7 +69,7 @@ export function renderJitManager(transitionTo, setSelectedGame) {
     const dashboard = document.createElement('div');
     applyStyles(dashboard, {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', // Reduced minmax for mobile
         gap: '1rem',
         padding: '1.5rem',
         backgroundColor: 'var(--card-bg)',
@@ -81,16 +83,16 @@ export function renderJitManager(transitionTo, setSelectedGame) {
         const div = document.createElement('div');
         div.innerHTML = `
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--primary-color);">${icon}</div>
-            <div style="font-size: 0.9rem; color: var(--text-color-light); text-transform: uppercase; letter-spacing: 1px;">${label}</div>
-            <div id="${valueId}" style="font-size: 1.5rem; font-weight: 700; color: var(--text-color);">0</div>
+            <div style="font-size: 0.8rem; color: var(--text-color-light); text-transform: uppercase; letter-spacing: 1px;">${label}</div>
+            <div id="${valueId}" style="font-size: 1.3rem; font-weight: 700; color: var(--text-color);">0</div>
         `;
         return div;
     };
 
     dashboard.append(
-        createDashItem('Dia Atual', 'jit-day', '📅'),
+        createDashItem('Dia', 'jit-day', '📅'),
         createDashItem('Saldo ($)', 'jit-balance', '💰'),
-        createDashItem('Capacidade Fábrica', 'jit-capacity', '🏭')
+        createDashItem('Capacidade', 'jit-capacity', '🏭')
     );
 
     // Main Simulation Area
@@ -136,7 +138,7 @@ export function renderJitManager(transitionTo, setSelectedGame) {
     ordersGrid.id = 'jit-orders-grid';
     applyStyles(ordersGrid, {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', // Slightly reduced for mobile
         gap: '1rem'
     });
 

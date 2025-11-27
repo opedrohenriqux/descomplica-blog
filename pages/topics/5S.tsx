@@ -1,6 +1,8 @@
 
 
-import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
 
 export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -202,6 +204,7 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('5s');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -212,6 +215,7 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         s5Grid,
         image5S,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

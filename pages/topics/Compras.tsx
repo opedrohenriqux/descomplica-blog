@@ -1,5 +1,7 @@
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo } from '../../utils.tsx';
+
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo, createCommentSection } from '../../utils.tsx';
 
 export function renderComprasPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -244,6 +246,7 @@ export function renderComprasPage(transitionTo, selectedTopic, setSelectedTopic)
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('compras');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -259,6 +262,7 @@ export function renderComprasPage(transitionTo, selectedTopic, setSelectedTopic)
         cycleSection,
         cardsContainer,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

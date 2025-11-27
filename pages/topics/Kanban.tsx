@@ -1,5 +1,7 @@
 
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
 
 export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -234,6 +236,7 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('kanban');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -249,6 +252,7 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         melhoria,
         exampleBoard,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

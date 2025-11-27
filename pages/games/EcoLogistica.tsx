@@ -1,5 +1,6 @@
 
 
+
 import { styles, applyStyles, CtaButton } from '../../utils.tsx';
 
 export function renderEcoLogistica(transitionTo, setSelectedGame) {
@@ -122,7 +123,8 @@ export function renderEcoLogistica(transitionTo, setSelectedGame) {
     // Bins Area (Drop Zones)
     const binsContainer = document.createElement('div');
     applyStyles(binsContainer, {
-        height: '140px',
+        height: 'auto',
+        minHeight: '120px', // Reduced min height for flexibility
         display: 'flex',
         justifyContent: 'space-around',
         padding: '10px',
@@ -131,9 +133,9 @@ export function renderEcoLogistica(transitionTo, setSelectedGame) {
     });
 
     const binTypes = [
-        { id: 'recycle', label: 'Reciclagem', icon: '♻️', color: '#2ecc71', desc: 'Lixo, quebrado, sucata' },
-        { id: 'repair', label: 'Conserto', icon: '🛠️', color: '#f39c12', desc: 'Defeito leve, recondicionar' },
-        { id: 'resell', label: 'Revenda', icon: '🏪', color: '#3498db', desc: 'Produto perfeito, devolvido' }
+        { id: 'recycle', label: 'Reciclagem', icon: '♻️', color: '#2ecc71', desc: 'Lixo, sucata' },
+        { id: 'repair', label: 'Conserto', icon: '🛠️', color: '#f39c12', desc: 'Defeito leve' },
+        { id: 'resell', label: 'Revenda', icon: '🏪', color: '#3498db', desc: 'Produto perfeito' }
     ];
 
     // Map for hit testing
@@ -152,13 +154,15 @@ export function renderEcoLogistica(transitionTo, setSelectedGame) {
             justifyContent: 'center',
             color: '#fff',
             border: '4px solid transparent',
-            transition: 'transform 0.2s, border-color 0.2s'
+            transition: 'transform 0.2s, border-color 0.2s',
+            padding: '5px'
         });
         
+        // Adjusted font sizes for mobile
         binEl.innerHTML = `
-            <div style="font-size: 2.5rem;">${bin.icon}</div>
-            <div style="font-weight: bold; font-size: 1rem;">${bin.label}</div>
-            <div style="font-size: 0.7rem; opacity: 0.9; text-align: center;">${bin.desc}</div>
+            <div style="font-size: clamp(1.5rem, 4vw, 2.5rem);">${bin.icon}</div>
+            <div style="font-weight: bold; font-size: clamp(0.8rem, 2.5vw, 1rem); text-align: center;">${bin.label}</div>
+            <div style="font-size: clamp(0.6rem, 2vw, 0.7rem); opacity: 0.9; text-align: center;">${bin.desc}</div>
         `;
         
         binsContainer.appendChild(binEl);

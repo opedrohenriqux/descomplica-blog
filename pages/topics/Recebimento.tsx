@@ -1,4 +1,5 @@
-import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
+
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
 
 function renderNotasFiscaisSection() {
     const section = document.createElement('div');
@@ -300,6 +301,7 @@ export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTo
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
+    const commentsSection = createCommentSection('recebimento');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -313,6 +315,7 @@ export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTo
         notasFiscaisSection,
         animationSection,
         quizSection,
+        commentsSection,
         topicNav
     );
     return container;

@@ -1,5 +1,6 @@
 
 
+
 import { styles, applyStyles, CtaButton } from '../../utils.tsx';
 
 export function renderKanbanSimulator(transitionTo, setSelectedGame) {
@@ -90,9 +91,10 @@ export function renderKanbanSimulator(transitionTo, setSelectedGame) {
 
     // Board
     const board = document.createElement('div');
+    // Ajuste para mobile: colunas menores ou 100%
     applyStyles(board, {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         gap: '1.5rem',
         width: '100%',
         minHeight: '500px'
