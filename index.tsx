@@ -1,5 +1,5 @@
 
-import { MoonIcon, SunIcon, applyStyles } from './utils.tsx';
+import { MoonIcon, SunIcon, AccessibilityIcon, applyStyles } from './utils.tsx';
 import { renderInicioPage } from './pages/Inicio.tsx';
 import { renderConteudoPage } from './pages/Conteudos.tsx';
 import { renderGamesPage } from './pages/Jogos.tsx';
@@ -27,6 +27,115 @@ function initTheme() {
   const theme = savedTheme || (prefersDark ? 'dark' : 'light');
   document.body.dataset.theme = theme;
   currentTheme = theme;
+}
+
+// Accessibility Logic
+const accessState = {
+    grayscale: false,
+    highContrast: false,
+    largeText: false,
+    readableFont: false,
+    highlightLinks: false
+};
+
+function initAccessibility() {
+    const saved = localStorage.getItem('accessibility');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(accessState, parsed);
+        applyAccessibility();
+    }
+}
+
+function applyAccessibility() {
+    const body = document.body;
+    
+    // Grayscale
+    if (accessState.grayscale) body.classList.add('access-grayscale');
+    else body.classList.remove('access-grayscale');
+
+    // High Contrast
+    if (accessState.highContrast) body.classList.add('access-high-contrast');
+    else body.classList.remove('access-high-contrast');
+
+    // Large Text
+    if (accessState.largeText) body.classList.add('access-large-text');
+    else body.classList.remove('access-large-text');
+
+    // Readable Font
+    if (accessState.readableFont) body.classList.add('access-readable-font');
+    else body.classList.remove('access-readable-font');
+
+    // Highlight Links
+    if (accessState.highlightLinks) body.classList.add('access-highlight-links');
+    else body.classList.remove('access-highlight-links');
+
+    localStorage.setItem('accessibility', JSON.stringify(accessState));
+    updateAccessMenuState();
+}
+
+function updateAccessMenuState() {
+    // Update visual state of buttons in the panel if it exists
+    const panel = document.querySelector('.access-panel');
+    if (!panel) return;
+
+    const buttons = panel.querySelectorAll('.access-option');
+    buttons.forEach(btn => {
+        const element = btn as HTMLElement;
+        const type = element.dataset.type;
+        if (type && accessState[type]) element.classList.add('active');
+        else element.classList.remove('active');
+    });
+}
+
+function toggleAccessOption(type) {
+    if (type === 'reset') {
+        Object.keys(accessState).forEach(key => accessState[key] = false);
+    } else {
+        accessState[type] = !accessState[type];
+    }
+    applyAccessibility();
+}
+
+function renderAccessibilityMenu() {
+    const btn = document.createElement('button');
+    btn.id = 'accessibility-btn';
+    btn.innerHTML = AccessibilityIcon;
+    btn.setAttribute('aria-label', 'Menu de Acessibilidade');
+    btn.title = 'Acessibilidade';
+
+    const panel = document.createElement('div');
+    panel.className = 'access-panel';
+    panel.innerHTML = `
+        <div class="access-option" data-type="largeText">🔠 Aumentar Texto</div>
+        <div class="access-option" data-type="grayscale">👁️ Escala de Cinza</div>
+        <div class="access-option" data-type="highContrast">🌗 Alto Contraste</div>
+        <div class="access-option" data-type="readableFont">📖 Fonte Legível</div>
+        <div class="access-option" data-type="highlightLinks">🔗 Destacar Links</div>
+        <div class="access-option" data-type="reset">❌ Reiniciar</div>
+    `;
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.toggle('visible');
+        updateAccessMenuState();
+    });
+
+    panel.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const target = (e.target as HTMLElement).closest('.access-option') as HTMLElement;
+        if (target && target.dataset.type) {
+            toggleAccessOption(target.dataset.type);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!panel.contains(e.target as Node) && e.target !== btn) {
+            panel.classList.remove('visible');
+        }
+    });
+
+    return { btn, panel };
 }
 
 function transitionTo(updateState) {
@@ -203,6 +312,9 @@ function render() {
   const main = document.createElement('main');
   const footer = renderFooter();
   const backToTopButton = renderBackToTopButton();
+  
+  // Renderiza elementos de acessibilidade
+  const { btn: accessBtn, panel: accessPanel } = renderAccessibilityMenu();
 
   const setSelectedTopic = (topic) => {
     selectedTopic = topic;
@@ -231,7 +343,7 @@ function render() {
   }
 
   main.appendChild(pageContent);
-  root.append(header, main, footer, backToTopButton);
+  root.append(header, main, footer, backToTopButton, accessBtn, accessPanel);
 
   setTimeout(() => {
     main.classList.add('page-fade-in');
@@ -241,6 +353,7 @@ function render() {
 
 function init() {
     initTheme();
+    initAccessibility();
     render();
 
     let lastScrollY = window.scrollY;

@@ -80,6 +80,30 @@
         transition: background-color 0.3s ease, color 0.3s ease;
         overflow-x: hidden; /* Prevent horizontal scrollbar during transition */
       }
+      
+      /* Accessibility Classes */
+      body.access-grayscale {
+        filter: grayscale(100%);
+      }
+      body.access-high-contrast {
+        filter: contrast(125%);
+      }
+      body.access-large-text {
+        font-size: 120%;
+      }
+      body.access-readable-font {
+        font-family: Arial, Helvetica, sans-serif !important;
+      }
+      body.access-readable-font * {
+        font-family: Arial, Helvetica, sans-serif !important;
+      }
+      body.access-highlight-links a {
+        text-decoration: underline !important;
+        font-weight: 700 !important;
+        background-color: #ffff00 !important;
+        color: #000 !important;
+      }
+
       a, button, [role="button"], input, select, textarea, .fund-card, .topic-card, .game-card, .faq-question {
         cursor: inherit;
       }
@@ -907,6 +931,83 @@
         stroke: var(--bg-color);
       }
 
+      /* Accessibility Button Styles */
+      #accessibility-btn {
+        position: fixed;
+        bottom: 6.5rem;
+        left: 2rem;
+        width: 50px;
+        height: 50px;
+        background-color: var(--primary-color);
+        color: #333;
+        border-radius: 50%;
+        border: 2px solid #333;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      
+      #accessibility-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      }
+
+      /* Accessibility Menu Panel */
+      .access-panel {
+        position: fixed;
+        bottom: 10rem;
+        left: 2rem;
+        width: 250px;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        padding: 1rem;
+        z-index: 2000;
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+        animation: fadeUp 0.3s ease-out;
+      }
+      
+      .access-panel.visible {
+        display: flex;
+      }
+
+      .access-option {
+        background: var(--button-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        padding: 0.8rem;
+        cursor: pointer;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background 0.2s;
+      }
+
+      .access-option:hover {
+        background: var(--button-bg-hover);
+      }
+
+      .access-option.active {
+        background: var(--primary-color);
+        color: #333;
+        border-color: #333;
+      }
+
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       /* Game Page Styles */
       .games-grid {
         display: flex;
@@ -1469,6 +1570,18 @@
     </style>
 </head>
   <body>
+    <!-- VLibras Widget -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
