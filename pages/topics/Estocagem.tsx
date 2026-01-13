@@ -30,6 +30,7 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
 
     function createSection(titleText, content, isList = false) {
         const sectionEl = document.createElement('div');
+        sectionEl.style.width = '100%';
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
         applyStyles(h3, {
@@ -216,56 +217,139 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
     `;
     comparisonGrid.append(estoqueCard, armazemCard);
 
+    // --- NOVA SEÇÃO: CURVA ABC ---
+    const abcSection = document.createElement('div');
+    abcSection.className = 'abc-curve-section';
+    applyStyles(abcSection, { width: '100%', marginTop: '5rem' });
 
-    // 8. Endereçamento (Visual Antigo - Mantido como complemento)
-    const addressingTitle = document.createElement('h3');
-    addressingTitle.textContent = 'Bônus: Endereçamento Logístico';
-    applyStyles(addressingTitle, {
-        fontSize: '1.5rem',
-        fontWeight: '700',
-        color: 'var(--text-color)',
-        marginTop: '3rem',
-        marginBottom: '1rem',
-        paddingBottom: '0.5rem',
-        borderBottom: '2px solid var(--primary-color)'
-    });
-    
-    const addressingIntro = document.createElement('p');
-    addressingIntro.innerHTML = 'Para que a Armazenagem funcione, precisamos de organização. O sistema mais comum utiliza quatro coordenadas principais: <strong>Rua, Prédio, Nível e Apartamento</strong>.';
-    applyStyles(addressingIntro, { fontSize: '1.1rem', lineHeight: '1.8' });
+    const abcHeader = createSection('Curva ABC: Classificação e Importância', 'A Curva ABC é uma ferramenta gerencial baseada no Princípio de Pareto (regra do 80/20), que ajuda a classificar os itens do estoque de acordo com sua importância, valor ou rotatividade. Ela permite que a empresa direcione seus esforços e recursos para o que realmente gera mais impacto financeiro e operacional.');
 
-    const visualAddressing = document.createElement('div');
-    visualAddressing.className = 'addressing-visual';
-    applyStyles(visualAddressing, {
+    const abcImportance = createSection('Por que ela é importante?', 'Gerenciar todos os itens com o mesmo nível de rigor é caro e ineficiente. A Curva ABC permite um controle diferenciado: itens de classe A recebem atenção máxima, enquanto itens de classe C têm processos mais simplificados, otimizando o tempo da equipe e o capital investido.');
+
+    const abcBenefitsTitle = document.createElement('h4');
+    abcBenefitsTitle.textContent = 'Benefícios da Classificação ABC';
+    applyStyles(abcBenefitsTitle, { color: 'var(--primary-color)', fontSize: '1.3rem', marginTop: '1.5rem' });
+
+    const abcBenefitsList = createTopicList([
+        'Otimização do investimento: Reduz o capital preso em itens de pouco giro.',
+        'Melhoria do giro de estoque: Foca na reposição ágil dos produtos mais vendidos.',
+        'Redução de desperdícios: Evita a obsolescência de itens valiosos.',
+        'Planejamento de compras: Melhora a negociação com fornecedores de itens críticos.',
+        'Layout estratégico: Itens "A" podem ser posicionados em locais de fácil acesso.'
+    ]);
+
+    // --- EXEMPLO ANIMADO CURVA ABC ---
+    const animatedExampleTitle = document.createElement('h3');
+    animatedExampleTitle.textContent = 'Exemplo Interativo: A Divisão 80/20';
+    applyStyles(animatedExampleTitle, { textAlign: 'center', marginTop: '3rem', color: 'var(--text-color)' });
+
+    const abcVisualContainer = document.createElement('div');
+    applyStyles(abcVisualContainer, {
+        width: '100%',
+        backgroundColor: 'var(--card-bg)',
+        border: '1px solid var(--card-border)',
+        borderRadius: '24px',
+        padding: '3rem',
+        marginTop: '1.5rem',
+        boxShadow: '0 10px 30px var(--card-shadow)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        margin: '2rem 0',
-        width: '100%',
-        backgroundColor: 'var(--timeline-bg)',
-        padding: '2rem',
-        borderRadius: '12px',
-        border: '1px solid var(--card-border)'
+        gap: '2rem'
     });
 
-    visualAddressing.innerHTML = `
-        <svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto; max-width: 600px;">
-            <rect x="50" y="50" width="500" height="200" fill="none" stroke="var(--text-color-subtle)" stroke-width="4" />
-            <line x1="50" y1="116" x2="550" y2="116" stroke="var(--text-color-subtle)" stroke-width="4" />
-            <line x1="50" y1="182" x2="550" y2="182" stroke="var(--text-color-subtle)" stroke-width="4" />
-            <line x1="216" y1="50" x2="216" y2="250" stroke="var(--text-color-subtle)" stroke-width="4" />
-            <line x1="382" y1="50" x2="382" y2="250" stroke="var(--text-color-subtle)" stroke-width="4" />
-            <rect x="220" y="120" width="158" height="58" fill="var(--primary-color)" opacity="0.5" />
-            <text x="300" y="155" text-anchor="middle" font-weight="bold" fill="#333" font-size="14">Endereço: 01-02-02-01</text>
-            <text x="300" y="30" text-anchor="middle" font-weight="bold" fill="var(--text-color)">Vista Frontal da Estante (Rua 01)</text>
-            <text x="133" y="280" text-anchor="middle" fill="var(--text-color-light)">Prédio 01</text>
-            <text x="300" y="280" text-anchor="middle" fill="var(--text-color-light)">Prédio 02</text>
-            <text x="466" y="280" text-anchor="middle" fill="var(--text-color-light)">Prédio 03</text>
-            <text x="30" y="90" text-anchor="middle" fill="var(--text-color-light)" transform="rotate(-90 30,90)">Nível 03</text>
-            <text x="30" y="150" text-anchor="middle" fill="var(--text-color-light)" transform="rotate(-90 30,150)">Nível 02</text>
-            <text x="30" y="210" text-anchor="middle" fill="var(--text-color-light)" transform="rotate(-90 30,210)">Nível 01</text>
-        </svg>
-    `;
+    const chartWrapper = document.createElement('div');
+    applyStyles(chartWrapper, {
+        width: '100%',
+        maxWidth: '700px',
+        height: '300px',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        gap: '10px'
+    });
+
+    // Segmentos da Curva ABC
+    const segments = [
+        { label: 'Classe A', percentItems: '20%', percentValue: '80%', color: '#fec700', desc: 'Itens de alto valor e extrema importância. Exigem controle rigoroso e inventários frequentes.' },
+        { label: 'Classe B', percentItems: '30%', percentValue: '15%', color: '#ffd54f', desc: 'Itens de importância média. Controle intermediário, com revisões periódicas.' },
+        { label: 'Classe C', percentItems: '50%', percentValue: '5%', color: '#fff176', desc: 'Itens de baixo valor, mas em grande quantidade. Controle simplificado para reduzir custos administrativos.' }
+    ];
+
+    const infoBox = document.createElement('div');
+    applyStyles(infoBox, {
+        width: '100%',
+        padding: '1.5rem',
+        backgroundColor: 'var(--timeline-bg)',
+        borderRadius: '12px',
+        borderLeft: '5px solid var(--primary-color)',
+        minHeight: '100px',
+        transition: 'all 0.3s ease'
+    });
+    infoBox.innerHTML = '<p style="text-align:center; color:var(--text-color-light);">Passe o mouse ou clique nas barras para ver os detalhes de cada classe.</p>';
+
+    segments.forEach((seg, i) => {
+        const barGroup = document.createElement('div');
+        applyStyles(barGroup, {
+            flex: '1',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            cursor: 'pointer',
+            transition: 'transform 0.3s ease'
+        });
+
+        const bar = document.createElement('div');
+        const height = parseInt(seg.percentValue) * 2.5; // Escala visual baseada no valor
+        applyStyles(bar, {
+            width: '100%',
+            height: '0px',
+            backgroundColor: seg.color,
+            borderRadius: '8px 8px 0 0',
+            transition: 'height 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+            position: 'relative'
+        });
+
+        const label = document.createElement('span');
+        label.textContent = seg.label;
+        applyStyles(label, { fontWeight: '700', marginTop: '10px', color: 'var(--text-color)' });
+
+        const valLabel = document.createElement('span');
+        valLabel.textContent = `${seg.percentValue} do Valor`;
+        applyStyles(valLabel, { fontSize: '0.75rem', color: 'var(--text-color-light)' });
+
+        barGroup.append(bar, label, valLabel);
+        chartWrapper.appendChild(barGroup);
+
+        // Animação ao entrar em cena (Trigger simulado)
+        setTimeout(() => { bar.style.height = `${height}px`; }, 100 + (i * 200));
+
+        // Interatividade
+        const showInfo = () => {
+            barGroup.style.transform = 'translateY(-10px)';
+            bar.style.filter = 'brightness(1.05)';
+            infoBox.innerHTML = `
+                <h4 style="margin:0; color:var(--primary-color);">${seg.label}</h4>
+                <p style="margin:5px 0 0 0; font-size:0.95rem;"><strong>Qtd. de Itens:</strong> ${seg.percentItems} | <strong>Valor Acumulado:</strong> ${seg.percentValue}</p>
+                <p style="margin:10px 0 0 0; font-size:0.9rem; line-height:1.5;">${seg.desc}</p>
+            `;
+            infoBox.style.borderColor = seg.color;
+        };
+
+        const resetInfo = () => {
+            barGroup.style.transform = 'translateY(0)';
+            bar.style.filter = 'none';
+        };
+
+        barGroup.addEventListener('mouseenter', showInfo);
+        barGroup.addEventListener('mouseleave', resetInfo);
+        barGroup.addEventListener('touchstart', (e) => { e.preventDefault(); showInfo(); });
+    });
+
+    abcVisualContainer.append(chartWrapper, infoBox);
+    abcSection.append(abcHeader, abcImportance, abcBenefitsTitle, abcBenefitsList, animatedExampleTitle, abcVisualContainer);
 
     // 9. Quiz Section
     const quizSection = document.createElement('div');
@@ -283,9 +367,9 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
         { q: "Qual destes é um benefício de um estoque organizado?", a: 2, o: ["Aumento de custos operacionais.", "Maior dificuldade em encontrar produtos.", "Agiliza o atendimento ao cliente e a produção.", "Gera excesso de produtos obsoletos."] },
         { q: "O método FEFO (PVPS) é ideal para qual tipo de produto?", a: 0, o: ["Produtos com data de validade (perecíveis).", "Eletrônicos.", "Móveis de escritório.", "Ferramentas de aço."] },
         { q: "Qual é a função da Armazenagem?", a: 1, o: ["Apenas contar os produtos.", "Gerenciar todo o fluxo, infraestrutura e movimentação desde o recebimento até a expedição.", "Definir o preço de venda.", "Fazer o marketing do produto."] },
-        { q: "No contexto de 'Evitar perdas', como a gestão de estoque ajuda?", a: 2, o: ["Permitindo que qualquer um pegue produtos sem controle.", "Comprando produtos sem planejamento.", "Impedindo prejuízos por excesso (obsoletos) ou falta de produtos.", "Aumentando o desperdício de materiais."] },
+        { q: "Na Curva ABC, a Classe A representa geralmente:", a: 2, o: ["80% dos itens e 20% do valor.", "50% dos itens e 5% do valor.", "20% dos itens e 80% do valor.", "Itens sem nenhuma importância financeira."] },
         { q: "O método FIFO (PEPS) significa:", a: 0, o: ["Primeiro a Entrar, Primeiro a Sair.", "Primeiro a Vencer, Primeiro a Sair.", "Último a Entrar, Primeiro a Sair.", "Último a Vencer, Primeiro a Sair."] },
-        { q: "Qual a diferença de foco entre Armazenagem e Estocagem?", a: 3, o: ["Não há diferença.", "Armazenagem foca no preço, Estocagem no volume.", "Estocagem foca no transporte, Armazenagem na venda.", "Estocagem foca nos produtos; Armazenagem foca na estrutura física e processos."] },
+        { q: "Qual a importância da Curva ABC para a gestão de estoque?", a: 3, o: ["Comprar a mesma quantidade de todos os itens.", "Ignorar os itens de baixo valor.", "Aumentar o custo de todos os processos.", "Permitir um controle diferenciado focado nos itens de maior impacto."] },
         { q: "Como a gestão de estoque fundamenta decisões?", a: 1, o: ["Baseando-se em palpites.", "Fornecendo informações cruciais sobre demanda e desempenho dos produtos.", "Ignorando os dados de vendas.", "Decidindo apenas pelo produto mais barato."] },
         { q: "Qual exemplo melhor representa uma atividade de Armazenagem?", a: 0, o: ["Controlar a temperatura e umidade do galpão.", "Definir o nível mínimo de compra.", "Escolher a cor do produto.", "Pagar o boleto do fornecedor."] },
     ];
@@ -364,9 +448,7 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
         impArmazenagem,
         diferencaIntro,
         comparisonGrid,
-        addressingTitle,
-        addressingIntro,
-        visualAddressing,
+        abcSection, // NOVA SEÇÃO CURVA ABC
         quizSection,
         topicNav
     );
