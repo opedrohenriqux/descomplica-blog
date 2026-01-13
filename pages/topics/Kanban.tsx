@@ -1,7 +1,5 @@
 
-
-
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -33,49 +31,131 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
     const intro = document.createElement('p');
     intro.textContent = 'Fala, pessoal! Kanban é uma metodologia visual de gestão de tarefas e processos, muito usada para organizar trabalhos de forma eficiente, a ideia é visualizar o andamento do trabalho e limitar o trabalho em andamento para aumentar a produtividade e identificar erros. Além de ser muito útil no ambiente de trabalho, pode ser utilizado até na vida pessoal, principalmente se você tem aquele leve esquecimento as vezes, com o Kanban você consegue facilmente visualizar quais demandas são de extrema urgência.';
     
+    // Helper para criar os tópicos destacados (Cards dinâmicos)
+    const createHighlightedTopicList = (items) => {
+        const listContainer = document.createElement('div');
+        applyStyles(listContainer, {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            width: '100%',
+            marginBottom: '2rem',
+            marginTop: '1rem'
+        });
+
+        items.forEach(itemText => {
+            const card = document.createElement('div');
+            applyStyles(card, {
+                backgroundColor: 'var(--card-bg)',
+                border: '2px solid var(--primary-color)',
+                borderRadius: '24px',
+                padding: '1.2rem 1.8rem',
+                boxShadow: '0 4px 10px var(--card-shadow)',
+                fontSize: '1.05rem',
+                lineHeight: '1.5',
+                color: 'var(--text-color)',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            });
+            
+            // Lógica para negritar antes do separador caso exista
+            const separator = itemText.includes(':') ? ':' : (itemText.includes('→') ? '→' : null);
+            if (separator) {
+                const parts = itemText.split(separator);
+                card.innerHTML = `<strong>${parts[0]}${separator}</strong> ${parts.slice(1).join(separator).trim()}`;
+            } else {
+                card.textContent = itemText;
+            }
+
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateX(8px)';
+                card.style.boxShadow = '0 6px 15px var(--card-shadow-hover)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateX(0)';
+                card.style.boxShadow = '0 4px 10px var(--card-shadow)';
+            });
+
+            listContainer.appendChild(card);
+        });
+
+        return listContainer;
+    };
+
+    // Quadro Kanban Visual (Cores adaptáveis ao tema)
     const kanbanBoardSVG = document.createElement('div');
-    kanbanBoardSVG.className = 'kanban-board-svg';
-    kanbanBoardSVG.innerHTML = `
-      <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1" y="1" width="398" height="198" rx="10" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
+    kanbanBoardSVG.className = 'kanban-visual-mock';
+    applyStyles(kanbanBoardSVG, {
+        width: '100%',
+        maxWidth: '750px',
+        margin: '2rem auto 0.5rem',
+        backgroundColor: 'var(--timeline-bg)', 
+        padding: '2rem',
+        borderRadius: '24px',
+        border: '1px solid var(--card-border)', 
+        boxShadow: '0 15px 35px var(--card-shadow)', 
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '1rem'
+    });
+
+    const createMockColumn = (title, tasks, colorClass) => {
+        const col = document.createElement('div');
+        applyStyles(col, {
+            backgroundColor: 'var(--card-bg)', 
+            borderRadius: '16px',
+            padding: '1.5rem 1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            minHeight: '280px',
+            boxShadow: '0 4px 10px var(--card-shadow)'
+        });
+
+        const h = document.createElement('h4');
+        h.textContent = title;
+        applyStyles(h, { 
+            color: 'var(--text-color)', 
+            margin: '0 0 1.5rem 0', 
+            fontSize: '1.2rem', 
+            fontWeight: '700' 
+        });
         
-        <!-- Columns -->
-        <rect x="10" y="10" width="120" height="180" rx="5" fill="var(--timeline-bg)"/>
-        <text x="70" y="30" font-family="Poppins" font-size="14" font-weight="600" fill="var(--text-color)" text-anchor="middle">A Fazer</text>
-        
-        <rect x="140" y="10" width="120" height="180" rx="5" fill="var(--timeline-bg)"/>
-        <text x="200" y="30" font-family="Poppins" font-size="14" font-weight="600" fill="var(--text-color)" text-anchor="middle">Fazendo</text>
-        
-        <rect x="270" y="10" width="120" height="180" rx="5" fill="var(--timeline-bg)"/>
-        <text x="330" y="30" font-family="Poppins" font-size="14" font-weight="600" fill="var(--text-color)" text-anchor="middle">Feito</text>
-        
-        <!-- Cards -->
-        <g class="kanban-card">
-          <rect x="20" y="45" width="100" height="30" rx="3" fill="#fef4d6"/>
-          <text x="70" y="64" font-family="Poppins" font-size="10" fill="#333" text-anchor="middle">Tarefa 1</text>
-        </g>
-        <g class="kanban-card">
-          <rect x="20" y="85" width="100" height="30" rx="3" fill="#fef4d6"/>
-          <text x="70" y="104" font-family="Poppins" font-size="10" fill="#333" text-anchor="middle">Tarefa 2</text>
-        </g>
-        <g class="kanban-card">
-          <rect x="150" y="45" width="100" height="30" rx="3" fill="#d4edda"/>
-          <text x="200" y="64" font-family="Poppins" font-size="10" fill="#333" text-anchor="middle">Tarefa 3</text>
-        </g>
-        <g class="kanban-card">
-          <rect x="280" y="45" width="100" height="30" rx="3" fill="#f8d7da"/>
-          <text x="330" y="64" font-family="Poppins" font-size="10" fill="#333" text-anchor="middle">Tarefa 4</text>
-        </g>
-      </svg>
-    `;
+        col.appendChild(h);
+
+        tasks.forEach(taskText => {
+            const task = document.createElement('div');
+            task.textContent = taskText;
+            applyStyles(task, {
+                width: '100%',
+                padding: '0.8rem',
+                borderRadius: '8px',
+                marginBottom: '0.8rem',
+                textAlign: 'center',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                color: '#333', 
+                backgroundColor: colorClass === 'yellow' ? '#fff9db' : (colorClass === 'green' ? '#d3f9d8' : '#ffe3e3')
+            });
+            col.appendChild(task);
+        });
+
+        return col;
+    };
+
+    kanbanBoardSVG.append(
+        createMockColumn('A Fazer', ['Tarefa 1', 'Tarefa 2'], 'yellow'),
+        createMockColumn('Fazendo', ['Tarefa 3'], 'green'),
+        createMockColumn('Feito', ['Tarefa 4'], 'red')
+    );
 
     const imageDesc = document.createElement('p');
     imageDesc.textContent = 'O Kanban funciona como um sistema visual de gestão de tarefas, baseado em alguns princípios simples, mas muito eficazes.';
     imageDesc.style.textAlign = 'center';
     imageDesc.style.fontStyle = 'italic';
-    imageDesc.style.marginTop = '0.5rem';
+    imageDesc.style.marginTop = '1rem';
+    imageDesc.style.width = '100%';
 
-    function createSection(titleText, content) {
+    function createSection(titleText, content, useCards = false) {
         const sectionEl = document.createElement('div');
         const h3 = document.createElement('h3');
         h3.textContent = titleText;
@@ -91,7 +171,9 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         });
         sectionEl.appendChild(h3);
 
-        if (typeof content === 'string') {
+        if (useCards && Array.isArray(content)) {
+            sectionEl.appendChild(createHighlightedTopicList(content));
+        } else if (typeof content === 'string') {
             const p = document.createElement('p');
             p.innerHTML = content;
             sectionEl.appendChild(p);
@@ -104,7 +186,9 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
     }
 
     const definicao = createSection('DEFINIÇÃO', 'O Kanban é um quadro visual que organiza tarefas em etapas como “A Fazer”, “Em Progresso” e “Concluído”. Cada tarefa é um cartão que se move pelo quadro, permitindo visualizar o fluxo de trabalho, priorizar atividades e evitar sobrecarga, melhorando a produtividade e a entrega de resultados.');
-    const comoSurgiu = createSection('COMO SURGIU?', 'O Kanban surgiu no final dos anos 1940 na Toyota, no Japão, como parte do sistema de produção enxuta (Lean Manufacturing). Foi criado por Taiichi Ohno para melhorar a eficiência da produção e evitar desperdícios.A ideia era usar cartões (kanban, em japonês significa “cartão” ou “sinal visual”) para controlar o fluxo de materiais na linha de produção, mostrando quando era necessário produzir mais peças ou repor estoque, garantindo que nada fosse feito em excesso e que a produção acompanhasse a demanda real.');
+    const comoSurgiu = createSection('COMO SURGIU?', 'O Kanban surgiu no final dos anos 1940 na Toyota, no Japão, como parte do sistema de produção enxuta (Lean Manufacturing). Foi criado por Taiichi Ohno para melhorar a eficiência de produção e evitar desperdícios.A ideia era usar cartões (kanban, em japonês significa “cartão” ou “sinal visual”) para controlar o fluxo de materiais na linha de produção, mostrando quando era necessário produzir mais peças ou repor estoque, garantindo que nada fosse feito em excesso e que a produção acompanhasse a demanda real.');
+    
+    // Seção de Princípios com Cards Dinâmicos
     const principios = createSection('PRINCÍPIOS', [
         'Visualizar todas as tarefas para ter clareza do processo;',
         'Limitar o trabalho em andamento (WIP) para evitar sobrecarga;',
@@ -112,11 +196,11 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         'Tornar as regras e processos explícitos, garantindo que todos saibam como agir;',
         'Promover melhoria contínua, ajustando processos regularmente;',
         'Respeitar as pessoas e equipes, estimulando colaboração e autonomia.',
-    ]);
+    ], true);
+
     const limitacao = createSection('LIMITAÇÃO DE TAREFAS', 'Limites de WIP (Work In Progress/Trabalho em Progresso) são restrições sobre a quantidade máxima de tarefas que podem estar em andamento simultaneamente em cada etapa do processo. O objetivo é evitar sobrecarga, aumentar o foco da equipe e identificar gargalos no fluxo de trabalho. Ao respeitar esses limites, o time consegue entregar mais rápido e com mais qualidade, pois as tarefas são concluídas antes de novas serem iniciadas.');
     const melhoria = createSection('Melhoria Contínua (Kaizen) no Kanban', 'Melhoria Contínua (Kaizen) no Kanban é a prática de revisar e ajustar processos regularmente para torná-los mais eficientes e reduzir desperdícios. No Kanban, isso envolve observar o fluxo de trabalho para identificar gargalos ou etapas que atrasam tarefas, analisar dados do quadro, como tempo de conclusão e número de tarefas em andamento, e fazer pequenas mudanças constantes para melhorar a produtividade da equipe. Exemplos de ações incluem reduzir tarefas paradas na coluna “Fazendo”, melhorar a comunicação entre membros da equipe e ajustar prioridades ou redefinir limites de WIP. Com essas melhorias contínuas, a equipe trabalha de forma mais eficiente e organizada, e os resultados evoluem ao longo do tempo.');
 
-    // New Image Section
     const exampleBoard = document.createElement('div');
     exampleBoard.className = 'media-container';
     exampleBoard.style.marginBottom = '3rem';
@@ -236,7 +320,6 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('kanban');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -252,7 +335,6 @@ export function renderKanbanPage(transitionTo, selectedTopic, setSelectedTopic) 
         melhoria,
         exampleBoard,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

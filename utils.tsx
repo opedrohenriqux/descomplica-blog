@@ -41,19 +41,19 @@ export const styles = {
     overflow: 'hidden',
   },
   sectionTitle: {
-    fontSize: "2.5rem",
+    fontSize: "clamp(2.5rem, 6vw, 4rem)",
     fontWeight: "700",
     color: "var(--text-color)",
     marginBottom: "1rem",
     paddingBottom: "0.5rem",
-    borderBottom: "3px solid var(--primary-color)",
+    borderBottom: "4px solid var(--primary-color)",
   },
 };
 
 // Data
 export const conteudosList = [
     { id: 'logistica-integrada', title: 'Logística Integrada', intro: 'Logística integrada é a gestão unificada de todas as etapas da cadeia de suprimentos — desde a compra de insumos, transporte, armazenagem, produção até a entrega ao cliente final — visando otimizar processos, reduzir custos e aumentar a eficiência.', content: 'A Logística Integrada é a gestão unificada de todas as atividades logísticas de uma empresa, desde a aquisição de matéria-prima até a entrega do produto final ao cliente. O objetivo é otimizar processos, reduzir custos e aumentar a eficiência da cadeia de suprimentos.' },
-    { id: 'just-in-time', title: 'Just in Time', intro: 'É uma filosofia e sistema de gestão de produção, criado pela Toyota, que visa eliminar desperdícios e aumentar a eficiência ao produzir e entregar produtos apenas quando são necessários e na quantidade exata.', content: 'O Just in Time (JIT) é um sistema de produção que busca produzir e entregar produtos na quantidade exata, no momento exato e no local exato. Ele visa eliminar desperdícios, reduzir estoques e melhorar a qualidade e a eficiência.' },
+    { id: 'just-in-time', title: 'Just in Time', intro: 'É uma filosofia e sistema de gestão de produção, criado pela Toyota, que visa eliminar desperdícios e aumentar a eficiência al produzir e entregar produtos apenas quando são necessários e na quantidade exata.', content: 'O Just in Time (JIT) é um sistema de produção que busca produzir e entregar produtos na quantidade exata, no momento exato e no local exato. Ele visa eliminar desperdícios, reduzir estoques e melhorar a qualidade e a eficiência.' },
     { id: 'kanban', title: 'Kanban', intro: 'Kanban é um método de gestão visual para melhorar o fluxo de trabalho, usando um quadro e cartões (como post-its) para representar tarefas e seu status.', content: 'Kanban é um sistema visual de gestão de trabalho que utiliza cartões (ou sinais visuais) para controlar o fluxo de produção. Ele ajuda a visualizar o trabalho, limitar o trabalho em andamento (WIP) e maximizar a eficiência, promovendo a melhoria contínua.' },
     { id: 'kaizen', title: 'Kaizen', intro: 'Kaizen é um termo japonês para "mudança para melhor" e descreve a filosofia da melhoria contínua em todas as áreas de uma organização ou vida pessoal.', content: 'Kaizen é uma filosofia japonesa de melhoria contínua que envolve todos os funcionários de uma organização. O objetivo é fazer pequenas mudanças incrementais nos processos para melhorar a qualidade, a produtividade e a segurança.' },
     { id: '5s', title: '5S', intro: '5S é um programa de origem japonesa que foi criado a partir da aplicação de cinco conceitos: Seiri, Seiton, Seiso, Seiketsu e Shitsuke. Ele tem como foco organizar diferentes setores de uma empresa com base na organização, padronização e limpeza.', content: 'O 5S é uma metodologia de organização de locais de trabalho que utiliza cinco palavras japonesas: Seiri (Utilização), Seiton (Organização), Seiso (Limpeza), Seiketsu (Padronização) e Shitsuke (Disciplina). O objetivo é criar um ambiente de trabalho mais limpo, organizado e eficiente.' },
@@ -135,7 +135,6 @@ export function createTopicList(items) {
 export function createTopicNavigation(topicId, transitionTo, selectedTopicUpdater) {
     const navContainer = document.createElement('div');
     navContainer.className = 'topic-navigation';
-    // Estilos agora gerenciados via CSS class no index.html para responsividade (@media)
     
     const currentIndex = conteudosList.findIndex(t => t.id === topicId);
 
@@ -258,7 +257,6 @@ export function createCommentSection(topicId) {
             return;
         }
 
-        // Sort by newest first
         comments.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         comments.forEach(comment => {
@@ -297,9 +295,8 @@ export function createCommentSection(topicId) {
             text.style.margin = '0';
             text.style.lineHeight = '1.6';
             text.style.color = 'var(--text-color)';
-            text.style.whiteSpace = 'pre-wrap'; // Preserves line breaks
+            text.style.whiteSpace = 'pre-wrap';
 
-            // Optional: Delete button (simulating admin/user control for local storage)
             const deleteBtn = document.createElement('button');
             deleteBtn.innerHTML = '×';
             deleteBtn.title = 'Excluir comentário';
@@ -350,8 +347,6 @@ export function createCommentSection(topicId) {
         saveComments(comments);
 
         commentInput.value = '';
-        // Optional: nameInput.value = ''; // Keep name for convenience
-        
         renderComments();
     };
 
@@ -369,7 +364,7 @@ export function createImage(src, alt, caption = '') {
     img.src = src;
     img.alt = alt;
     img.className = 'media-content';
-    img.loading = 'lazy'; // Performance
+    img.loading = 'lazy';
 
     container.appendChild(img);
 
@@ -383,55 +378,43 @@ export function createImage(src, alt, caption = '') {
     return container;
 }
 
-export function createVideo(src, caption = '') {
+export function createVideo(src, caption = '', transcript = '') {
     const container = document.createElement('div');
     container.className = 'media-container';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'video-wrapper';
 
-    // Regex robusto para YouTube (incluindo parâmetros como ?si=)
-    // Captura o ID de 11 caracteres após embed/, v=, ou youtu.be/
     const ytRegExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const ytMatch = src.match(ytRegExp);
-
-    // Regex para Google Drive
-    // Captura o ID entre /d/ e /view ou /preview
     const driveRegExp = /\/d\/([a-zA-Z0-9_-]+)/;
     const driveMatch = src.match(driveRegExp);
     
     let externalLink = src;
     let linkText = 'Assistir no site original';
-    let isVideoDetected = false;
 
     if (ytMatch && ytMatch[1]) {
-        isVideoDetected = true;
         const videoId = ytMatch[1];
         const iframe = document.createElement('iframe');
-        // Usar youtube-nocookie para evitar alguns erros de privacidade/cookies de terceiros (Erro 153)
         iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0`;
         iframe.title = caption || "YouTube video player";
         iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
         iframe.allowFullscreen = true;
         iframe.referrerPolicy = "strict-origin-when-cross-origin"; 
         wrapper.appendChild(iframe);
-        
         externalLink = `https://www.youtube.com/watch?v=${videoId}`;
         linkText = 'Assistir no YouTube';
     } else if (driveMatch && driveMatch[1]) {
-        isVideoDetected = true;
         const fileId = driveMatch[1];
         const iframe = document.createElement('iframe');
-        // Forçar modo preview
         iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
-        iframe.allow = "autoplay; fullscreen";
+        iframe.setAttribute('allow', 'autoplay; fullscreen');
+        iframe.setAttribute('allowfullscreen', 'true');
         iframe.title = caption || "Google Drive Video";
         wrapper.appendChild(iframe);
-
         externalLink = `https://drive.google.com/file/d/${fileId}/view`;
         linkText = 'Assistir no Google Drive';
     } else {
-        // Fallback para arquivo direto
         const video = document.createElement('video');
         video.src = src;
         video.controls = true;
@@ -440,47 +423,31 @@ export function createVideo(src, caption = '') {
     }
 
     container.appendChild(wrapper);
+
+    const linkContainer = document.createElement('div');
+    linkContainer.style.padding = '1rem';
+    linkContainer.style.backgroundColor = 'var(--timeline-bg)';
     
-    // Botão de Fallback/Externo SEMPRE presente
-    // Isso garante que se o player falhar (erro 153, permissão negada, etc), o usuário tem saída.
     const fallbackLink = document.createElement('a');
     fallbackLink.href = externalLink;
     fallbackLink.target = '_blank';
     fallbackLink.rel = 'noopener noreferrer';
     applyStyles(fallbackLink, {
         display: 'inline-block',
-        marginTop: '1rem',
         fontSize: '0.9rem',
-        color: '#fff',
+        color: '#333',
         backgroundColor: 'var(--primary-color)',
         padding: '0.5rem 1rem',
         borderRadius: '50px',
         textDecoration: 'none',
         fontWeight: '600',
         boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-        cursor: 'pointer',
-        border: '1px solid rgba(0,0,0,0.1)'
+        cursor: 'pointer'
     });
     
-    // Ícone de link externo
     fallbackLink.innerHTML = `${linkText} <svg style="vertical-align: middle; margin-left: 4px;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
     
-    // Adiciona hover effect simples via JS já que é inline style
-    fallbackLink.addEventListener('mouseenter', () => {
-        fallbackLink.style.transform = 'translateY(-2px)';
-        fallbackLink.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-    });
-    fallbackLink.addEventListener('mouseleave', () => {
-        fallbackLink.style.transform = 'translateY(0)';
-        fallbackLink.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-    });
-
-    const linkContainer = document.createElement('div');
-    linkContainer.style.marginTop = '0.5rem';
     linkContainer.appendChild(fallbackLink);
-    
-    // Se não for detectado vídeo (ex: arquivo local), não força o botão ser tão chamativo, ou usa lógica diferente
-    // Mas para YouTube/Drive é essencial.
     container.appendChild(linkContainer);
 
     if (caption) {
@@ -526,6 +493,5 @@ export function handleQuizSubmit(e, quizData, quizForm, resultsDiv, aiTipDiv, to
     submitButton.style.display = 'none';
     resetButton.style.display = 'inline-block';
     
-    // AI Tip logic removed as requested
     aiTipDiv.innerHTML = '';
 }

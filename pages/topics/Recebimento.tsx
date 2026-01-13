@@ -1,74 +1,5 @@
 
-import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
-
-function renderNotasFiscaisSection() {
-    const section = document.createElement('div');
-    section.className = 'notas-fiscais-section';
-
-    const title = document.createElement('h3');
-    title.textContent = 'Tipos de Documentos Fiscais';
-    applyStyles(title, {
-        fontSize: '1.8rem',
-        fontWeight: '700',
-        color: 'var(--text-color)',
-        marginTop: '3rem',
-        marginBottom: '2rem',
-        textAlign: 'center',
-        width: '100%'
-    });
-
-    const grid = document.createElement('div');
-    grid.className = 'notas-fiscais-grid';
-
-    const notasData = [
-        {
-            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`,
-            title: "NF-e (Nota Fiscal Eletrônica)",
-            oQueE: "É o documento digital que registra a venda de produtos. Ela substitui a nota fiscal de papel modelo 1 e 1A.",
-            quandoUsar: "Obrigatória em praticamente todas as operações de circulação de mercadorias, como vendas, devoluções, transferências, etc."
-        },
-        {
-            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`,
-            title: "NFS-e (Nota Fiscal de Serviços)",
-            oQueE: "Similar à NF-e, mas específica para a prestação de serviços. Cada prefeitura tem seu próprio sistema para emissão.",
-            quandoUsar: "Utilizada por empresas que prestam serviços, como consultorias, oficinas mecânicas, academias, escolas, etc."
-        },
-        {
-            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.99 4c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V4zM17 14H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z"/></svg>`,
-            title: "CT-e (Conhecimento de Transporte)",
-            oQueE: "Documento fiscal digital que registra a prestação de serviço de transporte de cargas entre municípios ou estados.",
-            quandoUsar: "Emitido por transportadoras para cobrir o frete de mercadorias. Ele acompanha a carga junto com a NF-e."
-        },
-        {
-            icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14zM16 11H8V9h8v2zm-2-4H8V5h6v2z"/></svg>`,
-            title: "MDF-e (Manifesto Eletrônico)",
-            oQueE: "Agrupa vários CT-es ou NF-es em um único documento, simplificando a fiscalização de cargas em trânsito.",
-            quandoUsar: "Obrigatório quando há mais de um CT-e ou NF-e no mesmo veículo. Vincula os documentos da carga ao veículo transportador."
-        }
-    ];
-
-    notasData.forEach(nota => {
-        const card = document.createElement('div');
-        card.className = 'nota-fiscal-card';
-        card.innerHTML = `
-            <div class="nf-card-header">
-                <div class="nf-card-icon">${nota.icon}</div>
-                <h3>${nota.title}</h3>
-            </div>
-            <div class="nf-card-content">
-                <h4>O que é?</h4>
-                <p>${nota.oQueE}</p>
-                <h4>Quando usar?</h4>
-                <p>${nota.quandoUsar}</p>
-            </div>
-        `;
-        grid.appendChild(card);
-    });
-
-    section.append(title, grid);
-    return section;
-}
-
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -121,106 +52,202 @@ export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTo
 
     const introducao = createSection('Introdução', 'Fala, galera! Sobre recebimento de materiais não estamos falando de receber aquilo que é necessário, mas sim de um departamento estratégico que recebe os produtos essenciais para serviços, realiza vistoria física dos materiais para identificar avarias, compara a quantidade recebida com a nota fiscal e verifica a qualidade dos produtos.');
     const definicao = createSection('Definição', 'O recebimento de mercadorias consiste em um conjunto de atividades necessárias para receber os produtos adquiridos dos fornecedores. Ou seja, é o processo que acontece assim que as mercadorias compradas são entregues na empresa.');
+    
+    // --- NOVA SEÇÃO INTERATIVA: Interaja com o Processo de Recebimento ---
+    const interactiveSection = document.createElement('div');
+    interactiveSection.className = 'recebimento-interaction-container';
+    applyStyles(interactiveSection, {
+        width: '100%',
+        margin: '4rem 0',
+        padding: '2.5rem',
+        backgroundColor: 'var(--card-bg)',
+        borderRadius: '24px',
+        border: '2px solid var(--primary-color)',
+        boxShadow: '0 15px 45px var(--card-shadow)',
+        position: 'relative'
+    });
+
+    const interTitle = document.createElement('h3');
+    interTitle.textContent = 'Interaja com o Processo de Recebimento';
+    applyStyles(interTitle, { 
+        textAlign: 'center', 
+        marginBottom: '2rem', 
+        fontSize: '2rem', 
+        color: 'var(--text-color)',
+        fontWeight: '800'
+    });
+
+    // Palco da Animação
+    const animationStage = document.createElement('div');
+    applyStyles(animationStage, {
+        width: '100%',
+        height: '200px',
+        backgroundColor: 'var(--timeline-bg)',
+        borderRadius: '16px',
+        position: 'relative',
+        marginBottom: '2rem',
+        overflow: 'hidden',
+        border: '1px solid var(--card-border)'
+    });
+
+    animationStage.innerHTML = `
+        <style>
+            .truck-sprite { 
+                position: absolute; 
+                bottom: 40px; 
+                left: -150px; 
+                transition: left 2s cubic-bezier(0.4, 0, 0.2, 1); 
+                z-index: 10;
+            }
+            .truck-sprite.arrived { left: 100px; }
+            .warehouse-dock { 
+                position: absolute; 
+                bottom: 40px; 
+                right: 0; 
+                width: 250px; 
+                height: 120px; 
+                background: #333; 
+                border-radius: 8px 0 0 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .warehouse-dock::after {
+                content: "RECEBIMENTO";
+                color: #fec700;
+                font-weight: 800;
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+            }
+            .status-indicator {
+                position: absolute;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 8px 20px;
+                background: #fec700;
+                color: #000;
+                border-radius: 50px;
+                font-weight: bold;
+                opacity: 0;
+                transition: opacity 0.5s;
+                z-index: 15;
+            }
+            .road-line {
+                position: absolute;
+                bottom: 40px;
+                width: 100%;
+                height: 4px;
+                background: #ccc;
+            }
+        </style>
+        <div class="road-line"></div>
+        <div class="warehouse-dock"></div>
+        <div class="status-indicator" id="process-status">INICIANDO...</div>
+        <div class="truck-sprite" id="truck-visual">
+            <svg width="120" height="70" viewBox="0 0 120 70">
+                <rect x="0" y="10" width="80" height="50" rx="4" fill="#333" />
+                <rect x="0" y="0" width="80" height="50" rx="4" fill="#fec700" />
+                <rect x="80" y="20" width="30" height="40" rx="4" fill="#fec700" />
+                <rect x="100" y="25" width="10" height="15" fill="#87CEEB" />
+                <circle cx="20" cy="62" r="8" fill="#111" />
+                <circle cx="70" cy="62" r="8" fill="#111" />
+                <circle cx="100" cy="62" r="8" fill="#111" />
+            </svg>
+        </div>
+    `;
+
+    const stepsContainer = document.createElement('div');
+    applyStyles(stepsContainer, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '1rem',
+        width: '100%'
+    });
+
+    const stepData = [
+        { id: 1, title: '1. Checagem da Nota Fiscal', desc: 'Verificar se o pedido corresponde ao que foi entregue.', icon: '📑' },
+        { id: 2, title: '2. Inspeção Quantitativa', desc: 'Contar os volumes e conferir se a quantidade está correta.', icon: '🔢' },
+        { id: 3, title: '3. Inspeção Qualitativa', desc: 'Analisar a qualidade e verificar se há avarias nos produtos.', icon: '🔍' },
+        { id: 4, title: '4. Endereçamento', desc: 'Enviar os materiais conferidos para o estoque.', icon: '📍' }
+    ];
+
+    const stepCards = stepData.map(step => {
+        const card = document.createElement('div');
+        applyStyles(card, {
+            padding: '1.5rem',
+            backgroundColor: 'var(--timeline-bg)',
+            borderRadius: '16px',
+            border: '2px solid transparent',
+            opacity: '0.3',
+            transform: 'translateY(10px)',
+            transition: 'all 0.5s ease'
+        });
+        card.innerHTML = `
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">${step.icon}</div>
+            <strong style="display:block; margin-bottom: 0.5rem; color: var(--text-color);">${step.title}</strong>
+            <p style="font-size: 0.9rem; color: var(--text-color-light); margin: 0; line-height: 1.4;">${step.desc}</p>
+        `;
+        stepsContainer.appendChild(card);
+        return card;
+    });
+
+    const controls = document.createElement('div');
+    applyStyles(controls, { marginTop: '2.5rem', display: 'flex', justifyContent: 'center' });
+    
+    const startBtn = CtaButton('Iniciar Processo de Recebimento', () => runProcess());
+    controls.appendChild(startBtn);
+
+    interactiveSection.append(interTitle, animationStage, stepsContainer, controls);
+
+    async function runProcess() {
+        startBtn.disabled = true;
+        startBtn.style.opacity = '0.5';
+        
+        const truck = animationStage.querySelector('#truck-visual') as HTMLElement;
+        const status = animationStage.querySelector('#process-status') as HTMLElement;
+        
+        // Reset state
+        stepCards.forEach(card => applyStyles(card, { opacity: '0.3', transform: 'translateY(10px)', borderColor: 'transparent' }));
+        truck.classList.remove('arrived');
+        status.style.opacity = '0';
+
+        // 1. Caminhão anda até o destino
+        await new Promise(r => setTimeout(r, 100));
+        truck.classList.add('arrived');
+        status.textContent = "CHEGADA DO VEÍCULO";
+        status.style.opacity = '1';
+
+        await new Promise(r => setTimeout(r, 2200));
+
+        // 2. Passos sequenciais
+        for (let i = 0; i < stepCards.length; i++) {
+            status.textContent = stepData[i].title.toUpperCase();
+            applyStyles(stepCards[i], {
+                opacity: '1',
+                transform: 'translateY(0)',
+                borderColor: '#fec700',
+                backgroundColor: 'var(--card-bg)',
+                boxShadow: '0 8px 20px var(--card-shadow)'
+            });
+            await new Promise(r => setTimeout(r, 1500));
+        }
+
+        status.textContent = "PROCESSO CONCLUÍDO!";
+        status.style.background = "#2ecc71";
+        status.style.color = "#fff";
+        
+        await new Promise(r => setTimeout(r, 1000));
+        startBtn.disabled = false;
+        startBtn.style.opacity = '1';
+        startBtn.textContent = 'Reiniciar Processo';
+    }
+
+    // Outras seções
     const objetivo = createSection('Objetivo', 'O objetivo do recebimento de compras é utilizar planejamento estratégico para garantir que o material seja recebido de forma certa, e com a qualidade certa. Além disso, garantir que as necessidades da empresa sejam atendidas.');
     const importancia = createSection('Importância', `Longe de ser apenas uma função de apoio, o recebimento é uma etapa estratégica e prioritária na cadeia de suprimentos. Papel Estratégico na Logística e Geração de Receita O recebimento de materiais é um dos pilares da gestão de materiais. Ele é considerado a primeira etapa da cadeia de suprimentos interna da empresa.<br><br>Ou seja, o setor de recebimento é fundamental para o bom funcionamento de qualquer organização, pois é responsável por garantir que todos os materiais necessários para que a produção, vendas e serviços da empresa não faltem e esses processos continuem em andamento.`);
     const comunicacao = createSection('Comunicação', 'O setor de recebimento de materiais precisa dialogar e estar estritamente integrado com diversas áreas, tanto internas quanto externas à empresa, para garantir a eficiência do processo logístico e a conformidade do estoque. Departamentos Internos<br><br>O diálogo interno é vital para antecipar as entregas, garantir que o material recebido seja o correto e finalizar a transação financeira. A área de recebimento precisa estar integrada ao setor de compras, sabendo antecipadamente a programação de entregas.');
 
-    const notasFiscaisSection = renderNotasFiscaisSection();
-
-    const animationSection = document.createElement('div');
-    animationSection.className = 'recebimento-animation-section';
-    const animationTitle = document.createElement('h3');
-    animationTitle.textContent = 'Interaja com o Processo de Recebimento';
-    applyStyles(animationTitle, {
-        fontSize: '1.8rem',
-        fontWeight: '700',
-        color: 'var(--text-color)',
-        marginTop: '3rem',
-        marginBottom: '1rem',
-        textAlign: 'center',
-        width: '100%'
-    });
-    const animationContainer = document.createElement('div');
-    animationContainer.className = 'recebimento-animation-container';
-    
-    animationContainer.innerHTML = `
-        <div class="recebimento-svg-scene">
-            <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-                <!-- Supplier -->
-                <g transform="translate(50, 100)">
-                    <rect x="-40" y="-30" width="80" height="60" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                    <text x="0" y="5" text-anchor="middle" font-weight="600" fill="var(--text-color)">Fornecedor</text>
-                </g>
-                <!-- Company -->
-                <g transform="translate(550, 100)">
-                     <rect x="-50" y="-50" width="100" height="100" rx="5" fill="var(--card-bg)" stroke="var(--card-border)" stroke-width="2"/>
-                    <text x="0" y="5" text-anchor="middle" font-weight="600" fill="var(--text-color)">Empresa</text>
-                </g>
-                <!-- Road -->
-                <line x1="90" y1="130" x2="500" y2="130" stroke="var(--text-color-subtle)" stroke-width="10"/>
-                <line x1="90" y1="130" x2="500" y2="130" stroke="white" stroke-width="2" stroke-dasharray="10 10" class="road-lines"/>
-                <!-- Truck -->
-                <g id="truck-group">
-                    <path d="M 0 0 L 0 -25 L 25 -25 L 35 -15 L 35 0 Z" fill="var(--primary-color)" transform="translate(100, 120)"/>
-                    <rect x="70" y="95" width="40" height="25" fill="#fec700"/>
-                    <circle cx="80" cy="120" r="8" fill="#333"/>
-                    <circle cx="125" cy="120" r="8" fill="#333"/>
-                    <animateMotion id="truck-animation" xlink:href="#truck-group" dur="4s" begin="indefinite" fill="freeze" path="M 0 0 H 380" />
-                </g>
-            </svg>
-        </div>
-        <div class="recebimento-controls">
-             <button id="start-recebimento-btn" class="cta-button">Iniciar Recebimento</button>
-        </div>
-        <div class="step-display-container">
-            <div class="recebimento-step" id="step1">
-                <h4>1. Checagem da Nota Fiscal</h4>
-                <p>Verificar se o pedido corresponde ao que foi entregue.</p>
-            </div>
-            <div class="recebimento-step" id="step2">
-                <h4>2. Inspeção Quantitativa</h4>
-                <p>Contar os volumes e conferir se a quantidade está correta.</p>
-            </div>
-            <div class="recebimento-step" id="step3">
-                <h4>3. Inspeção Qualitativa</h4>
-                <p>Analisar a qualidade e verificar se há avarias nos produtos.</p>
-            </div>
-             <div class="recebimento-step" id="step4">
-                <h4>4. Endereçamento</h4>
-                <p>Enviar os materiais conferidos para o estoque.</p>
-            </div>
-        </div>
-    `;
-    
-    const startBtn = animationContainer.querySelector('#start-recebimento-btn');
-    const animationEl = animationContainer.querySelector('#truck-animation');
-    const steps = animationContainer.querySelectorAll('.recebimento-step');
-    
-    startBtn.addEventListener('click', () => {
-        startBtn.setAttribute('disabled', 'true');
-        startBtn.textContent = 'Em trânsito...';
-        steps.forEach(s => s.classList.remove('visible'));
-
-        if (animationEl instanceof SVGAnimationElement) {
-            animationEl.beginElement();
-        }
-        
-        setTimeout(() => {
-            startBtn.textContent = 'Entrega Realizada!';
-            steps.forEach((step, index) => {
-                setTimeout(() => {
-                    step.classList.add('visible');
-                }, index * 700);
-            });
-            setTimeout(() => {
-                startBtn.removeAttribute('disabled');
-                startBtn.textContent = 'Reiniciar Animação';
-            }, steps.length * 700);
-        }, 4000); 
-    });
-    
-    animationSection.append(animationTitle, animationContainer);
-    
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
 
@@ -301,7 +328,6 @@ export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTo
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('recebimento');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -310,12 +336,10 @@ export function renderRecebimentoPage(transitionTo, selectedTopic, setSelectedTo
         introducao,
         definicao,
         objetivo,
+        interactiveSection,
         importancia,
         comunicacao,
-        notasFiscaisSection,
-        animationSection,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

@@ -1,8 +1,5 @@
 
-
-
-
-import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -54,53 +51,126 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
     const intro = createSection('Introdução', 'Fala, galera! O 5S é uma metodologia japonesa que ajuda a organizar o local de trabalho para que tudo seja mais fácil, rápido e seguro. O nome vem de cinco palavras em japonês que começam com "S": Seiri, Seiton, Seiso, Seiketsu e Shitsuke. Cada uma representa um passo para criar um ambiente mais limpo, organizado e produtivo.');
     const comoSurgiu = createSection('Como surgiu?', 'O programa 5S surgiu no Japão, após a Segunda Guerra Mundial, durante a reconstrução do país. A ideia era melhorar a eficiência e a qualidade nas indústrias, eliminando desperdícios e criando um ambiente de trabalho mais organizado. A metodologia se popularizou como parte do Sistema Toyota de Produção e, hoje, é usada por empresas do mundo todo para aumentar a produtividade e a segurança.');
     
-    const s5Grid = document.createElement('div');
-    s5Grid.className = 's5-visual-grid';
+    const s5ListContainer = document.createElement('div');
+    applyStyles(s5ListContainer, {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1.5rem',
+        width: '100%',
+        marginTop: '3rem'
+    });
     
     const s5Data = [
         { 
-            title: "1. Seiri (Senso de Utilização)", 
-            text: "<strong>O que é:</strong> Separar o que é necessário do que não é.<br><strong>Como fazer:</strong> Olhe tudo o que você tem na sua área de trabalho e jogue fora, doe ou guarde em outro lugar o que não for essencial para suas tarefas diárias. O objetivo é manter apenas o indispensável.",
-            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><path d="M54 18h-8v-4c0-2.2-1.8-4-4-4h-8c-2.2 0-4 1.8-4 4v4h-8l-4 40h40l-4-40z" fill="url(#s5-grad-1)"/><path d="M52 18h-6v-4c0-1.1-.9-2-2-2h-8c-1.1 0-2 .9-2 2v4h-6l-3.5 36h35l-3.5-36z M38 18h-4v-2h4v2z" fill="var(--text-color)"/><path d="M22 28l-2 2 10 10 10-10-2-2-8 8z" fill="var(--primary-color)" opacity="0.8"/><line x1="10" y1="24" x2="54" y2="24" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4"/></svg>`
+            id: "1",
+            name: "Seiri",
+            subtitle: "(Senso de Utilização)", 
+            queE: "Separar o que é necessário do que não é.",
+            comoFazer: "Olhe tudo o que você tem na sua área de trabalho e jogue fora, doe ou guarde em outro lugar o que não for essencial para suas tarefas diárias. O objetivo é manter apenas o indispensável.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M54 18h-8v-4c0-2.2-1.8-4-4-4h-8c-2.2 0-4 1.8-4 4v4h-8l-4 40h40l-4-40z" fill="var(--primary-color)" opacity="0.2"/><path d="M52 18h-6v-4c0-1.1-.9-2-2-2h-8c-1.1 0-2 .9-2 2v4h-6l-3.5 36h35l-3.5-36z M38 18h-4v-2h4v2z" fill="var(--primary-color)"/><path d="M22 28l-2 2 10 10 10-10-2-2-8 8z" fill="#fff" opacity="0.8"/><line x1="10" y1="24" x2="54" y2="24" stroke="var(--primary-color)" stroke-width="2" stroke-dasharray="4 4"/></svg>`
         },
         { 
-            title: "2. Seiton (Senso de Organização)", 
-            text: "<strong>O que é:</strong> Organizar o que ficou.<br><strong>Como fazer:</strong> Defina um lugar para cada coisa e mantenha cada coisa em seu lugar. Use etiquetas, prateleiras e caixas para que qualquer pessoa possa encontrar o que precisa de forma rápida e fácil.",
-            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><rect x="8" y="10" width="48" height="44" rx="4" fill="url(#s5-grad-2)"/><path d="M12 18h16v8h-16z M32 18h16v8h-16z M12 30h16v8h-16z M32 30h16v8h-16z M12 42h36v8h-36z" fill="var(--text-color)"/><path d="M14 20h12v4h-12z" fill="var(--primary-color)" opacity="0.8"/><path d="M34 32h12v4h-12z" fill="var(--primary-color)" opacity="0.8"/><path d="M14 44h32v4h-32z" fill="var(--primary-color)" opacity="0.8"/></svg>`
+            id: "2",
+            name: "Seiton",
+            subtitle: "(Senso de Organização)", 
+            queE: "Organizar o que ficou.",
+            comoFazer: "Defina um lugar para cada coisa e mantenha cada coisa em seu lugar. Use etiquetas, prateleiras e caixas para que qualquer pessoa possa encontrar o que precisa de forma rápida e fácil.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="10" width="48" height="44" rx="4" fill="var(--primary-color)" opacity="0.2"/><path d="M12 18h16v8h-16z M32 18h16v8h-16z M12 30h16v8h-16z M32 30h16v8h-16z M12 42h36v8h-36z" fill="var(--primary-color)"/><path d="M14 20h12v4h-12z" fill="#fff" opacity="0.8"/><path d="M34 32h12v4h-12z" fill="#fff" opacity="0.8"/><path d="M14 44h32v4h-32z" fill="#fff" opacity="0.8"/></svg>`
         },
         { 
-            title: "3. Seiso (Senso de Limpeza)", 
-            text: "<strong>O que é:</strong> Manter o ambiente limpo.<br><strong>Como fazer:</strong> Crie o hábito de limpar sua área de trabalho regularmente. Um ambiente limpo é mais agradável, seguro e ajuda a identificar problemas, como vazamentos ou equipamentos quebrados, mais facilmente.",
-            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><path d="M52 12l-20 20-12-12-8 8 20 20 28-28z" fill="url(#s5-grad-3)"/><path d="M48 10h-32v2h32z M48 52h-32v2h32z" fill="var(--text-color)" opacity="0.5"/><path d="M50 8l-28 28-12-12-4 4 16 16 32-32z" fill="var(--primary-color)"/><path d="M18 42l-4 4 8 8 4-4z M10 50l-4 4 8 8 4-4z M26 50l-4 4 8 8 4-4z" fill="var(--text-color)" opacity="0.7"/></svg>`
+            id: "3",
+            name: "Seiso",
+            subtitle: "(Senso de Limpeza)", 
+            queE: "Manter o ambiente limpo.",
+            comoFazer: "Crie o hábito de limpar sua área de trabalho regularmente. Um ambiente limpo é mais agradável, seguro e ajuda a identificar problemas, como vazamentos ou equipamentos quebrados, mais facilmente.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M52 12l-20 20-12-12-8 8 20 20 28-28z" fill="var(--primary-color)" opacity="0.2"/><path d="M50 8l-28 28-12-12-4 4 16 16 32-32z" fill="var(--primary-color)"/><path d="M18 42l-4 4 8 8 4-4z" fill="#fff" opacity="0.7"/></svg>`
         },
         { 
-            title: "4. Seiketsu (Senso de Padronização)", 
-            text: "<strong>O que é:</strong> Manter a organização e a limpeza.<br><strong>Como fazer:</strong> Crie regras e padrões para que os três primeiros “S” (Utilização, Organização e Limpeza) se tornem um hábito. Isso pode incluir checklists, rotinas de limpeza e responsabilidades claras para cada um.",
-            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><rect x="12" y="8" width="40" height="48" rx="4" fill="url(#s5-grad-4)"/><path d="M20 18h24v4h-24z" fill="var(--text-color)"/><path d="M24 28h16v2h-16zm0 6h16v2h-16zm0 6h16v2h-16z" fill="var(--text-color)" opacity="0.7"/><path d="M20 28l-4 4 2 2 4-4z M20 34l-4 4 2 2 4-4z M20 40l-4 4 2 2 4-4z" fill="var(--primary-color)"/></svg>`
+            id: "4",
+            name: "Seiketsu",
+            subtitle: "(Senso de Padronização)", 
+            queE: "Manter a organização e a limpeza.",
+            comoFazer: "Crie regras e padrões para que os três primeiros “S” (Utilização, Organização e Limpeza) se tornem um hábito. Isso pode incluir checklists, rotinas de limpeza e responsabilidades claras para cada um.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="8" width="40" height="48" rx="4" fill="var(--primary-color)" opacity="0.2"/><path d="M20 18h24v4h-24z" fill="var(--primary-color)"/><path d="M20 28l-4 4 2 2 4-4z M20 34l-4 4 2 2 4-4z M20 40l-4 4 2 2 4-4z" fill="#fff"/></svg>`
         },
         { 
-            title: "5. Shitsuke (Senso de Disciplina)", 
-            text: "<strong>O que é:</strong> Ter disciplina para seguir as regras.<br><strong>Como fazer:</strong> É o compromisso de todos em manter os padrões definidos. Significa transformar o 5S em parte da cultura da empresa, onde cada um faz sua parte sem precisar ser lembrado.",
-            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="s5-grad-5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--primary-color)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--primary-color)" stop-opacity="0.1"/></linearGradient></defs><circle cx="32" cy="32" r="24" fill="url(#s5-grad-5)"/><path d="M32 12c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20zm0 36c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" fill="var(--text-color)"/><path d="M42 30h-6v-6c0-1.1-.9-2-2-2s-2 .9-2 2v8h8c1.1 0 2-.9 2-2s-.9-2-2-2z" fill="var(--primary-color)"/></svg>`
+            id: "5",
+            name: "Shitsuke",
+            subtitle: "(Senso de Disciplina)", 
+            queE: "Ter disciplina para seguir as regras.",
+            comoFazer: "É o compromisso de todos em manter os padrões definidos. Significa transformar o 5S em parte da cultura da empresa, onde cada um faz sua parte sem precisar ser lembrado.",
+            icon: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="24" fill="var(--primary-color)" opacity="0.2"/><path d="M32 12c-11 0-20 9-20 20s9 20 20 20 20-9 20-20-9-20-20-20zm0 36c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16z" fill="var(--primary-color)"/><path d="M42 30h-6v-6c0-1.1-.9-2-2-2s-2 .9-2 2v8h8c1.1 0 2-.9 2-2s-.9-2-2-2z" fill="#fff"/></svg>`
         },
     ];
 
     s5Data.forEach(item => {
         const card = document.createElement('div');
-        card.className = 's5-visual-card';
-        card.innerHTML = `
-            <div class="s5-card-icon">${item.icon}</div>
-            <div class="s5-card-content">
-                <h3>${item.title}</h3>
-                <p>${item.text}</p>
+        card.className = 's5-interactive-card';
+        applyStyles(card, {
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderLeft: '6px solid var(--primary-color)',
+            borderRadius: '12px',
+            padding: '2.5rem 2rem',
+            gap: '2rem',
+            transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+            boxShadow: '0 4px 15px var(--card-shadow)',
+            position: 'relative',
+            overflow: 'hidden'
+        });
+
+        const iconContainer = document.createElement('div');
+        applyStyles(iconContainer, {
+            flex: '0 0 80px',
+            height: '80px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+        });
+        iconContainer.innerHTML = item.icon;
+
+        const content = document.createElement('div');
+        applyStyles(content, {
+            flex: '1',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.8rem'
+        });
+
+        content.innerHTML = `
+            <h3 style="margin:0; font-size: 1.6rem; color: var(--primary-color); font-weight: 700;">
+                <span style="margin-right: 5px;">${item.id}. ${item.name}</span>
+                <span style="font-size: 1.3rem; color: var(--text-color);">${item.subtitle}</span>
+            </h3>
+            <div style="font-size: 1.1rem; line-height: 1.5; color: var(--text-color);">
+                <strong style="color: var(--text-color); font-weight: 800;">O que é:</strong> ${item.queE}
+            </div>
+            <div style="font-size: 1.1rem; line-height: 1.6; color: var(--text-color-light);">
+                <strong style="color: var(--text-color); font-weight: 800;">Como fazer:</strong> ${item.comoFazer}
             </div>
         `;
-        s5Grid.appendChild(card);
+
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px) scale(1.01)';
+            card.style.borderColor = 'var(--primary-color)';
+            card.style.boxShadow = '0 12px 30px rgba(254, 199, 0, 0.2)';
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1)';
+            card.style.borderColor = 'var(--card-border)';
+            card.style.boxShadow = '0 4px 15px var(--card-shadow)';
+        });
+
+        card.append(iconContainer, content);
+        s5ListContainer.appendChild(card);
     });
 
     const image5S = document.createElement('div');
     image5S.className = 'media-container';
-    image5S.style.marginTop = '3rem';
+    image5S.style.marginTop = '4rem';
 
     const iframeWrapper = document.createElement('div');
     iframeWrapper.className = 'video-wrapper';
@@ -140,7 +210,7 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         { q: "O 'Seiketsu' (Senso de Padronização) serve para:", a: 3, o: ["Descartar itens uma única vez.", "Organizar o ambiente apenas quando há visitas.", "Limpar o local de trabalho esporadicamente.", "Manter os três primeiros sensos como um hábito."] },
         { q: "O 'Shitsuke' (Senso de Disciplina) representa:", a: 1, o: ["A punição para quem não segue as regras.", "O compromisso de todos em manter os padrões.", "A limpeza feita apenas pela equipe de faxina.", "A compra de novos materiais de organização."] },
         { q: "O 5S é uma metodologia que se originou em qual país?", a: 0, o: ["Japão", "Estados Unidos", "Alemanha", "China"] },
-        { q: "Qual o principal benefício de aplicar o 5S em um ambiente de trabalho?", a: 2, o: ["Aumentar a quantidade de itens estocados.", "Tornar o trabalho mais burocrático.", "Aumentar a produtividade, a segurança e a organização.", "Diminuir a comunicação entre a equipe."] },
+        { q: "Qual o principal beneficio de aplicar o 5S em um ambiente de trabalho?", a: 2, o: ["Aumentar a quantidade de itens estocados.", "Tornar o trabalho mais burocrático.", "Aumentar a produtividade, a segurança e a organização.", "Diminuir a comunicação entre a equipe."] },
         { q: "Qual senso do 5S está mais relacionado à cultura organizacional e ao comprometimento de longo prazo?", a: 3, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Shitsuke (Disciplina)"] },
         { q: "Etiquetar prateleiras e caixas para facilitar a localização de itens é uma prática de qual senso?", a: 1, o: ["Seiri (Utilização)", "Seiton (Organização)", "Seiso (Limpeza)", "Seiketsu (Padronização)"] },
         { q: "O programa 5S foi popularizado como parte de qual famoso sistema de produção?", a: 2, o: ["Fordismo", "Taylorismo", "Sistema Toyota de Produção", "Produção em Massa"] },
@@ -204,7 +274,6 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('5s');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -212,10 +281,9 @@ export function render5SPage(transitionTo, selectedTopic, setSelectedTopic) {
         title,
         intro,
         comoSurgiu,
-        s5Grid,
+        s5ListContainer, // Nova lista interativa estilo imagem
         image5S,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

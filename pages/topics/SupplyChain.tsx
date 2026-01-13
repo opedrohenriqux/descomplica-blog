@@ -1,7 +1,5 @@
 
-
-
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createImage, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createImage } from '../../utils.tsx';
 
 export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -63,12 +61,11 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
 
     const intro = createSection('O que é?', 'Fala, galera! A Cadeia de Suprimentos (ou Supply Chain, em inglês) é todo o caminho que um produto faz, desde a matéria-prima até chegar na sua mão. Pensa no seu celular: a cadeia de suprimentos inclui a mineração dos metais, a fabricação das peças, a montagem do aparelho, o transporte para a loja e, finalmente, a venda para você. É uma rede gigante que conecta fornecedores, fabricantes, distribuidores, lojas e clientes.');
     
-    // Correção: Usando iframe para garantir a visualização da imagem do Google Drive
     const imageDiagram = document.createElement('div');
     imageDiagram.className = 'media-container';
     
     const iframeWrapper = document.createElement('div');
-    iframeWrapper.className = 'video-wrapper'; // Mantém proporção responsiva
+    iframeWrapper.className = 'video-wrapper'; 
     iframeWrapper.innerHTML = `
         <iframe 
             src="https://drive.google.com/file/d/1EGKuZFzTNSZe_YGYc5tw9-ujt_3SY2JP/preview" 
@@ -91,19 +88,79 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     
     const logisticaVsSCM = createSection('Logística vs. Supply Chain Management (SCM)', 'Muita gente confunde, mas saca só a diferença: a <strong>Logística</strong> é uma parte da cadeia de suprimentos. Ela cuida da movimentação e armazenagem dos produtos (transporte, estoque, etc.). Já o <strong>Supply Chain Management (SCM)</strong> é a gestão de TUDO: desde a negociação com fornecedores, produção, logística, até o serviço ao cliente. Ou seja, a logística é o "como" (movimentar), e o SCM é o "o quê" e o "porquê" (gerenciar o processo todo).');
     
-    // Seção: Importância
     const importanciaSection = createSection('Qual a importância?', 'A gestão da Cadeia de Suprimentos é o coração pulsante de qualquer empresa moderna. Sem ela, os produtos não chegariam às prateleiras, os hospitais ficariam sem remédios e as fábricas parariam. <br><br>Em um mundo globalizado, uma falha em um fornecedor do outro lado do mundo pode parar uma linha de montagem inteira aqui no Brasil. Por isso, gerenciar essa cadeia não é apenas sobre "transportar caixas", mas sobre <strong>estratégia, inteligência e previsão</strong> para garantir que o negócio continue rodando mesmo diante de imprevistos.');
 
-    // Seção: Benefícios
-    const beneficiosSection = createSection('Principais Benefícios', [
-        'Redução de Custos Operacionais: Identificar desperdícios e otimizar rotas economiza muito dinheiro.',
-        'Melhoria na Qualidade: Controle rigoroso desde a matéria-prima garante um produto final melhor.',
-        'Satisfação do Cliente: Entregar no prazo e sem avarias fideliza quem compra.',
-        'Gestão de Riscos: Ter planos para lidar com crises, greves ou falta de material.',
-        'Fluxo de Caixa Otimizado: Estoque parado é dinheiro parado; o SCM ajuda a girar o estoque mais rápido.'
-    ]);
+    const bTitle = document.createElement('h3');
+    bTitle.textContent = 'Principais Benefícios';
+    applyStyles(bTitle, {
+        fontSize: '1.5rem',
+        fontWeight: '700',
+        color: 'var(--text-color)',
+        marginTop: '2.5rem',
+        marginBottom: '1.5rem',
+        paddingBottom: '0.5rem',
+        borderBottom: '2px solid var(--primary-color)',
+        width: '100%'
+    });
 
-    // Seção: Tipos de Cadeia de Suprimentos
+    const benefitsGrid = document.createElement('div');
+    applyStyles(benefitsGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        gap: '1.5rem',
+        width: '100%',
+        marginBottom: '3rem'
+    });
+
+    const benefitsData = [
+        { title: "Redução de Custos Operacionais", icon: "💰", desc: "Identificar desperdícios e otimizar rotas economiza muito dinheiro." },
+        { title: "Melhoria na Qualidade", icon: "💎", desc: "Controle rigoroso desde a matéria-prima garante um produto final melhor." },
+        { title: "Satisfação do Cliente", icon: "😊", desc: "Entregar no prazo e sem avarias fideliza quem compra." },
+        { title: "Gestão de Riscos", icon: "🛡️", desc: "Ter planos para lidar com crises, greves ou falta de material." },
+        { title: "Fluxo de Caixa Otimizado", icon: "📈", desc: "Estoque parado é dinheiro parado; o SCM ajuda a girar o estoque mais rápido." }
+    ];
+
+    benefitsData.forEach(item => {
+        const bCard = document.createElement('div');
+        applyStyles(bCard, {
+            backgroundColor: 'var(--card-bg)',
+            border: '2px solid var(--card-border)',
+            borderRadius: '16px',
+            padding: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            boxShadow: '0 4px 10px var(--card-shadow)',
+            cursor: 'default'
+        });
+
+        bCard.innerHTML = `
+            <div style="font-size: 2.5rem; margin-bottom: 1rem;">${item.icon}</div>
+            <h4 style="margin: 0 0 0.5rem 0; color: var(--text-color); font-weight: 700; line-height: 1.2;">${item.title}</h4>
+            <p style="margin: 0; font-size: 0.95rem; color: var(--text-color-light); line-height: 1.5;">${item.desc}</p>
+        `;
+
+        bCard.addEventListener('mouseenter', () => {
+            bCard.style.transform = 'translateY(-10px) scale(1.03)';
+            bCard.style.borderColor = 'var(--primary-color)';
+            bCard.style.boxShadow = '0 15px 30px rgba(254, 199, 0, 0.25)';
+        });
+
+        bCard.addEventListener('mouseleave', () => {
+            bCard.style.transform = 'translateY(0) scale(1)';
+            bCard.style.borderColor = 'var(--card-border)';
+            bCard.style.boxShadow = '0 4px 10px var(--card-shadow)';
+        });
+
+        benefitsGrid.appendChild(bCard);
+    });
+
+    const beneficiosSection = document.createElement('div');
+    beneficiosSection.style.width = '100%';
+    beneficiosSection.append(bTitle, benefitsGrid);
+
     const typesTitle = document.createElement('h3');
     typesTitle.textContent = 'Tipos de Cadeia de Suprimentos';
     applyStyles(typesTitle, {
@@ -165,7 +222,6 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     const typesSection = document.createElement('div');
     typesSection.append(typesTitle, typesGrid);
 
-    // Imagem 2: Tecnologia
     const imageTech = createImage(
         'https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&h=600&q=80',
         'Armazém automatizado moderno',
@@ -173,29 +229,108 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     );
 
     const cardContainer = document.createElement('div');
-    cardContainer.className = 'info-cards-container';
-    
-    const etapasCard = document.createElement('div');
-    etapasCard.className = 'info-card';
-    etapasCard.innerHTML = '<h3>Principais Etapas</h3>';
-    etapasCard.appendChild(createTopicList([
+    applyStyles(cardContainer, {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2rem',
+        width: '100%',
+        margin: '3rem 0'
+    });
+
+    const createDarkAccentCard = (title, items) => {
+        const group = document.createElement('div');
+        applyStyles(group, {
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem'
+        });
+
+        const sectionHeader = document.createElement('h3');
+        sectionHeader.textContent = title;
+        applyStyles(sectionHeader, {
+            fontSize: '1.6rem',
+            fontWeight: '700',
+            color: 'var(--text-color)',
+            marginBottom: '0.5rem'
+        });
+        group.appendChild(sectionHeader);
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            applyStyles(card, {
+                backgroundColor: 'var(--timeline-bg)',
+                border: '1px solid var(--card-border)',
+                borderRadius: '8px',
+                padding: '1.2rem 1.5rem',
+                display: 'flex',
+                alignItems: 'stretch',
+                gap: '1.2rem',
+                boxShadow: '0 4px 15px var(--card-shadow)',
+                transition: 'transform 0.2s ease, background-color 0.2s ease',
+                position: 'relative'
+            });
+            
+            // A barra lateral amarela arredondada estilo "pill" da imagem
+            const accentBar = document.createElement('div');
+            applyStyles(accentBar, {
+                width: '6px',
+                backgroundColor: '#fec700',
+                borderRadius: '10px',
+                flexShrink: '0'
+            });
+
+            const contentWrap = document.createElement('div');
+            applyStyles(contentWrap, {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                flex: '1'
+            });
+
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateX(8px)';
+                card.style.backgroundColor = 'var(--button-bg-hover)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateX(0)';
+                card.style.backgroundColor = 'var(--timeline-bg)';
+            });
+
+            const separator = item.includes('→') ? '→' : ':';
+            const parts = item.split(separator);
+            
+            if (parts.length > 1) {
+                contentWrap.innerHTML = `
+                    <div style="color: var(--text-color); font-weight: 700; font-size: 1.1rem; line-height: 1.2;">${parts[0].trim()}</div>
+                    <div style="color: var(--text-color-light); font-size: 0.95rem; line-height: 1.4;">${parts.slice(1).join(separator).trim()}</div>
+                `;
+            } else {
+                contentWrap.innerHTML = `<div style="color: var(--text-color); font-weight: 700; font-size: 1.1rem;">${item}</div>`;
+            }
+            
+            card.append(accentBar, contentWrap);
+            group.appendChild(card);
+        });
+
+        return group;
+    };
+
+    const etapasCard = createDarkAccentCard('Principais Etapas', [
         'Planejamento → Prever a demanda e planejar a produção.',
         'Compras (Sourcing) → Escolher fornecedores e comprar matéria-prima.',
         'Produção (Fabricação) → Transformar a matéria-prima em produto.',
         'Distribuição e Logística → Armazenar e transportar o produto.',
-        'Logística Reversa → Lidar com devoluções ou reciclagem de produtos.',
-    ]));
-    
-    const componentsCard = document.createElement('div');
-    componentsCard.className = 'info-card';
-    componentsCard.innerHTML = '<h3>Quem participa?</h3>';
-    componentsCard.appendChild(createTopicList([
+        'Logística Reversa → Lidar com devoluções ou reciclagem de produtos.'
+    ]);
+
+    const componentsCard = createDarkAccentCard('Quem participa?', [
         'Fornecedores primários e secundários.',
         'Fabricantes e montadoras.',
         'Distribuidores e atacadistas.',
         'Varejistas (físicos e e-commerce).',
         'Consumidor final (Você!).'
-    ]));
+    ]);
     
     cardContainer.append(etapasCard, componentsCard);
 
@@ -279,7 +414,6 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
     
-    const commentsSection = createCommentSection('supply-chain');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
     
     container.append(
@@ -289,12 +423,11 @@ export function renderSupplyChainPage(transitionTo, selectedTopic, setSelectedTo
         imageDiagram,
         logisticaVsSCM,
         importanciaSection,
-        beneficiosSection,
+        beneficiosSection, 
         typesSection,
         imageTech,
         cardContainer,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

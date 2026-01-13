@@ -1,7 +1,5 @@
 
-
-
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicNavigation } from '../../utils.tsx';
 
 export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -92,6 +90,46 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         .glossary-close:hover {
             background: var(--button-bg-hover);
         }
+
+        /* Otimização dos Itens de Lista nos Novos Cards */
+        .optimized-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .optimized-item {
+            margin-bottom: 1.2rem;
+            padding: 1rem;
+            background-color: var(--timeline-bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s ease;
+        }
+        .optimized-item:hover {
+            transform: translateX(5px);
+        }
+        .optimized-item strong {
+            display: block;
+            color: var(--text-color);
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+        .optimized-item span {
+            font-size: 0.9rem;
+            color: var(--text-color-light);
+            line-height: 1.4;
+        }
+
+        /* Responsividade para colunas de conteúdo */
+        @media (max-width: 768px) {
+            .content-columns {
+                flex-direction: column !important;
+            }
+            .image-col {
+                flex: 0 0 auto !important;
+                margin-bottom: 2rem;
+            }
+        }
     `;
     document.head.appendChild(glossaryStyles);
 
@@ -145,10 +183,8 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
 
-        // Animate in
         requestAnimationFrame(() => overlay.classList.add('open'));
 
-        // Close logic
         const close = () => {
             overlay.classList.remove('open');
             setTimeout(() => overlay.remove(), 300);
@@ -173,7 +209,6 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     });
     title.textContent = 'Logística Integrada';
 
-    // Helper para estilo padrão de título
     const applyH3Style = (element) => {
         applyStyles(element, {
             fontSize: '1.5rem',
@@ -183,7 +218,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
             marginBottom: '1rem',
             paddingBottom: '0.5rem',
             borderBottom: '2px solid var(--primary-color)',
-            width: '100%' // Garante que a linha vá até o final
+            width: '100%'
         });
     };
 
@@ -192,12 +227,30 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     applyH3Style(tradTitle);
 
     const tradIntro = document.createElement('p');
+    tradIntro.style.fontSize = '1.1rem';
+    tradIntro.style.lineHeight = '1.8';
     tradIntro.textContent = 'Fala, pessoal! Você sabe o que é Logística? Aposto que você pensou na definição de Logística como entrega de "algo". E não está errado, bom... De certa maneira! Sabia que existe um processo muito legal e bacana por trás de cada produto que compramos e recebemos? É o que hoje chamamos de Logística Integrada e veremos isso mais adiante, agora vamos falar sobre a Logística tradicional quando o processo se resumia apenas a transporte e movimentação.';
     
+    // NOVO LAYOUT DE COLUNAS CONFORME IMAGEM
     const columns = document.createElement('div');
     columns.className = 'content-columns';
+    applyStyles(columns, {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '3rem',
+        margin: '3rem 0',
+        width: '100%'
+    });
+
     const imageCol = document.createElement('div');
     imageCol.className = 'image-col';
+    applyStyles(imageCol, {
+        flex: '0 0 300px',
+        display: 'flex',
+        justifyContent: 'center'
+    });
     imageCol.innerHTML = `
         <svg width="250" height="200" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="70" width="100" height="60" rx="5" fill="#fef4d6" stroke="#fec700" stroke-width="2"/>
@@ -207,33 +260,25 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
             <path d="M125 100h50" stroke="#ccc" stroke-width="2" stroke-dasharray="5 5"/>
         </svg>
     `;
+
     const textCol = document.createElement('div');
     textCol.className = 'text-col';
-    textCol.innerHTML = `<p>Antes da Logística Integrada, havia uma visão de que a Logística era apenas transporte e armazenagem, sem nenhuma integração com as outras áreas da empresa. Sabe o que isso gerava? Altos custos, ineficiência e lentidão no atendimento ao cliente.</p>
-    <p>Esse isolamento não era nada bom, com a falta de comunicação e organização interna, a empresa não conseguia obter melhores resultados e como não havia coordenação, havia excesso de estoque, rotas mal planejadas, atrasos e retrabalhos, o que aumentava os gastos.</p>`;
+    applyStyles(textCol, { 
+        flex: '1',
+        fontSize: '1.15rem', 
+        lineHeight: '1.8',
+        textAlign: 'left'
+    });
+    textCol.innerHTML = `
+        <p>Antes da Logística Integrada, havia uma visão de que a Logística era apenas transporte e armazenagem, sem nenhuma integração com as outras áreas da empresa. Sabe o que isso gerava? Altos custos, ineficiência e lentidão no atendimento ao cliente.</p>
+        <p>Esse isolamento não era nada bom, com a falta de comunicação e organização interna, a empresa não conseguia obter melhores resultados e como não havia coordenação, havia excesso de estoque, rotas mal planejadas, atrasos e retrabalhos, o que aumentava os gastos.</p>
+    `;
     columns.append(imageCol, textCol);
 
-    const intTitle = document.createElement('h3');
-    intTitle.textContent = 'Logística Integrada';
-    applyH3Style(intTitle);
-
-    const intIntro = document.createElement('div');
-    intIntro.innerHTML = `<p>Fala galera, de boa? Como solução para os problemas da Logística tradicional surgiu a Logística Integrada.</p>
-    <p>Saca só: Logística Integrada nada mais é do que juntar tudo que acontece dentro de uma empresa, desde pegar o material lá no começo até entregar o produto na mão do cliente. É igual fazer todas as partes do rolê se conectarem, sem bagunça e sem atraso.</p>
-    <p>Imagina um time dando um show, cada um sabendo o que tem que fazer e passando a bola na hora certa. É exatamente isso! A empresa ganha tempo, economiza dinheiro e o cliente recebe tudo bem de boa.</p>
-    <p>A Logística Integrada surgiu da necessidade das empresas de:</p>`;
-    const intTopics = createTopicList([
-        'Reduzir custos operacionais (combustível, armazenagem e mão de obra).',
-        'Aumentar a eficiência (menos falhas e atrasos).',
-        'Responder de forma rápida e flexível às mudanças do mercado.',
-        'Integrar informações em tempo real entre setores.',
-        'Garantir satisfação do cliente e fidelização.',
-        'Se diferenciar em um mercado cada vez mais competitivo',
-    ]);
-
+    // --- Timeline Section ---
     const timelineData = [
         { id: '1950', label: 'Antes 1950', content: 'A logística era vista apenas como transporte e armazenagem. O foco era movimentar produtos de um ponto a outro.' },
-        { id: '1960', label: '1950–1960', content: 'Após a 2ª Guerra Mundial, empresas começaram a aplicar conceitos militares de logística (movimentação estratégica de suprimentos) no setor empresarial.' },
+        { id: '1960', label: '1950–1960', content: 'Após a 2ª Guerra Mundial, empresas comenzaron a aplicar conceptos militares de logística (movimentação estratégica de suprimentos) no setor empresarial.' },
         { id: '1970', label: '1970', content: 'Crises do petróleo aumentaram os custos, e as empresas perceberam a necessidade de reduzir desperdícios e integrar melhor suas operações.' },
         { id: '1980', label: '1980', content: 'Surge o conceito de Supply Chain Management (Gestão da Cadeia de Suprimentos), com visão mais ampla, considerando fornecedores, produção e clientes como partes de um mesmo sistema.' },
         { id: '1990', label: '1990', content: 'Avanço da tecnologia da informação (<span class="glossary-term" data-term="erp">sistemas ERP</span>, código de barras, rastreamento) permite integração em tempo real entre áreas da empresa e parceiros externos.' },
@@ -254,7 +299,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         const contentItem = document.createElement('div');
         contentItem.className = 'timeline-content';
         contentItem.id = `timeline-${item.id}`;
-        contentItem.innerHTML = item.content; // Changed from textContent to innerHTML
+        contentItem.innerHTML = item.content;
 
         if (index === 0) {
             navItem.classList.add('active');
@@ -282,22 +327,81 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         }
     });
 
-    // Event listener delegation for glossary terms
-    timelineContentContainer.addEventListener('click', (e) => {
-        if (e.target instanceof HTMLElement && e.target.classList.contains('glossary-term')) {
-            const term = e.target.dataset.term;
-            if (term) showGlossary(term);
-        }
-    });
-
     timelineSection.append(timelineNav, timelineContentContainer);
-    
-    // --- NOVA SEÇÃO: Fluxos Logísticos ---
+
+    // --- Logística Integrada Section ---
+    const intTitle = document.createElement('h3');
+    intTitle.textContent = 'Logística Integrada';
+    applyH3Style(intTitle);
+
+    const intIntro = document.createElement('div');
+    applyStyles(intIntro, { fontSize: '1.2rem', lineHeight: '1.8', margin: '2rem 0' });
+    intIntro.innerHTML = `
+        <p>Fala galera, de boa? Como solução para os problemas da Logística tradicional surgiu a Logística Integrada.</p>
+        <p>Saca só: Logística Integrada nada mais é do que juntar tudo que acontece dentro de uma empresa, desde pegar o material lá no começo até entregar o produto na mão do cliente. É igual fazer todas as partes do rolê se conectarem, sem bagunça e sem atraso.</p>
+        <p>Imagina um time dando um show, cada um sabendo o que tem que fazer e passando a bola na hora certa. É exatamente isso! A empresa ganha tempo, economiza dinheiro e o cliente recebe tudo bem de boa.</p>
+        <p style="font-weight:600; margin-top: 2rem;">A Logística Integrada surgiu da necessidade das empresas de:</p>
+    `;
+
+    // --- NOVA SEÇÃO DE CARD DE MOTIVAÇÕES (Substituindo a lista simples) ---
+    const createOptimizedCard = (title, items) => {
+        const card = document.createElement('div');
+        applyStyles(card, {
+            backgroundColor: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '24px',
+            padding: '2.5rem',
+            boxShadow: '0 12px 30px var(--card-shadow)',
+            height: 'fit-content',
+            width: '100%',
+            marginBottom: '3rem'
+        });
+
+        const header = document.createElement('h3');
+        header.textContent = title;
+        applyStyles(header, { 
+            color: 'var(--primary-color)', 
+            fontSize: '1.8rem', 
+            marginTop: '0', 
+            marginBottom: '2rem',
+            textAlign: 'center',
+            fontWeight: '700'
+        });
+
+        const list = document.createElement('div');
+        list.className = 'optimized-list';
+
+        items.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'optimized-item';
+            itemDiv.innerHTML = `
+                <strong>${item.bold}</strong>
+                <span>${item.desc}</span>
+            `;
+            list.appendChild(itemDiv);
+        });
+
+        card.append(header, list);
+        return card;
+    };
+
+    const motivacaoData = [
+        { bold: 'Redução de custos operacionais', desc: '(combustível, armazenagem e mão de obra).' },
+        { bold: 'Aumento da eficiência', desc: '(menos falhas e atrasos).' },
+        { bold: 'Agilidade e flexibilidade', desc: 'Responder de forma rápida e flexível às mudanças do mercado.' },
+        { bold: 'Integração de informações', desc: 'Integrar informações em tempo real entre setores.' },
+        { bold: 'Satisfação e fidelização', desc: 'Garantir satisfação do cliente e fidelização.' },
+        { bold: 'Diferencial competitivo', desc: 'Se diferenciar em um mercado cada vez mais competitivo.' }
+    ];
+
+    const motivacaoCard = createOptimizedCard('Por que integrar?', motivacaoData);
+
     const fluxosTitle = document.createElement('h3');
     fluxosTitle.textContent = 'Os Dois Fluxos da Logística';
     applyH3Style(fluxosTitle);
 
     const fluxosContent = document.createElement('div');
+    applyStyles(fluxosContent, { fontSize: '1.1rem', lineHeight: '1.8' });
     fluxosContent.innerHTML = `
         <p>Para entender a integração, precisamos entender que a logística não movimenta apenas caixas. Ela movimenta informações. Existem dois fluxos principais que correm simultaneamente, mas em direções (geralmente) opostas:</p>
     `;
@@ -340,7 +444,6 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     
     fluxosGrid.append(fluxoFisico, fluxoInfo);
     
-    // --- NOVA SEÇÃO: Diagrama Visual ---
     const diagramContainer = document.createElement('div');
     applyStyles(diagramContainer, {
         width: '100%',
@@ -351,47 +454,37 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     diagramContainer.innerHTML = `
         <h3 style="margin-bottom: 2rem;">O Ciclo da Logística Integrada</h3>
         <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
-            <!-- Arrows -->
             <defs>
                 <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
                     <path d="M0,0 L0,6 L9,3 z" fill="var(--primary-color)" />
                 </marker>
             </defs>
-            
             <line x1="150" y1="150" x2="250" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
             <line x1="350" y1="150" x2="450" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
             <line x1="550" y1="150" x2="650" y2="150" stroke="var(--primary-color)" stroke-width="4" marker-end="url(#arrow)" />
-            
-            <!-- Nodes -->
             <g>
                 <circle cx="100" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
                 <text x="100" y="155" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Fornecedor</text>
             </g>
-            
             <g>
                 <circle cx="300" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
                 <text x="300" y="145" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Indústria</text>
                 <text x="300" y="165" text-anchor="middle" fill="var(--text-color-light)" font-size="10">(Produção)</text>
             </g>
-            
             <g>
                 <circle cx="500" cy="150" r="50" fill="var(--card-bg)" stroke="var(--text-color)" stroke-width="2"/>
                 <text x="500" y="145" text-anchor="middle" font-weight="bold" fill="var(--text-color)" font-size="12">Distribuição</text>
                 <text x="500" y="165" text-anchor="middle" fill="var(--text-color-light)" font-size="10">(Transporte)</text>
             </g>
-            
             <g>
                 <circle cx="700" cy="150" r="50" fill="var(--primary-color)" stroke="var(--text-color)" stroke-width="2"/>
                 <text x="700" y="155" text-anchor="middle" font-weight="bold" fill="#333" font-size="12">Cliente Final</text>
             </g>
-            
-            <!-- Information Flow (Dashed lines underneath) -->
             <path d="M 700 210 Q 400 260 100 210" fill="none" stroke="var(--text-color-subtle)" stroke-width="2" stroke-dasharray="5,5" />
             <text x="400" y="240" text-anchor="middle" fill="var(--text-color-light)" font-size="12">Fluxo de Informação (Pedidos, Feedback)</text>
         </svg>
     `;
 
-    // --- NOVA SEÇÃO: Os 4 Pilares ---
     const pilaresTitle = document.createElement('h3');
     pilaresTitle.textContent = 'Os 4 Pilares da Logística Integrada';
     applyH3Style(pilaresTitle);
@@ -427,45 +520,37 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         createPilarCard('🔄', 'Logística Reversa', 'O caminho de volta. Cuida do retorno de produtos para troca, devolução, reciclagem ou descarte correto, fechando o ciclo sustentável da cadeia.')
     );
 
+    // --- NOVA SEÇÃO OTIMIZADA: Objetivos e Importância ---
+    const goalsAndImportanceGrid = document.createElement('div');
+    applyStyles(goalsAndImportanceGrid, {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        gap: '3rem',
+        marginTop: '5rem',
+        width: '100%'
+    });
 
-    const cardsContainer = document.createElement('div');
-    cardsContainer.className = 'info-cards-container';
-    
-    const cardImportancia = document.createElement('div');
-    cardImportancia.className = 'info-card';
-    cardImportancia.innerHTML = '<h3>Importância:</h3>';
-    cardImportancia.appendChild(createTopicList([
-        'Integração de processos: conecta suprimentos, produção, armazenagem, transporte e distribuição;',
-        'Fluxo de informações: uso de sistemas para acompanhar em tempo real pedidos, estoques e entregas;',
-        'Redução de custos: elimina desperdícios e atividades duplicadas;',
-        'Agilidade e flexibilidade: melhora a capacidade de resposta às mudanças de mercado;',
-        'Foco no cliente: garante que o produto certo chegue no lugar certo, na hora certa, com qualidade e menor custo.',
-    ]));
+    const objetivosData = [
+        { bold: 'Redução de custos', desc: 'Eliminar desperdícios, evitar retrabalho e otimizar recursos.' },
+        { bold: 'Eficiência operacional', desc: 'Garantir que todos os processos estejam sincronizados e fluindo sem gargalos.' },
+        { bold: 'Agilidade e flexibilidade', desc: 'Responder rapidamente a mudanças de demanda ou imprevistos no mercado.' },
+        { bold: 'Qualidade no atendimento', desc: 'Entregar o produto certo, no lugar certo, no tempo certo.' },
+        { bold: 'Integração da cadeia de suprimentos', desc: 'Conectar fornecedores, produção e cliente final em um só sistema.' },
+        { bold: 'Satisfação e fidelização do cliente', desc: 'Aumentar a competitividade ao oferecer melhor experiência de compra.' }
+    ];
 
-    const cardCaracteristicas = document.createElement('div');
-    cardCaracteristicas.className = 'info-card';
-    cardCaracteristicas.innerHTML = '<h3>Características:</h3>';
-     cardCaracteristicas.appendChild(createTopicList([
-        'Integração de processos: conecta suprimentos, produção, armazenagem, transporte e distribuição.',
-        'Fluxo de informações: uso de sistemas para acompanhar em tempo real pedidos, estoques e entregas.',
-        'Redução de custos: elimina desperdícios e atividades duplicadas.',
-        'Agilidade e flexibilidade: melhora a capacidade de resposta às mudanças de mercado.',
-        'Foco no cliente: garante que o produto certo chegue no lugar certo, na hora certa, com qualidade e menor custo.',
-    ]));
+    const importanciaData = [
+        { bold: 'Integração de processos', desc: 'Conecta suprimentos, produção, armazenagem, transporte e distribuição.' },
+        { bold: 'Fluxo de informações', desc: 'Uso de sistemas para acompanhar em tempo real pedidos, estoques e entregas.' },
+        { bold: 'Redução de custos', desc: 'Elimina desperdícios e atividades duplicadas de forma estratégica.' },
+        { bold: 'Agilidade e flexibilidade', desc: 'Melhora a capacidade de resposta às mudanças constantes de mercado.' },
+        { bold: 'Foco no cliente', desc: 'Garante qualidade e menor custo na entrega final.' }
+    ];
 
-    const cardObjetivos = document.createElement('div');
-    cardObjetivos.className = 'info-card';
-    cardObjetivos.innerHTML = '<h3>Objetivos:</h3>';
-     cardObjetivos.appendChild(createTopicList([
-        'Redução de custos → eliminar desperdícios, evitar retrabalho e otimizar recursos.',
-        'Eficiência operacional → garantir que todos os processos estejam sincronizados e fluindo sem gargalos.',
-        'Agilidade e flexibilidade → responder rapidamente a mudanças de demanda ou imprevistos no mercado.',
-        'Qualidade no atendimento → entregar o produto certo, no lugar certo, no tempo certo.',
-        'Integração da cadeia de suprimentos → conectar fornecedores, produção, armazenagem, transporte e cliente final em um só sistema.',
-        'Satisfação e fidelização do cliente → aumentar a competitividade ao oferecer melhor experiência de compra.',
-    ]));
-
-    cardsContainer.append(cardObjetivos, cardImportancia, cardCaracteristicas);
+    goalsAndImportanceGrid.append(
+        createOptimizedCard('Objetivos', objetivosData),
+        createOptimizedCard('Importância', importanciaData)
+    );
 
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
@@ -482,11 +567,11 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         { q: "Em que década o conceito de Supply Chain Management (SCM) começou a ganhar força?", a: 2, o: ["Década de 1950", "Década de 1970", "Década de 1980", "Década de 2010"] },
         { q: "Qual o resultado final esperado para o cliente com a implementação da Logística Integrada?", a: 2, o: ["Buscar o produto diretamente na fábrica.", "Receber o produto com atraso, mas mais barato.", "Receber o produto certo, no lugar e na hora certa.", "Ter menos opções de produtos disponíveis."] },
         { q: "Um dos principais benefícios da Logística Integrada é:", a: 3, o: ["O aumento do nível de estoque.", "A complexidade na comunicação.", "A maior dependência de um único setor.", "A redução de custos operacionais."] },
-        { q: "Que evento histórico impulsionou a necessidade de maior eficiência logística nos anos 1970?", a: 1, o: ["A Segunda Guerra Mundial.", "As crises do petróleo.", "A invenção do código de barras.", "O surgimento do e-commerce."] },
-        { q: "A Logística 4.0, que consolida a integração, é marcada pelo uso de qual tecnologia?", a: 0, o: ["Inteligência Artificial (IA) e IoT.", "Máquinas a vapor.", "Telefone e fax.", "Apenas planilhas eletrônicas."] },
-        { q: "Qual NÃO é um objetivo da Logística Integrada?", a: 3, o: ["Aumentar a eficiência operacional.", "Responder rapidamente às mudanças de mercado.", "Garantir a satisfação do cliente.", "Manter cada departamento trabalhando de forma isolada."] },
-        { q: "A integração do fluxo de informações em tempo real é uma característica-chave da Logística Integrada. Qual tecnologia foi fundamental para isso nos anos 90?", a: 2, o: ["Rádio amador.", "Correio tradicional.", "Sistemas ERP (Enterprise Resource Planning).", "Máquinas de escrever."] },
-        { q: "A visão da Logística Integrada considera a empresa como:", a: 1, o: ["Uma coleção de departamentos independentes.", "Um sistema único e conectado.", "Apenas um centro de distribuição.", "Um ponto de venda para o cliente."] },
+        { q: "O fluxo de informação na logística integrada é considerado:", a: 1, o: ["Unidirecional (apenas da fábrica para o cliente).", "Bidirecional (as informações vão e voltam entre os elos).", "Irrelevante para o transporte físico.", "Focado apenas em notas fiscais."] },
+        { q: "Qual pilar da logística integrada foca no retorno de produtos para reciclagem ou descarte?", a: 3, o: ["Administração de Materiais.", "Movimentação Interna.", "Distribuição Física.", "Logística Reversa."] },
+        { q: "O que caracteriza a Logística 4.0, consolidada a partir dos anos 2000?", a: 2, o: ["O uso exclusivo de caminhões maiores.", "A volta ao foco apenas em armazenagem.", "O uso de tecnologias como IA, IoT e Big Data.", "A eliminação de fornecedores externos."] },
+        { q: "No 'Fluxo Físico' da logística, o movimento geralmente acontece de onde para onde?", a: 0, o: ["Da origem (fornecedores) para o consumidor final.", "Do consumidor final para o fabricante.", "Apenas dentro do armazém.", "Do setor de marketing para o financeiro."] },
+        { q: "O pilar de 'Administração de Materiais' cuida principalmente de:", a: 1, o: ["Entregar o produto na casa do cliente.", "Insumos, negociação com fornecedores e transporte de entrada.", "Vender as sobras de produção no mercado.", "Treinar os motoristas da frota de entrega."] }
     ];
 
     const quizForm = document.createElement('form');
@@ -546,7 +631,6 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('logistica-integrada');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -557,7 +641,7 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         columns,
         intTitle,
         intIntro,
-        intTopics,
+        motivacaoCard,
         timelineSection,
         fluxosTitle,
         fluxosContent,
@@ -565,9 +649,8 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         diagramContainer,
         pilaresTitle,
         pilaresGrid,
-        cardsContainer,
+        goalsAndImportanceGrid,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

@@ -8,7 +8,7 @@ import { renderQuemSomosPage } from './pages/QuemSomos.tsx';
 const root = document.getElementById('root');
 let currentPage = 'inicio';
 let selectedTopic = null;
-let selectedGame = null; // Novo estado para jogos
+let selectedGame = null; 
 let currentTheme = 'light';
 let isTransitioning = false;
 let isMenuOpen = false;
@@ -35,47 +35,86 @@ const accessState = {
     highContrast: false,
     largeText: false,
     readableFont: false,
-    highlightLinks: false
+    highlightLinks: false,
+    readingMode: false // Nova funcionalidade de leitura
 };
+
+let speechInstance = null;
+
+function stopSpeaking() {
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+}
+
+function speakContent() {
+    if (!window.speechSynthesis) return;
+    
+    stopSpeaking();
+    
+    // Coleta textos significativos da página mantendo a ordem
+    const elements = document.querySelectorAll('h1, h2, h3, h4, p, li, blockquote');
+    let fullText = "";
+    
+    elements.forEach(el => {
+        // Ignora elementos dentro do cabeçalho ou menu de acessibilidade para focar no conteúdo
+        if (!el.closest('header') && !el.closest('.access-panel')) {
+            fullText += el.textContent + ". ";
+        }
+    });
+
+    const utterance = new SpeechSynthesisUtterance(fullText);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1;
+    
+    utterance.onend = () => {
+        accessState.readingMode = false;
+        updateAccessMenuState();
+    };
+
+    window.speechSynthesis.speak(utterance);
+}
 
 function initAccessibility() {
     const saved = localStorage.getItem('accessibility');
     if (saved) {
         const parsed = JSON.parse(saved);
+        // Garantimos que readingMode comece sempre falso para não assustar o usuário
+        parsed.readingMode = false;
         Object.assign(accessState, parsed);
         applyAccessibility();
     }
 }
 
 function applyAccessibility() {
-    const body = document.body;
+    const el = document.documentElement;
     
-    // Grayscale
-    if (accessState.grayscale) body.classList.add('access-grayscale');
-    else body.classList.remove('access-grayscale');
+    if (accessState.grayscale) el.classList.add('access-grayscale');
+    else el.classList.remove('access-grayscale');
 
-    // High Contrast
-    if (accessState.highContrast) body.classList.add('access-high-contrast');
-    else body.classList.remove('access-high-contrast');
+    if (accessState.highContrast) el.classList.add('access-high-contrast');
+    else el.classList.remove('access-high-contrast');
 
-    // Large Text
-    if (accessState.largeText) body.classList.add('access-large-text');
-    else body.classList.remove('access-large-text');
+    if (accessState.largeText) el.classList.add('access-large-text');
+    else el.classList.remove('access-large-text');
 
-    // Readable Font
-    if (accessState.readableFont) body.classList.add('access-readable-font');
-    else body.classList.remove('access-readable-font');
+    if (accessState.readableFont) el.classList.add('access-readable-font');
+    else el.classList.remove('access-readable-font');
 
-    // Highlight Links
-    if (accessState.highlightLinks) body.classList.add('access-highlight-links');
-    else body.classList.remove('access-highlight-links');
+    if (accessState.highlightLinks) el.classList.add('access-highlight-links');
+    else el.classList.remove('access-highlight-links');
+
+    if (accessState.readingMode) {
+        speakContent();
+    } else {
+        stopSpeaking();
+    }
 
     localStorage.setItem('accessibility', JSON.stringify(accessState));
     updateAccessMenuState();
 }
 
 function updateAccessMenuState() {
-    // Update visual state of buttons in the panel if it exists
     const panel = document.querySelector('.access-panel');
     if (!panel) return;
 
@@ -91,6 +130,7 @@ function updateAccessMenuState() {
 function toggleAccessOption(type) {
     if (type === 'reset') {
         Object.keys(accessState).forEach(key => accessState[key] = false);
+        stopSpeaking();
     } else {
         accessState[type] = !accessState[type];
     }
@@ -101,18 +141,21 @@ function renderAccessibilityMenu() {
     const btn = document.createElement('button');
     btn.id = 'accessibility-btn';
     btn.innerHTML = AccessibilityIcon;
-    btn.setAttribute('aria-label', 'Menu de Acessibilidade');
+    btn.setAttribute('aria-label', 'Abrir Menu de Acessibilidade');
     btn.title = 'Acessibilidade';
 
     const panel = document.createElement('div');
     panel.className = 'access-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', 'Opções de Acessibilidade');
     panel.innerHTML = `
-        <div class="access-option" data-type="largeText">🔠 Aumentar Texto</div>
-        <div class="access-option" data-type="grayscale">👁️ Escala de Cinza</div>
-        <div class="access-option" data-type="highContrast">🌗 Alto Contraste</div>
-        <div class="access-option" data-type="readableFont">📖 Fonte Legível</div>
-        <div class="access-option" data-type="highlightLinks">🔗 Destacar Links</div>
-        <div class="access-option" data-type="reset">❌ Reiniciar</div>
+        <div class="access-option" data-type="readingMode" role="button" aria-pressed="${accessState.readingMode}">🔊 Ouvir Conteúdo</div>
+        <div class="access-option" data-type="largeText" role="button" aria-pressed="${accessState.largeText}">🔠 Aumentar Texto</div>
+        <div class="access-option" data-type="grayscale" role="button" aria-pressed="${accessState.grayscale}">👁️ Escala de Cinza</div>
+        <div class="access-option" data-type="highContrast" role="button" aria-pressed="${accessState.highContrast}">🌗 Alto Contraste</div>
+        <div class="access-option" data-type="readableFont" role="button" aria-pressed="${accessState.readableFont}">📖 Fonte Legível</div>
+        <div class="access-option" data-type="highlightLinks" role="button" aria-pressed="${accessState.highlightLinks}">🔗 Destacar Links</div>
+        <div class="access-option" data-type="reset" role="button">❌ Reiniciar</div>
     `;
 
     btn.addEventListener('click', (e) => {
@@ -142,6 +185,7 @@ function transitionTo(updateState) {
     if (isTransitioning) return;
 
     const main = document.querySelector('main');
+    stopSpeaking(); // Para a leitura ao mudar de página
 
     if (main) {
         isTransitioning = true;
@@ -177,7 +221,7 @@ function renderFooter() {
 function renderBackToTopButton() {
     const button = document.createElement('button');
     button.id = 'back-to-top-btn';
-    button.setAttribute('aria-label', 'Voltar ao topo');
+    button.setAttribute('aria-label', 'Voltar ao topo da página');
     button.title = 'Voltar ao topo';
     button.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`;
     button.addEventListener('click', () => {
@@ -190,7 +234,6 @@ function renderBackToTopButton() {
 }
 
 function navigateTo(page) {
-    // Se já estiver na página e não houver sub-seleção (tópico ou jogo), não faz nada
     if (currentPage === page && !selectedTopic && !selectedGame) {
         isMenuOpen = false; 
         render(); 
@@ -201,7 +244,6 @@ function navigateTo(page) {
     
     transitionTo(() => {
         currentPage = page;
-        // Reseta seleções ao mudar de "aba" principal
         selectedTopic = null;
         selectedGame = null;
     });
@@ -229,13 +271,15 @@ function renderHeader() {
   const logo = document.createElement('a');
   logo.href = '#';
   logo.textContent = 'Descomplica Logística';
+  logo.setAttribute('aria-label', 'Descomplica Logística - Ir para a página inicial');
   applyStyles(logo, {
-    fontSize: '1.5rem',
-    fontWeight: '700',
+    fontSize: '1.8rem',
+    fontWeight: '800',
     color: 'var(--text-color)',
     textDecoration: 'none',
     zIndex: '1003',
-    position: 'relative'
+    position: 'relative',
+    letterSpacing: '-1px'
   });
   logo.addEventListener('click', (e) => {
     e.preventDefault();
@@ -247,6 +291,7 @@ function renderHeader() {
 
   const nav = document.createElement('nav');
   nav.className = `nav-links ${isMenuOpen ? 'open' : ''}`;
+  nav.setAttribute('aria-label', 'Navegação principal');
 
   const navLinks = [
     { text: 'Início', page: 'inicio' },
@@ -270,6 +315,7 @@ function renderHeader() {
     if (link.page === currentPage) {
       a.style.color = 'var(--text-color)';
       a.style.backgroundColor = 'var(--button-bg)';
+      a.setAttribute('aria-current', 'page');
     }
     a.addEventListener('click', (e) => {
       e.preventDefault();
@@ -281,12 +327,12 @@ function renderHeader() {
   const themeToggleButton = document.createElement('button');
   themeToggleButton.className = 'theme-toggle-button';
   themeToggleButton.innerHTML = currentTheme === 'light' ? MoonIcon : SunIcon;
-  themeToggleButton.setAttribute('aria-label', `Switch to ${currentTheme === 'light' ? 'dark' : 'light'} mode`);
+  themeToggleButton.setAttribute('aria-label', `Mudar para modo ${currentTheme === 'light' ? 'escuro' : 'claro'}`);
   themeToggleButton.addEventListener('click', toggleTheme);
 
   const hamburger = document.createElement('button');
   hamburger.className = `hamburger-btn ${isMenuOpen ? 'open' : ''}`;
-  hamburger.setAttribute('aria-label', 'Abrir menu');
+  hamburger.setAttribute('aria-label', isMenuOpen ? 'Fechar menu' : 'Abrir menu de navegação');
   hamburger.innerHTML = `
     <span class="hamburger-line"></span>
     <span class="hamburger-line"></span>
@@ -310,10 +356,10 @@ function render() {
 
   const header = renderHeader();
   const main = document.createElement('main');
+  main.setAttribute('role', 'main');
   const footer = renderFooter();
   const backToTopButton = renderBackToTopButton();
   
-  // Renderiza elementos de acessibilidade
   const { btn: accessBtn, panel: accessPanel } = renderAccessibilityMenu();
 
   const setSelectedTopic = (topic) => {

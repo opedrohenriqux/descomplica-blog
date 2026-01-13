@@ -1,7 +1,5 @@
 
-
-
-import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicList, createTopicNavigation, createImage, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, handleQuizSubmit, createTopicList, createTopicNavigation, createImage } from '../../utils.tsx';
 
 export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -349,7 +347,6 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('estocagem');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -371,7 +368,6 @@ export function renderEstocagemPage(transitionTo, selectedTopic, setSelectedTopi
         addressingIntro,
         visualAddressing,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;

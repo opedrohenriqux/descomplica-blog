@@ -1,7 +1,5 @@
 
-
-
-import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo, createImage, createCommentSection } from '../../utils.tsx';
+import { styles, applyStyles, CtaButton, createTopicList, handleQuizSubmit, createTopicNavigation, createVideo, createImage } from '../../utils.tsx';
 
 export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTopic) {
     const container = document.createElement('div');
@@ -40,21 +38,70 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
             fontWeight: '700',
             color: 'var(--text-color)',
             marginTop: '2.5rem',
-            marginBottom: '1rem',
+            marginBottom: '1.5rem',
             paddingBottom: '0.5rem',
             borderBottom: '2px solid var(--primary-color)',
-            width: '100%' // Garante que a linha vá até o final
+            width: '100%' 
         });
     };
 
-    // Seção de Imagem (Substituindo o Vídeo)
+    // Helper para criar os tópicos destacados (Cards individuais por item)
+    const createHighlightedTopicList = (items) => {
+        const listContainer = document.createElement('div');
+        applyStyles(listContainer, {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            width: '100%',
+            marginBottom: '2rem'
+        });
+
+        items.forEach(itemText => {
+            const card = document.createElement('div');
+            applyStyles(card, {
+                backgroundColor: 'var(--card-bg)',
+                border: '2px solid var(--primary-color)',
+                borderRadius: '24px',
+                padding: '1.2rem 1.8rem',
+                boxShadow: '0 4px 10px var(--card-shadow)',
+                fontSize: '1.05rem',
+                lineHeight: '1.5',
+                color: 'var(--text-color)',
+                transition: 'transform 0.2s ease'
+            });
+            
+            // Lógica para negritar antes do separador
+            const separator = itemText.includes('→') ? '→' : (itemText.includes(':') ? ':' : null);
+            if (separator) {
+                const parts = itemText.split(separator);
+                card.innerHTML = `<strong>${parts[0]}${separator}</strong> ${parts.slice(1).join(separator).trim()}`;
+            } else {
+                card.textContent = itemText;
+            }
+
+            card.addEventListener('mouseenter', () => card.style.transform = 'translateX(5px)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'translateX(0)');
+
+            listContainer.appendChild(card);
+        });
+
+        return listContainer;
+    };
+
+    // Seção de Imagem (Centralizada e Otimizada via CSS Global)
     const mediaSection = document.createElement('div');
-    mediaSection.style.width = '100%';
-    mediaSection.style.marginBottom = '2rem';
+    applyStyles(mediaSection, {
+        width: '100%',
+        marginBottom: '2.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center' 
+    });
     
     const mediaTitle = document.createElement('h3');
     mediaTitle.textContent = 'Fluxo do Just in Time';
     applyH3Style(mediaTitle);
+    mediaTitle.style.textAlign = 'left'; 
     
     const imageContainer = document.createElement('div');
     imageContainer.className = 'media-container';
@@ -64,15 +111,17 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     iframeWrapper.innerHTML = `
         <iframe 
             src="https://drive.google.com/file/d/12oA58IBZC3oT6ixN2UTbSZRU73CAB9RI/preview" 
-            width="640" 
-            height="480" 
+            width="100%" 
+            height="600" 
             allow="autoplay"
+            style="border:none;"
             title="Diagrama Just in Time">
         </iframe>
     `;
 
     const driveLink = document.createElement('div');
-    driveLink.style.marginTop = '0.5rem';
+    driveLink.style.padding = '1rem';
+    driveLink.style.backgroundColor = 'var(--timeline-bg)';
     driveLink.innerHTML = `<a href="https://drive.google.com/file/d/12oA58IBZC3oT6ixN2UTbSZRU73CAB9RI/view?usp=sharing" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); font-weight: 600; text-decoration: none; font-size: 0.9rem;">Abrir imagem em nova guia <svg style="vertical-align: middle;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a>`;
 
     const caption = document.createElement('p');
@@ -93,7 +142,7 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     comoFuncionaTitle.textContent = 'Como funciona?';
     applyH3Style(comoFuncionaTitle);
 
-    const comoFuncionaList = createTopicList([
+    const comoFuncionaList = createHighlightedTopicList([
         'Produção puxada pela demanda → só se fabrica quando há pedido/necessidade.',
         'Controle rigoroso de estoques → materiais chegam quase no momento da produção.',
         'Parceria com fornecedores → entregas frequentes e confiáveis, em pequenos lotes.',
@@ -114,31 +163,28 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     const importanciaText = document.createElement('p');
     importanciaText.textContent = 'O Just in Time (JIT) é importante porque aumenta a eficiência e reduz custos, produzindo apenas o necessário, garantindo qualidade e flexibilidade, e permitindo que as empresas se adaptem rapidamente às demandas do mercado.';
 
-    const cardsContainer = document.createElement('div');
-    cardsContainer.className = 'info-cards-container';
-
-    const vantagesCard = document.createElement('div');
-    vantagesCard.className = 'info-card';
-    vantagesCard.innerHTML = '<h3>Vantagens</h3>';
-    vantagesCard.appendChild(createTopicList([
+    const vantagensTitle = document.createElement('h3');
+    vantagensTitle.textContent = 'Vantagens';
+    applyH3Style(vantagensTitle);
+    
+    const vantagesList = createHighlightedTopicList([
         'Redução de estoques e custos de armazenamento;',
         'Aumento da eficiência e produtividade;',
         'Melhoria da qualidade dos produtos;',
         'Maior flexibilidade para atender à demanda do mercado.',
-    ]));
+    ]);
 
-    const desvantagensCard = document.createElement('div');
-    desvantagensCard.className = 'info-card';
-    desvantagensCard.innerHTML = '<h3>Desvantagens</h3>';
-    desvantagensCard.appendChild(createTopicList([
+    const desvantagensTitle = document.createElement('h3');
+    desvantagensTitle.textContent = 'Desvantagens';
+    applyH3Style(desvantagensTitle);
+
+    const desvantagensList = createHighlightedTopicList([
         'Dependência de fornecedores confiáveis;',
         'Risco elevado em caso de falhas na produção;',
         'Pouca margem para imprevisto;',
         'Necessidade de disciplina e organização rigorosas.',
-    ]));
+    ]);
 
-    cardsContainer.append(vantagesCard, desvantagensCard);
-    
     const quizSection = document.createElement('div');
     quizSection.className = 'quiz-section';
 
@@ -219,7 +265,6 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
     quizButtons.append(submitButton, resetButton);
     quizSection.append(quizTitle, quizForm, resultsDiv, aiTipDiv, quizButtons);
 
-    const commentsSection = createCommentSection('just-in-time');
     const topicNav = createTopicNavigation(selectedTopic.id, transitionTo, setSelectedTopic);
 
     container.append(
@@ -235,9 +280,11 @@ export function renderJustInTimePage(transitionTo, selectedTopic, setSelectedTop
         exemploText,
         importanciaTitle,
         importanciaText,
-        cardsContainer,
+        vantagensTitle,
+        vantagesList,
+        desvantagensTitle,
+        desvantagensList,
         quizSection,
-        commentsSection,
         topicNav
     );
     return container;
