@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 import { styles, applyStyles, CtaButton } from '../utils.tsx';
 import { renderMemoryGame } from './games/MemoryGame.tsx';
 import { renderLogisticaRun } from './games/LogisticaRun.tsx';
@@ -16,9 +7,30 @@ import { renderKanbanSimulator } from './games/KanbanSimulator.tsx';
 import { renderJitManager } from './games/JitManager.tsx';
 import { renderHangmanGame } from './games/HangmanGame.tsx';
 import { renderEcoLogistica } from './games/EcoLogistica.tsx';
+import { renderTruckSimulator3D } from './games/TruckSimulator3D.tsx';
+import { renderLogisticsHero3D } from './games/LogisticsHero3D.tsx';
+import { renderLogiBot3D } from './games/LogiBot3D.tsx';
 
 // Lista de Jogos Disponíveis
 const gamesList = [
+    {
+        id: 'logibot-3d',
+        title: 'LogiBot 3D: Automação',
+        description: 'Pilote um robô AMR em um centro de distribuição high-tech. Organize cargas com precisão cirúrgica e velocidade.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fec700"/><rect x="25" y="40" width="50" height="30" rx="5" fill="white"/><circle cx="35" cy="75" r="8" fill="#333"/><circle cx="65" cy="75" r="8" fill="#333"/><path d="M40 30 L60 30" stroke="white" stroke-width="5" stroke-linecap="round"/></svg>`
+    },
+    {
+        id: 'logistics-hero-3d',
+        title: 'Logistics Hero: Mundo Aberto',
+        description: 'Explore um terminal logístico em 3D, interaja com personagens e cumpra missões operacionais como um verdadeiro herói da logística.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#fec700"/><circle cx="50" cy="35" r="15" fill="white"/><rect x="30" y="55" width="40" height="35" rx="5" fill="white"/></svg>`
+    },
+    {
+        id: 'truck-simulator-3d',
+        title: 'Simulador de Entrega 3D',
+        description: 'Assuma o controle de um caminhão logístico em um ambiente 3D imersivo. Entregue cargas e domine a física de transporte.',
+        thumbnail: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="30" width="80" height="40" rx="5" fill="#fec700"/><path d="M70 30 L90 50 L90 70 L70 70 Z" fill="#333" opacity="0.2"/><circle cx="25" cy="75" r="8" fill="#333"/><circle cx="75" cy="75" r="8" fill="#333"/><rect x="15" y="35" width="50" height="20" fill="white" opacity="0.3"/></svg>`
+    },
     {
         id: 'memory-game',
         title: 'Memória Logística',
@@ -76,6 +88,15 @@ export function renderGamesPage(selectedGame, transitionTo, setSelectedGame) {
     if (selectedGame) {
         let gameContent;
         switch (selectedGame.id) {
+            case 'logibot-3d':
+                gameContent = renderLogiBot3D(transitionTo, setSelectedGame);
+                break;
+            case 'logistics-hero-3d':
+                gameContent = renderLogisticsHero3D(transitionTo, setSelectedGame);
+                break;
+            case 'truck-simulator-3d':
+                gameContent = renderTruckSimulator3D(transitionTo, setSelectedGame);
+                break;
             case 'memory-game':
                 gameContent = renderMemoryGame(transitionTo, setSelectedGame);
                 break;

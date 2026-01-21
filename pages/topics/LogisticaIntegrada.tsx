@@ -20,15 +20,17 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
     glossaryStyles.textContent = `
         .glossary-term {
             color: var(--primary-color);
-            border-bottom: 1px dashed var(--primary-color);
+            border-bottom: 2px dashed var(--primary-color);
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             transition: all 0.2s ease;
             position: relative;
+            padding: 0 2px;
         }
         .glossary-term:hover {
-            background-color: rgba(254, 199, 0, 0.1);
-            color: var(--text-color);
+            background-color: var(--primary-color);
+            color: #000;
+            border-radius: 4px;
         }
         .glossary-overlay {
             position: fixed;
@@ -36,15 +38,15 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            z-index: 2000;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 5000;
             display: flex;
             justify-content: center;
             align-items: center;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(5px);
         }
         .glossary-overlay.open {
             opacity: 1;
@@ -52,43 +54,44 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
         }
         .glossary-modal {
             background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 400px;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 450px;
             width: 90%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            border: 1px solid var(--primary-color);
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 2px solid var(--primary-color);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
         }
         .glossary-overlay.open .glossary-modal {
-            transform: translateY(0);
+            transform: scale(1);
         }
         .glossary-title {
             color: var(--primary-color);
             margin-top: 0;
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             margin-bottom: 1rem;
+            font-weight: 800;
         }
         .glossary-text {
             color: var(--text-color);
-            line-height: 1.6;
-            font-size: 1rem;
+            line-height: 1.7;
+            font-size: 1.1rem;
         }
         .glossary-close {
-            margin-top: 1.5rem;
-            background: var(--button-bg);
-            border: 1px solid var(--card-border);
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
+            margin-top: 2rem;
+            background: var(--primary-color);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
-            color: var(--text-color);
-            transition: background 0.2s;
+            font-weight: 800;
+            color: #000;
+            transition: transform 0.2s;
         }
         .glossary-close:hover {
-            background: var(--button-bg-hover);
+            transform: scale(1.05);
         }
 
         /* Otimização dos Itens de Lista nos Novos Cards */
@@ -195,6 +198,17 @@ export function renderLogisticaIntegradaPage(transitionTo, selectedTopic, setSel
             if (e.target === overlay) close();
         });
     }
+
+    // OUvinte de delegação de eventos para capturar cliques nos termos do glossário
+    container.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const glossaryTerm = target.closest('.glossary-term') as HTMLElement;
+        if (glossaryTerm && glossaryTerm.dataset.term) {
+            e.preventDefault();
+            e.stopPropagation();
+            showGlossary(glossaryTerm.dataset.term);
+        }
+    });
 
     const backButton = CtaButton('← Voltar para a lista', () => {
         transitionTo(() => { setSelectedTopic(null); });
