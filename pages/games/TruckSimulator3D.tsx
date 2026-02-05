@@ -1,3 +1,4 @@
+
 import { styles, applyStyles, CtaButton } from '../../utils.tsx';
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 
@@ -97,11 +98,14 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         border: '1px solid #ddd',
         zIndex: '100',
         color: '#111',
-        minWidth: '280px',
+        minWidth: '320px',
         boxShadow: '0 20px 60px rgba(0,0,0,0.4)'
     });
     hud.innerHTML = `
-        <div style="font-weight: 900; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 8px;">Telemetria Logística</div>
+        <div style="font-weight: 900; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span>Telemetria Logística</span>
+            <span id="game-clock" style="color: #333;">08:00</span>
+        </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
                 <div style="font-size: 2.5rem; font-weight: 900; line-height: 0.9;"><span id="truck-speed">0</span> <small style="font-size: 0.9rem; opacity: 0.5;">km/h</small></div>
@@ -109,6 +113,7 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
             </div>
             <div style="text-align: right;">
                 <div id="mission-tag" style="background: #fec700; color: #000; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 800;">ATIVO</div>
+                <div id="time-state" style="font-size: 0.65rem; font-weight: 800; margin-top: 5px; opacity: 0.7;">DIA</div>
             </div>
         </div>
         <div id="collision-alert" style="display:none; margin-top:10px; color:#e74c3c; font-weight:800; font-size:0.7rem; text-align:center;">⚠️ OBSTÁCULO À FRENTE</div>
@@ -136,11 +141,21 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
     let targetPos = new THREE.Vector3();
     let targetObject, score = 0;
     
+    // Cycle Data
+    let timeOfDay = 0.3; 
+    let sun, hemiLight;
+    let windows = [];
+    
+    // Traffic Systems
+    const trafficLights = [];
+    const aiVehicles = [];
+    let trafficTimer = 0;
+
     // Configurações da Cidade
-    const GRID_UNIT = 60; // Tamanho do Quarteirão + Rua
-    const ROAD_WIDTH = 25; // Espaço para dirigir
+    const GRID_UNIT = 60; 
+    const ROAD_WIDTH = 25; 
     const CITY_RADIUS = 300;
-    const buildings = []; // Para detecção de colisão manual simplificada
+    const buildings = []; 
 
     const handleKeyDown = (e) => keys[e.key.toLowerCase()] = true;
     const handleKeyUp = (e) => keys[e.key.toLowerCase()] = false;
@@ -154,9 +169,7 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
     function init3D() {
         clock = new THREE.Clock();
         scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0c10); 
-        scene.fog = new THREE.Fog(0x0a0c10, 40, 220);
-
+        
         camera = new THREE.PerspectiveCamera(60, gameCanvasContainer.clientWidth / gameCanvasContainer.clientHeight, 0.1, 1000);
         
         renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -166,10 +179,10 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         gameCanvasContainer.appendChild(renderer.domElement);
 
-        const hemiLight = new THREE.HemisphereLight(0x4444ff, 0x000000, 0.4);
+        hemiLight = new THREE.HemisphereLight(0x4444ff, 0x000000, 0.4);
         scene.add(hemiLight);
 
-        const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+        sun = new THREE.DirectionalLight(0xffffff, 1.5);
         sun.position.set(100, 150, 50);
         sun.castShadow = true;
         sun.shadow.camera.left = -250;
@@ -182,6 +195,7 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         createCity();
         createTruck();
         spawnMission();
+        createTrafficSystems();
 
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
@@ -190,7 +204,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
     }
 
     function createCity() {
-        // Chão de Asfalto
         const groundGeo = new THREE.PlaneGeometry(CITY_RADIUS * 2.5, CITY_RADIUS * 2.5);
         const groundMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -198,7 +211,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // Faixas das Ruas
         const gridHelper = new THREE.GridHelper(CITY_RADIUS * 2.5, CITY_RADIUS * 2.5 / (GRID_UNIT/2), 0x333333, 0x222222);
         gridHelper.position.y = 0.05;
         scene.add(gridHelper);
@@ -207,10 +219,8 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
 
         for (let x = -CITY_RADIUS; x <= CITY_RADIUS; x += GRID_UNIT) {
             for (let z = -CITY_RADIUS; z <= CITY_RADIUS; z += GRID_UNIT) {
-                // Deixa o centro livre
                 if (Math.abs(x) < 30 && Math.abs(z) < 30) continue;
 
-                // Calçada (Onde ficam os prédios)
                 const sidewalkSize = GRID_UNIT - ROAD_WIDTH;
                 const sidewalkGeo = new THREE.BoxGeometry(sidewalkSize, 1, sidewalkSize);
                 const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0x555555 });
@@ -219,7 +229,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
                 sidewalk.receiveShadow = true;
                 scene.add(sidewalk);
 
-                // Prédio Principal
                 const h = 20 + Math.random() * 80;
                 const bGeo = new THREE.BoxGeometry(sidewalkSize - 4, h, sidewalkSize - 4);
                 const bMat = new THREE.MeshStandardMaterial({ 
@@ -233,41 +242,107 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
                 building.receiveShadow = true;
                 scene.add(building);
 
-                // Janelas (Visual de luzes)
                 const winGeo = new THREE.BoxGeometry(sidewalkSize - 3.5, h * 0.9, sidewalkSize - 3.5);
                 const winMat = new THREE.MeshStandardMaterial({ 
                     color: 0x000000, 
                     emissive: 0xfec700, 
                     emissiveIntensity: 0.1, 
-                    wireframe: true 
+                    wireframe: false 
                 });
                 const win = new THREE.Mesh(winGeo, winMat);
                 win.position.copy(building.position);
                 scene.add(win);
+                windows.push(win);
 
-                // Guardar para colisão
-                buildings.push({
-                    x: x,
-                    z: z,
-                    halfSize: sidewalkSize / 2 + 1.5 // Margem de segurança
-                });
+                buildings.push({ x: x, z: z, halfSize: sidewalkSize / 2 + 1.5 });
             }
         }
         
-        // Pintura das Ruas (Faixas Amarelas)
         for (let i = -CITY_RADIUS; i <= CITY_RADIUS; i += GRID_UNIT) {
-            // Horizontais
             const stripeH = new THREE.Mesh(new THREE.PlaneGeometry(CITY_RADIUS * 2, 0.5), new THREE.MeshBasicMaterial({ color: 0xfec700 }));
             stripeH.rotation.x = -Math.PI / 2;
             stripeH.position.set(0, 0.1, i + (GRID_UNIT/2));
             scene.add(stripeH);
             
-            // Verticais
             const stripeV = new THREE.Mesh(new THREE.PlaneGeometry(0.5, CITY_RADIUS * 2), new THREE.MeshBasicMaterial({ color: 0xfec700 }));
             stripeV.rotation.x = -Math.PI / 2;
             stripeV.position.set(i + (GRID_UNIT/2), 0.1, 0);
             scene.add(stripeV);
         }
+    }
+
+    function createTrafficSystems() {
+        // Criar semáforos nos cruzamentos centrais
+        for (let x = -CITY_RADIUS + GRID_UNIT/2; x <= CITY_RADIUS; x += GRID_UNIT) {
+            for (let z = -CITY_RADIUS + GRID_UNIT/2; z <= CITY_RADIUS; z += GRID_UNIT) {
+                if (Math.abs(x) < CITY_RADIUS && Math.abs(z) < CITY_RADIUS) {
+                   createTrafficLight(x, z);
+                }
+            }
+        }
+
+        // Criar Veículos AI
+        const aiColors = [0xffffff, 0x3498db, 0xe74c3c, 0xfec700, 0x95a5a6];
+        for (let i = 0; i < 12; i++) {
+            createAIVehicle(aiColors[i % aiColors.length]);
+        }
+    }
+
+    function createTrafficLight(x, z) {
+        const group = new THREE.Group();
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 12), new THREE.MeshStandardMaterial({ color: 0x333 }));
+        pole.position.y = 6;
+        group.add(pole);
+
+        const head = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 1.5), new THREE.MeshStandardMaterial({ color: 0x111 }));
+        head.position.y = 10;
+        group.add(head);
+
+        const createLamp = (color, yOff) => {
+            const lamp = new THREE.Mesh(
+                new THREE.SphereGeometry(0.5, 16, 16),
+                new THREE.MeshStandardMaterial({ color: 0x111111, emissive: color, emissiveIntensity: 0 })
+            );
+            lamp.position.set(0, yOff, 0.6);
+            head.add(lamp);
+            return lamp;
+        };
+
+        const red = createLamp(0xff0000, 1.2);
+        const yellow = createLamp(0xffff00, 0);
+        const green = createLamp(0x00ff00, -1.2);
+
+        group.position.set(x + 10, 0, z + 10); // Offset do centro da rua
+        scene.add(group);
+        trafficLights.push({ group, red, yellow, green, x, z });
+    }
+
+    function createAIVehicle(color) {
+        const car = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2, 1.2, 4), new THREE.MeshStandardMaterial({ color: color }));
+        body.position.y = 0.6;
+        car.add(body);
+        
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 2), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+        cabin.position.set(0, 1.4, 0);
+        car.add(cabin);
+
+        // Sortear posição inicial na rua
+        const isHorizontal = Math.random() > 0.5;
+        const coord = (Math.floor(Math.random() * 8) - 4) * GRID_UNIT + GRID_UNIT/2;
+        const pos = (Math.random() - 0.5) * CITY_RADIUS * 2;
+        
+        if (isHorizontal) {
+            car.position.set(pos, 0, coord + 5);
+            car.rotation.y = Math.PI / 2;
+            car.userData = { axis: 'x', dir: Math.random() > 0.5 ? 1 : -1, lane: coord + 5 };
+        } else {
+            car.position.set(coord + 5, 0, pos);
+            car.userData = { axis: 'z', dir: Math.random() > 0.5 ? 1 : -1, lane: coord + 5 };
+        }
+
+        scene.add(car);
+        aiVehicles.push(car);
     }
 
     function createTruck() {
@@ -322,7 +397,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
     function spawnMission() {
         if (targetObject) scene.remove(targetObject);
 
-        // Posicionar na rua (múltiplos de GRID_UNIT desfazendo o centro)
         const rx = (Math.round((Math.random() - 0.5) * 8)) * GRID_UNIT + (GRID_UNIT / 2);
         const rz = (Math.round((Math.random() - 0.5) * 8)) * GRID_UNIT + (GRID_UNIT / 2);
         targetPos.set(rx, 0, rz);
@@ -336,7 +410,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
             group.add(box);
             group.position.set(rx, 5, rz);
             targetObject = group;
-
             document.getElementById('gps-status-label').textContent = "Coletar Carga";
             document.getElementById('gps-status-label').style.backgroundColor = "#fec700";
         } else {
@@ -344,16 +417,59 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
             const mat = new THREE.MeshBasicMaterial({ color: 0xe74c3c, transparent: true, opacity: 0.6 });
             targetObject = new THREE.Mesh(geo, mat);
             targetObject.position.set(rx, 0.2, rz);
-            
             const pLight = new THREE.PointLight(0xe74c3c, 20, 30);
             pLight.position.y = 5;
             targetObject.add(pLight);
-
             document.getElementById('gps-status-label').textContent = "Entregar em Vermelho";
             document.getElementById('gps-status-label').style.backgroundColor = "#e74c3c";
         }
-        
         scene.add(targetObject);
+    }
+
+    function updateTraffic(delta) {
+        trafficTimer += delta;
+        const cycle = trafficTimer % 15; // Ciclo de 15 segundos
+        
+        let currentState = 'RED';
+        if (cycle < 6) currentState = 'GREEN';
+        else if (cycle < 9) currentState = 'YELLOW';
+        else currentState = 'RED';
+
+        // Atualizar luzes
+        trafficLights.forEach(tl => {
+            tl.red.material.emissiveIntensity = currentState === 'RED' ? 4 : 0.1;
+            tl.yellow.material.emissiveIntensity = currentState === 'YELLOW' ? 4 : 0.1;
+            tl.green.material.emissiveIntensity = currentState === 'GREEN' ? 4 : 0.1;
+        });
+
+        // Atualizar Veículos AI
+        aiVehicles.forEach(car => {
+            const { axis, dir } = car.userData;
+            let currentSpeed = 25 * delta;
+
+            // Detectar semáforo à frente
+            trafficLights.forEach(tl => {
+                const dist = car.position.distanceTo(new THREE.Vector3(tl.x, 0, tl.z));
+                if (dist < 15 && currentState !== 'GREEN') {
+                    // Se o carro está indo em direção ao semáforo e ele está vermelho/amarelo, ele para
+                    const dot = new THREE.Vector3(tl.x - car.position.x, 0, tl.z - car.position.z).normalize().dot(new THREE.Vector3(axis === 'x' ? dir : 0, 0, axis === 'z' ? dir : 0));
+                    if (dot > 0.8 && dist > 5) {
+                        currentSpeed *= (dist - 5) / 10;
+                    } else if (dot > 0.8 && dist <= 5) {
+                        currentSpeed = 0;
+                    }
+                }
+            });
+
+            if (axis === 'x') car.position.x += currentSpeed * dir;
+            else car.position.z += currentSpeed * dir;
+
+            // Teleporte infinito (re-spawn)
+            if (car.position.x > CITY_RADIUS * 1.5) car.position.x = -CITY_RADIUS * 1.5;
+            if (car.position.x < -CITY_RADIUS * 1.5) car.position.x = CITY_RADIUS * 1.5;
+            if (car.position.z > CITY_RADIUS * 1.5) car.position.z = -CITY_RADIUS * 1.5;
+            if (car.position.z < -CITY_RADIUS * 1.5) car.position.z = CITY_RADIUS * 1.5;
+        });
     }
 
     function updateGPS() {
@@ -362,19 +478,16 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         const center = { x: 105, y: 90 };
         const scale = 0.25;
 
-        // Prédios no GPS
         ctx.fillStyle = "#333";
         buildings.forEach(b => {
             ctx.fillRect(center.x + (b.x - b.halfSize) * scale, center.y + (b.z - b.halfSize) * scale, b.halfSize * 2 * scale, b.halfSize * 2 * scale);
         });
 
-        // Alvo
         const tx = center.x + (targetPos.x * scale);
         const ty = center.y + (targetPos.z * scale);
         ctx.fillStyle = missionState === 'COLLECT' ? "#fec700" : "#e74c3c";
         ctx.beginPath(); ctx.arc(tx, ty, 6, 0, Math.PI*2); ctx.fill();
 
-        // Caminhão
         const px = center.x + (truck.position.x * scale);
         const py = center.y + (truck.position.z * scale);
         ctx.save();
@@ -395,11 +508,45 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
         return false;
     }
 
+    function updateDayNightCycle(delta) {
+        timeOfDay += delta * 0.008;
+        if (timeOfDay > 1) timeOfDay = 0;
+
+        const sunIntensity = Math.max(0, Math.sin(timeOfDay * Math.PI * 2 - Math.PI / 2));
+        sun.intensity = sunIntensity * 2;
+        sun.position.set(Math.cos(timeOfDay * Math.PI * 2) * 150, Math.sin(timeOfDay * Math.PI * 2) * 150, 50);
+
+        hemiLight.intensity = 0.1 + sunIntensity * 0.4;
+        const dayColor = new THREE.Color(0x87CEEB);
+        const nightColor = new THREE.Color(0x050505);
+        const currentColor = nightColor.clone().lerp(dayColor, sunIntensity);
+        scene.background = currentColor;
+        scene.fog = new THREE.Fog(currentColor, 40, 220);
+
+        windows.forEach(win => {
+            win.material.emissiveIntensity = (1 - sunIntensity) * 0.8;
+        });
+
+        const totalMinutes = timeOfDay * 24 * 60;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.floor(totalMinutes % 60);
+        const clockEl = document.getElementById('game-clock');
+        if (clockEl) clockEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        
+        const timeStateEl = document.getElementById('time-state');
+        if (timeStateEl) {
+            timeStateEl.textContent = hours >= 6 && hours < 18 ? "DIA" : "NOITE";
+            timeStateEl.style.color = hours >= 6 && hours < 18 ? "#f39c12" : "#9b59b6";
+        }
+    }
+
     function animate() {
         animationId = requestAnimationFrame(animate);
         const delta = clock.getDelta();
 
-        // Input e Aceleração
+        updateDayNightCycle(delta);
+        updateTraffic(delta);
+
         if (keys['arrowup'] || keys['w']) speed += 35 * delta;
         if (keys['arrowdown'] || keys['s']) speed -= 30 * delta;
         
@@ -409,19 +556,17 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
             if (keys['arrowright'] || keys['d']) rotation -= rotDir * 2.2 * delta;
         }
 
-        speed *= 0.98; // Atrito
+        speed *= 0.98; 
         
-        // Simulação de movimento com teste de colisão
         const nextRotation = rotation;
         const moveStep = speed * delta;
-        
         const nextPos = truck.position.clone();
         const direction = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), nextRotation);
         nextPos.add(direction.multiplyScalar(moveStep));
 
         const alertEl = document.getElementById('collision-alert');
         if (checkCollision(nextPos)) {
-            speed *= -0.5; // Rebate levemente
+            speed *= -0.5;
             if(alertEl) alertEl.style.display = 'block';
         } else {
             truck.position.copy(nextPos);
@@ -431,7 +576,6 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
 
         wheels.forEach(w => w.rotation.x += speed * delta * 3);
 
-        // Animação Marcador
         if (targetObject) {
             if (missionState === 'COLLECT') {
                 targetObject.rotation.y += delta * 2;
@@ -441,14 +585,12 @@ export function renderTruckSimulator3D(transitionTo, setSelectedGame) {
             }
         }
 
-        // Câmera Suave
         const idealCamPos = new THREE.Vector3(0, 12, -22);
         idealCamPos.applyQuaternion(truck.quaternion);
         idealCamPos.add(truck.position);
         camera.position.lerp(idealCamPos, 0.08);
         camera.lookAt(truck.position.clone().add(new THREE.Vector3(0, 2, 0)));
 
-        // Missão
         const dist = truck.position.distanceTo(targetPos);
         if (dist < 12) {
             if (missionState === 'COLLECT') {

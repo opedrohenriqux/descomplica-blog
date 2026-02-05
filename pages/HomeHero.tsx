@@ -28,7 +28,8 @@ export function renderHomeHero(navigateTo) {
 
   const title = document.createElement('h1');
   applyStyles(title, { ...styles.mainTitle, fontSize: "clamp(3.5rem, 10vw, 6.5rem)" });
-  title.innerHTML = `<span>Descomplica </span><span style="color: ${styles.highlight.color};">Logística</span>`;
+  // Destaque para "Descompli" como solicitado
+  title.innerHTML = `<span style="color: ${styles.highlight.color};">Descompli</span><span>ca Logística</span>`;
 
   const slogan = document.createElement('h2');
   applyStyles(slogan, { ...styles.slogan, fontSize: "clamp(2rem, 6vw, 3.2rem)", padding: "1.5rem 3rem" });
